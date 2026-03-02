@@ -1,0 +1,1 @@
+project('libtestrig', 'c')
