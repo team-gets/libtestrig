@@ -16,9 +16,17 @@ extern "C" {
 
 #include <stdint.h>
 
+/*
+ *	A test rig message.
+ *	These are unsigned chars - but more explict - on the architectures and OSes we care about
+ *	(x86_64 Linux and Windows, basically whatever Maxon supports)
+ */ 
 struct RigMessage {
+	// Header: Four bytes since might as well
 	uint8_t head[4];
-	uint8_t data[8]; // guessed from EPOS2 docs, guaranteed 8 bytes, no guarantee on bits, technically
+
+	// Data: Eight bytes as described by the EPOS2 manual's part on CAN frames.
+	uint8_t data[8];
 };
 
 /*
@@ -43,14 +51,19 @@ int SockBind(const int fd, const struct sockaddr_un* sockaddr);
 int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Send a message over the socket.
- */
-int SockSend(const int fd, char* msg);
-
-/*
  *	Close the socket.
  */
 int SockClose(const int fd);
+
+/*
+ *	Set the socket up to receive and decode bytestreams.
+ */
+int SockLoopReceive(const int fd);
+
+/*
+ *	Send a message over the socket without waiting for a response (?)
+ */
+int SockSend(const int fd, struct RigMessage* msg);
 
 #ifdef __cplusplus
 } // extern "C"

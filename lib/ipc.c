@@ -51,3 +51,28 @@ int SockClose(const int fd) {
 
 	return closestat;
 }
+
+int SockLoopReceive(const int fd) {
+	int recvstat;
+
+	while (1) {
+		uint8_t buf[12];
+		recvstat = recv(fd, buf, sizeof(buf), MSG_WAITALL);
+
+		if (recvstat != -1) { printf("Received this: %s\n", buf); }
+	}
+
+	return 0;
+}
+
+int SockSend(const int fd, struct RigMessage* msg) {
+	int nbytes;
+	uint8_t buf[12];
+
+	nbytes = send(fd, buf, sizeof(buf), MSG_NOSIGNAL);
+	if (nbytes == -1) { perror("Clientside socket send error"); }
+
+	return nbytes;
+}
+
+
