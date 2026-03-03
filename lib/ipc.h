@@ -2,15 +2,17 @@
 #ifdef __cplusplus
 namespace Gets {
 extern "C" {
+#endif // __cplusplus
 
 #ifdef _WIN32
 #inlcude <winsock2.h>
 #include <afunix.h>
 #else
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <sys/un.h>
+#include <sys/unistd.h>
 #endif // _WIN32
-#endif // __cplusplus
 
 #include <stdint.h>
 
@@ -19,9 +21,36 @@ struct RigMessage {
 	uint8_t data[8]; // guessed from EPOS2 docs, guaranteed 8 bytes, no guarantee on bits, technically
 };
 
-int SockSetup();
-int SockSend(char* msg);
-int SockClose();
+/*
+ *	Create a Unix domain socket to a random file.
+ *
+ *	Returns a nonzero int representing the file descriptor, otherwise -1.
+ */
+int SockSetup(struct sockaddr_un* sockaddr_mut);
+
+/*
+ *	Bind the Unix domain socket, using the path specified in the passed sockaddr_un struct.
+ *
+ *	Returns 0 on success, -1 on failure.
+ */
+int SockBind(const int fd, const struct sockaddr_un* sockaddr);
+
+/*
+ *	Connect the Domain Socket, using the path specified in the passed sockaddr_un struct.
+ *
+ *	Returns 0 on success, -1 on failure.
+ */
+int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
+
+/*
+ *	Send a message over the socket.
+ */
+int SockSend(const int fd, char* msg);
+
+/*
+ *	Close the socket.
+ */
+int SockClose(const int fd);
 
 #ifdef __cplusplus
 } // extern "C"
