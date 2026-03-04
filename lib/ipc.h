@@ -1,8 +1,7 @@
 #pragma once
 #ifdef __cplusplus
-namespace Gets {
 extern "C" {
-#endif // __cplusplus
+#endif
 
 #ifdef _WIN32
 #inlcude <winsock2.h>
@@ -15,6 +14,12 @@ extern "C" {
 #endif // _WIN32
 
 #include <stdint.h>
+
+#ifdef __cplusplus
+} // extern "C"
+namespace Gets {
+extern "C" {
+#endif // __cplusplus
 
 /*
  *	A test rig message.
