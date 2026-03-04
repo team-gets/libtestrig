@@ -1,5 +1,5 @@
 project('libtestrig', 'c')
 
-srcs = [ 'lib/ipc.c' ]
+srcs = [ 'ipc/ipc.c' ]
 lib = shared_library('testrig', srcs)
-dep = declare_dependency(include_directories: 'lib', link_with: lib)
+dep = declare_dependency(include_directories: '.', link_with: lib)
