@@ -65,7 +65,7 @@ int SockLoopReceive(const int fd, struct sockaddr_un* sockaddr) {
 		if (acceptstat == -1) { continue; }
 	
 		uint8_t buf[12] = { 0 };
-		recvstat = read(fd, buf, sizeof(buf));
+		recvstat = read(acceptstat, buf, sizeof(buf));
 
 		if (recvstat != -1) { printf("Received this: %s\n", buf); }
 	}
@@ -77,15 +77,15 @@ int SockSend(const int fd, struct RigMessage* msg) {
 	int nbytes;
 	uint8_t buf[12] = { 0 };
 
-	for (int i = 0; i < 8; i++) {
+	for (int i = 0; i < 4; i++) {
 		buf[i] = msg->head[i];
 	}
 
-	for (int i = 4; i < 12; i++) {
-		buf[i] = msg->data[i];
+	for (int i = 0; i < 8; i++) {
+		buf[i + 4] = msg->data[i];
 	}
 
-	nbytes = send(fd, buf, sizeof(buf), MSG_NOSIGNAL);
+	nbytes = send(fd, buf, 12, MSG_NOSIGNAL);
 	if (nbytes == -1) { perror("Clientside socket send error"); }
 
 	return nbytes;
