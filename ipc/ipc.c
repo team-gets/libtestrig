@@ -7,7 +7,7 @@
 
 int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
-	char sockpath[32] = { 0 };
+	char sockpath[32 + 5] = { '/', 't', 'm', 'p', '/' };
 
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (fd == -1) { perror("Failed to create socket"); return -1; }
@@ -17,6 +17,8 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 		sockpath[i] = rand() % (122 + 1 - 48) + 48;
 	}
 
+	memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
+	sockaddr_mut->sun_family = AF_UNIX;
 	strncpy(sockaddr_mut->sun_path, sockpath, 32 + 1);
 
 	return fd;
@@ -52,12 +54,18 @@ int SockClose(const int fd) {
 	return closestat;
 }
 
-int SockLoopReceive(const int fd) {
+int SockLoopReceive(const int fd, struct sockaddr_un* sockaddr) {
 	int recvstat;
+	int acceptstat;
+	socklen_t socklen = sizeof(*sockaddr);
 
 	while (1) {
+		acceptstat = accept(fd, (struct sockaddr*)sockaddr, &socklen);
+		if (acceptstat == -1) { continue; }
+	
+
 		uint8_t buf[12] = { 0 };
-		recvstat = recv(fd, buf, sizeof(buf), MSG_WAITALL);
+		recvstat = read(fd, buf, sizeof(buf));
 
 		if (recvstat != -1) { printf("Received this: %s\n", buf); }
 	}
@@ -68,6 +76,14 @@ int SockLoopReceive(const int fd) {
 int SockSend(const int fd, struct RigMessage* msg) {
 	int nbytes;
 	uint8_t buf[12] = { 0 };
+
+	for (int i = 0; i < 8; i++) {
+		buf[i] = msg->head[i];
+	}
+
+	for (int i = 4; i < 12; i++) {
+		buf[i] = msg->data[i];
+	}
 
 	nbytes = send(fd, buf, sizeof(buf), MSG_NOSIGNAL);
 	if (nbytes == -1) { perror("Clientside socket send error"); }

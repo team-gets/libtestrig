@@ -1,10 +1,11 @@
 #pragma once
+
+// Headers
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 #ifdef _WIN32
-#inlcude <winsock2.h>
+#include <winsock2.h>
 #include <afunix.h>
 #else
 #include <sys/socket.h>
@@ -63,7 +64,7 @@ int SockClose(const int fd);
 /*
  *	Set the socket up to receive and decode bytestreams.
  */
-int SockLoopReceive(const int fd);
+int SockLoopReceive(const int fd, struct sockaddr_un* sockaddr);
 
 /*
  *	Send a message over the socket without waiting for a response (?)
