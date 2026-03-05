@@ -13,8 +13,9 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	if (fd == -1) { perror("Failed to create socket"); return -1; }
 
 	srand(time(NULL));
-	for (int i = 0; i < 32; i++) {
-		sockpath[i] = rand() % (122 + 1 - 48) + 48;
+	for (int i = 5; i < 32 + 5; i++) {
+		int start = (i % 2 == 0) ? 'a' : 'A';
+		sockpath[i] = rand() % (26 + 1) + start;
 	}
 
 	memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
@@ -63,7 +64,6 @@ int SockLoopReceive(const int fd, struct sockaddr_un* sockaddr) {
 		acceptstat = accept(fd, (struct sockaddr*)sockaddr, &socklen);
 		if (acceptstat == -1) { continue; }
 	
-
 		uint8_t buf[12] = { 0 };
 		recvstat = read(fd, buf, sizeof(buf));
 
