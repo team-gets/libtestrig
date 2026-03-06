@@ -7,20 +7,23 @@
 
 int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
-	char sockpath[32 + 5] = { '/', 't', 'm', 'p', '/' };
+	char sockpath[5 + 32 + 5 + 1] = { 0 };
 
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (fd == -1) { perror("Failed to create socket"); return -1; }
 
+	strncpy(sockpath, "/tmp/", 6);
 	srand(time(NULL));
 	for (int i = 5; i < 32 + 5; i++) {
 		int start = (i % 2 == 0) ? 'a' : 'A';
 		sockpath[i] = rand() % (26 + 1) + start;
 	}
 
+	strncat(sockpath, ".sock", 6);
+
 	memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
 	sockaddr_mut->sun_family = AF_UNIX;
-	strncpy(sockaddr_mut->sun_path, sockpath, 32 + 1);
+	strncpy(sockaddr_mut->sun_path, sockpath, 5 + 32 + 5 + 1);
 
 	return fd;
 }
@@ -47,10 +50,11 @@ int SockConnect(const int fd, const struct sockaddr_un* sockaddr) {
 	return connstat;
 }
 
-int SockClose(const int fd) {
+int SockClose(const int fd, struct sockaddr_un* sockaddr) {
 	int closestat;
 
 	closestat = close(fd);
+	remove(sockaddr->sun_path);
 
 	return closestat;
 }
@@ -90,5 +94,3 @@ int SockSend(const int fd, struct RigMessage* msg) {
 
 	return nbytes;
 }
-
-

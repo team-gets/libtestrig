@@ -59,7 +59,7 @@ int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
 /*
  *	Close the socket.
  */
-int SockClose(const int fd);
+int SockClose(const int fd, struct sockaddr_un* sockaddr);
 
 /*
  *	Set the socket up to receive and decode bytestreams.
