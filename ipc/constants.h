@@ -8,7 +8,7 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-namespace Gets {
+namespace VSCL {
 extern "C" {
 #endif // __cplusplus
 
@@ -26,5 +26,5 @@ extern const uint8_t HEAD_DISCONNECTING[4];
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace Gets
+} // namespace VSCL
 #endif // __cplusplus

@@ -18,7 +18,7 @@ extern "C" {
 
 #ifdef __cplusplus
 } // extern "C"
-namespace Gets {
+namespace VSCL {
 extern "C" {
 #endif // __cplusplus
 
@@ -73,5 +73,5 @@ int SockSend(const int fd, struct RigMessage* msg);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace Gets
+} // namespace VSCL
 #endif
