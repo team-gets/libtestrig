@@ -50,12 +50,12 @@ int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
 int SockClose(const int fd, struct sockaddr_un* sockaddr);
 
 /*
- *	Set the socket up to receive and decode bytestreams.
+ *	Set the socket up to receive and simply write out to the buffer.
  */
-int SockLoopReceive(const int fd, struct sockaddr_un* sockaddr);
+int SockReadOut(const int fd, struct sockaddr_un* sockaddr, uint8_t* buf_out, int flags);
 
 /*
- *	Send a message over the socket without waiting for a response (?)
+ *	Send a message over the socket without waiting for a response.
  */
 int SockSend(const int fd, struct RigMessage* msg);
 

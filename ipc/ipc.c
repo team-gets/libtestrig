@@ -73,11 +73,13 @@ int SockClose(const int fd, struct sockaddr_un* sockaddr) {
 	return closestat;
 }
 
-int SockLoopReceive(const int fd, struct sockaddr_un* sockaddr) {
+int SockReadOut(const int fd, struct sockaddr_un* sockaddr, uint8_t* buf_out, int flags) {
 	int recvstat;
 	int acceptstat;
 	int head;
 
+	int bytes_written = 0;
+	int recent_success = 1;
 	int reading = 1;
 	socklen_t socklen = sizeof(*sockaddr);
 
@@ -94,22 +96,38 @@ int SockLoopReceive(const int fd, struct sockaddr_un* sockaddr) {
 			uint8_t headcheck[4] = { buf[0], buf[1], buf[2], buf[3] };
 			head = HeaderIdent(headcheck);
 
+			// Pick what to do
 			switch (head) {
-			case 1:
-				printf("I will disconnect\n");
-				reading = -1;
+			case 1: // Disconnecting
+				if (flags & DC_WITH_CLIENT)
+					reading = -1;
+
 				break;
-			case 2:
-				printf("I will continue\n");
+			case 2: // Continue
+				recent_success = 1;
 				break;
-			case -1:
-				printf("Socket receive error: Invalid header\n");
+			case -1: // Invalid header: don't read
+				if (recent_success == 1) {
+					printf("Socket receive error: Invalid header\n");
+					recent_success = 0;
+				}
+
+				continue;
 				break;
-			default:
-				printf("Unknown header read error\n");
+			default: // Not really possible, but don't read it regardless.
+				if (recent_success == 1) {
+					printf("Unknown header read error\n");
+					recent_success = 0;
+				}
+
+				continue;
 				break;
 			}
 
+			// Do a readout
+			for (int i = 4; i < 12 && bytes_written < 4096; i++, bytes_written++) {
+				buf_out[bytes_written] = buf[i];
+			}
 		}
 	}
 

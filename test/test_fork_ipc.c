@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
 	struct RigMessage msg;
 	uint8_t bad_head[4] = { 'H', 'E', 'L', 'L' };
 	uint8_t bad_msg[8] = { 'O', ' ', 'W', 'O', 'R', 'L', 'D', '!' };
+	uint8_t buf[4096] = { 0 };
 	SetMessage(&msg, bad_head, bad_msg);
 	
 	struct RigMessage msg1;
@@ -58,13 +59,14 @@ int main(int argc, char** argv) {
 		listenstat = listen(parent, 2);
 		if (listenstat == -1) { perror("listen error"); return 1; }
 
-		SockLoopReceive(parent, &parent_sockaddr);
+		SockReadOut(parent, &parent_sockaddr, buf, DC_WITH_CLIENT);
 		printf("Parent will exit...\n");
 		break;
 	}
 
 	closestat = SockClose(parent, &parent_sockaddr);
 	if (closestat == -1) { perror("parent socket close error"); return 1; }
+	printf("Parent received %s\n", buf);
 
 	return 0;
 }
