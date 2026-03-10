@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 
 #include "ipc/ipc.h"
 #include "ipc/message.h"
@@ -67,6 +68,8 @@ int main(int argc, char** argv) {
 	retstat = SockClose(parent, &parent_sockaddr);
 	if (retstat == -1) { perror("parent socket ret error"); return 1; }
 	printf("Parent received %s\n", buf);
+
+	assert(memcmp(buf, "O WORLD!O WORLD!", 16) == 0);
 
 	return 0;
 }

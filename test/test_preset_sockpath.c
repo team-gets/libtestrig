@@ -65,5 +65,7 @@ int main(int argc, char** argv) {
 	if (retstat == -1) { perror("parent socket close error"); return 1; }
 	printf("Parent received %s\n", buf);
 
+	assert(memcmp(buf, "HELLO!!\n", 8) == 0);
+
 	return 0;
 }
