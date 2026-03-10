@@ -1,0 +1,19 @@
+name: Test
+
+on:
+  workflow_run:
+    workflows: ["Build"]
+    branches: ["main"]
+    paths:
+      - ".github/workflows/build.yml"
+      - "ipc/**/*.c"
+      - "ipc/**/*.h"
+
+jobs:
+  meson-test:
+    name: Run
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verbosely Test
+        run: |
+          meson test -v -C build
