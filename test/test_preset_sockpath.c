@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
 		return 0;
 		break;
 	default: // original parent
-		retstat = listen(parent, 2);
+		retstat = SockListen(parent, 2);
 		if (retstat == -1) { perror("listen error"); return 1; }
 
 		SockReadOut(parent, &parent_sockaddr, buf, 4096, DC_WITH_CLIENT);

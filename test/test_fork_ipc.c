@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
 	struct sockaddr_un parent_sockaddr;
 	struct sockaddr_un child_sockaddr;
 	pid_t pid;
-	int bindstat; int connstat; int listenstat; int closestat;
+	int retstat;
 	int parent;
 	int fd;
 	int sent;
@@ -27,8 +27,8 @@ int main(int argc, char** argv) {
 	parent = SockSetup(&parent_sockaddr);
 	if (parent == -1) { perror("parent socket failed to spawn"); return 1; }
 
-	bindstat = bind(parent, (struct sockaddr*)&parent_sockaddr, sizeof(parent_sockaddr));
-	if (bindstat == -1) { perror("parent binding failure"); return 1; }
+	retstat = SockBind(parent, &parent_sockaddr);
+	if (retstat == -1) { perror("parent binding failure"); return 1; }
 
 	pid = fork();
 	switch (pid) {
@@ -39,8 +39,8 @@ int main(int argc, char** argv) {
 		fd = SockSetup(&child_sockaddr);
 		if (fd == -1) { perror("child socket failed to spawn"); return 1; }
 
-		connstat = SockConnect(fd, &parent_sockaddr);
-		if (connstat == -1) { perror("child connection failure"); return 1; }
+		retstat = SockConnect(fd, &parent_sockaddr);
+		if (retstat == -1) { perror("child connection failure"); return 1; }
 
 		printf("Will send multiple messages...\n");
 		sent = SockSend(fd, &msg);
@@ -50,22 +50,22 @@ int main(int argc, char** argv) {
 		sent = SockSend(fd, &msg2);
 		printf("Sent %i bytes the third time\n", sent);
 
-		closestat = SockClose(parent, &child_sockaddr);
-		if (closestat == -1) { perror("child socket close error"); return 1; }
+		retstat = SockClose(parent, &child_sockaddr);
+		if (retstat == -1) { perror("child socket ret error"); return 1; }
 
 		return 0;
 		break;
 	default: // original parent
-		listenstat = listen(parent, 2);
-		if (listenstat == -1) { perror("listen error"); return 1; }
+		retstat = SockListen(parent, 2);
+		if (retstat == -1) { perror("listen error"); return 1; }
 
 		SockReadOut(parent, &parent_sockaddr, buf, 4096, DC_WITH_CLIENT);
 		printf("Parent will exit...\n");
 		break;
 	}
 
-	closestat = SockClose(parent, &parent_sockaddr);
-	if (closestat == -1) { perror("parent socket close error"); return 1; }
+	retstat = SockClose(parent, &parent_sockaddr);
+	if (retstat == -1) { perror("parent socket ret error"); return 1; }
 	printf("Parent received %s\n", buf);
 
 	return 0;

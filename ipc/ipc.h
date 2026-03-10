@@ -31,28 +31,35 @@ extern "C" {
 int SockGeneratePath(char* sockpath);
 
 /*
- *	Create a Unix domain socket to a random file.
+ *	Create a Unix socket to a random file.
  *
  *	Returns a nonzero int representing the file descriptor, otherwise -1.
  */
 int SockSetup(struct sockaddr_un* sockaddr_mut);
 
 /*
- *	Bind the Unix domain socket, using the path specified in the passed sockaddr_un struct.
+ *	Bind the Unix socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
 int SockBind(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Connect the Domain Socket, using the path specified in the passed sockaddr_un struct.
+ *	Set the Unix socket to listen and permit connection attempts.
+ *
+ *	Returns 0 on success, -1 on failure.
+ */
+int SockListen(const int fd, int max_backlog);
+
+/*
+ *	Connect the Unix Socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
 int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Close the socket.
+ *	Close the socket and clean up.
  */
 int SockClose(const int fd, struct sockaddr_un* sockaddr);
 
