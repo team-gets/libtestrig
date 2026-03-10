@@ -6,13 +6,7 @@
 #include "constants.h"
 #include "ipc.h"
 
-int SockSetup(struct sockaddr_un* sockaddr_mut) {
-	int fd;
-	char sockpath[5 + 32 + 5 + 1] = { 0 };
-
-	fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (fd == -1) { perror("Failed to create socket"); return -1; }
-
+int SockGeneratePath(char* sockpath) {
 	strncpy(sockpath, "/tmp/", 6);
 	srand(time(NULL));
 	for (int i = 5; i < 32 + 5; i++) {
@@ -21,10 +15,28 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	}
 
 	strncat(sockpath, ".sock", 6);
+	return 0;
+}
 
-	memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
+int SockSetup(struct sockaddr_un* sockaddr_mut) {
+	int fd;
+	int path_set;
+	char sockpath[5 + 32 + 5 + 1] = { 0 };
+	char blank[108] = { 0 };
+
+	fd = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (fd == -1) { perror("Failed to create socket"); return -1; }
+
+	path_set = (strncmp(sockaddr_mut->sun_path, blank, 108)) ? -1 : 1;
+	if (path_set == -1) {
+		SockGeneratePath(sockpath);
+		memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
+	}
+
 	sockaddr_mut->sun_family = AF_UNIX;
-	strncpy(sockaddr_mut->sun_path, sockpath, 5 + 32 + 5 + 1);
+
+	if (path_set == -1)
+		strncpy(sockaddr_mut->sun_path, sockpath, 5 + 32 + 5 + 1);
 
 	return fd;
 }
@@ -193,7 +205,6 @@ int IdentifyFullHeader(uint8_t in[4]) {
 			identity &= IdentifyHeaderPart(in, i);
 		}
 	}
-	printf("Ident %i\n", identity);
 
 	return identity;
 }

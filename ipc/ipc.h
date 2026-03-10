@@ -24,6 +24,13 @@ extern "C" {
 #endif // __cplusplus
 
 /*
+ *	Generate a path to a socket file.
+ *
+ *	On Linux, this is a new file under /tmp/ with the .sock
+ */
+int SockGeneratePath(char* sockpath);
+
+/*
  *	Create a Unix domain socket to a random file.
  *
  *	Returns a nonzero int representing the file descriptor, otherwise -1.

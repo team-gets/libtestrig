@@ -32,15 +32,20 @@ extern const uint8_t HEAD_DC[4];
 extern const int DC_WITH_CLIENT;
 
 /*
- *	For use with socket handler functions.
- *
- *	When receiving HEAD_DC, disconnect right after the client does.
+ *	The type of header.
  */
-extern const int HANDLER_RET_DC;
-
 enum HEADER_TYPE {
 	HEADER_IS_STAY = 1,
 	HEADER_IS_DC = 2
+};
+
+/*
+ *	For use with socket handler functions.
+ */
+enum HEADER_RET {
+	// When receiving HEAD_DC, disconnect right after the client does.
+	HANDLER_RET_STAY = 1,
+	HANDLER_RET_DC = 2
 };
 
 #ifdef __cplusplus
