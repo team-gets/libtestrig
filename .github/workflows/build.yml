@@ -7,12 +7,14 @@ on:
       - ".github/workflows/build.yml"
       - "ipc/**/*.c"
       - "ipc/**/*.h"
+      - "**/meson.build"
   push:
     branches: ["main"]
     paths:
       - ".github/workflows/build.yml"
       - "ipc/**/*.c"
       - "ipc/**/*.h"
+      - "**/meson.build"
 
 jobs:
   linux-build-meson:
