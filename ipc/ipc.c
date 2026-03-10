@@ -167,7 +167,7 @@ int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(
 
 			handlestat = handler(buf);
 
-			if (handlestat & HANDLER_RET_DC) {
+			if (handlestat == HANDLER_RET_DC) {
 				reading = -1;
 			}
 		}
