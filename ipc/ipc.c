@@ -73,7 +73,7 @@ int SockClose(const int fd, struct sockaddr_un* sockaddr) {
 	return closestat;
 }
 
-int SockReadOut(const int fd, struct sockaddr_un* sockaddr, uint8_t* buf_out, int flags) {
+int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags) {
 	int recvstat;
 	int acceptstat;
 	int head;
@@ -87,6 +87,7 @@ int SockReadOut(const int fd, struct sockaddr_un* sockaddr, uint8_t* buf_out, in
 		acceptstat = accept(fd, (struct sockaddr*)sockaddr, &socklen);
 		if (acceptstat == -1) { continue; }
 	
+		// While a child is connected to this socket...
 		while (reading != -1) {
 			uint8_t buf[12] = { 0 };
 			recvstat = read(acceptstat, buf, sizeof(buf));
@@ -127,6 +128,36 @@ int SockReadOut(const int fd, struct sockaddr_un* sockaddr, uint8_t* buf_out, in
 			// Do a readout
 			for (int i = 4; i < 12 && bytes_written < 4096; i++, bytes_written++) {
 				buf_out[bytes_written] = buf[i];
+			}
+		}
+	}
+
+	return 0;
+}
+
+int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*)) {
+	int recvstat;
+	int acceptstat;
+	int handlestat;
+
+	int reading = 1;
+	socklen_t socklen = sizeof(*sockaddr);
+
+	while (reading != -1) {
+		acceptstat = accept(fd, (struct sockaddr*)sockaddr, &socklen);
+		if (acceptstat == -1) { continue; }
+	
+		// While a child is connected to this socket...
+		while (reading != -1) {
+			uint8_t buf[12] = { 0 };
+			recvstat = read(acceptstat, buf, sizeof(buf));
+
+			if (recvstat == -1) { perror("Socket read failure"); continue; }
+
+			handlestat = handler(buf);
+
+			if (handlestat & HANDLER_RET_DC) {
+				reading = -1;
 			}
 		}
 	}

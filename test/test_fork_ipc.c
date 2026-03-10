@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 		listenstat = listen(parent, 2);
 		if (listenstat == -1) { perror("listen error"); return 1; }
 
-		SockReadOut(parent, &parent_sockaddr, buf, DC_WITH_CLIENT);
+		SockReadOut(parent, &parent_sockaddr, buf, 4096, DC_WITH_CLIENT);
 		printf("Parent will exit...\n");
 		break;
 	}

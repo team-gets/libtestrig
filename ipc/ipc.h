@@ -52,7 +52,12 @@ int SockClose(const int fd, struct sockaddr_un* sockaddr);
 /*
  *	Set the socket up to receive and simply write out to the buffer.
  */
-int SockReadOut(const int fd, struct sockaddr_un* sockaddr, uint8_t* buf_out, int flags);
+int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags);
+
+/*
+ *	Set the socket up to receive and loop the handler on each message.
+ */
+int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*));
 
 /*
  *	Send a message over the socket without waiting for a response.

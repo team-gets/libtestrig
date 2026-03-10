@@ -31,6 +31,13 @@ extern const uint8_t HEAD_DC[4];
  */
 extern const int DC_WITH_CLIENT;
 
+/*
+ *	For use with socket handler functions.
+ *
+ *	When receiving HEAD_DC, disconnect right after the client does.
+ */
+extern const int HANDLER_RET_DC;
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VSCL
