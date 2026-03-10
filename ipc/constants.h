@@ -22,7 +22,7 @@ extern const uint8_t HEAD_STAY[4];
 /*
  *	Signal to the listener process to stop listening on the socket and close.
  */
-extern const uint8_t HEAD_DISCONNECTING[4];
+extern const uint8_t HEAD_DC[4];
 
 #ifdef __cplusplus
 } // extern "C"

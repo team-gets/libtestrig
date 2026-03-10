@@ -15,25 +15,13 @@ extern "C" {
 #endif // _WIN32
 
 #include <stdint.h>
+#include "message.h"
 
 #ifdef __cplusplus
 } // extern "C"
 namespace VSCL {
 extern "C" {
 #endif // __cplusplus
-
-/*
- *	A test rig message.
- *	These are unsigned chars - but more explict - on the architectures and OSes we care about
- *	(x86_64 Linux and Windows, basically whatever Maxon supports)
- */ 
-struct RigMessage {
-	// Header: Four bytes since might as well
-	uint8_t head[4];
-
-	// Data: Eight bytes as described by the EPOS2 manual's part on CAN frames.
-	uint8_t data[8];
-};
 
 /*
  *	Create a Unix domain socket to a random file.

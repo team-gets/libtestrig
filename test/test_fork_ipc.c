@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "ipc/ipc.h"
+#include "ipc/constants.h"
 
 int main(int argc, char** argv) {
 	struct sockaddr_un parent_sockaddr;

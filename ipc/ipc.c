@@ -8,10 +8,10 @@
 
 // Simple header compare
 static int HeaderIdent(uint8_t in[4]) {
-	int byte0 = (in[0] == HEAD_DISCONNECTING[0]) ? 1 : (in[0] == HEAD_STAY[0]) ? 2 : -1;
-	int byte1 = (in[1] == HEAD_DISCONNECTING[1]) ? 1 : (in[1] == HEAD_STAY[1]) ? 2 : -1;
-	int byte2 = (in[2] == HEAD_DISCONNECTING[2]) ? 1 : (in[2] == HEAD_STAY[2]) ? 2 : -1;
-	int byte3 = (in[3] == HEAD_DISCONNECTING[3]) ? 1 : (in[3] == HEAD_STAY[3]) ? 2 : -1;
+	int byte0 = (in[0] == HEAD_DC[0]) ? 1 : (in[0] == HEAD_STAY[0]) ? 2 : -1;
+	int byte1 = (in[1] == HEAD_DC[1]) ? 1 : (in[1] == HEAD_STAY[1]) ? 2 : -1;
+	int byte2 = (in[2] == HEAD_DC[2]) ? 1 : (in[2] == HEAD_STAY[2]) ? 2 : -1;
+	int byte3 = (in[3] == HEAD_DC[3]) ? 1 : (in[3] == HEAD_STAY[3]) ? 2 : -1;
 
 	if (byte0 == -1 || byte1 == -1 || byte2 == -1 || byte3 == -1) { return -1; }
 	if (byte0 == 1 && byte1 == 1 && byte2 == 1 && byte3 == 1) { return 1; }
