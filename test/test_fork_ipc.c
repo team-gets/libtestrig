@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "ipc/ipc.h"
+#include "ipc/message.h"
 #include "ipc/constants.h"
 
 int main(int argc, char** argv) {
@@ -11,9 +12,16 @@ int main(int argc, char** argv) {
 	int parent;
 	int fd;
 	int sent;
-	struct RigMessage msg = { {'H', 'E', 'L', 'L'}, { 'O', ' ', 'W', 'O', 'R', 'L', 'D', '!' } };
-	struct RigMessage msg1 = { { 27, 34, 41, 48 }, { 'O', ' ', 'W', 'O', 'R', 'L', 'D', '!' } };
-	struct RigMessage msg2 = { { 255, 127, 63, 31 }, { 'O', ' ', 'W', 'O', 'R', 'L', 'D', '!' } };
+	struct RigMessage msg;
+	uint8_t bad_head[4] = { 'H', 'E', 'L', 'L' };
+	uint8_t bad_msg[8] = { 'O', ' ', 'W', 'O', 'R', 'L', 'D', '!' };
+	SetMessage(&msg, bad_head, bad_msg);
+	
+	struct RigMessage msg1;
+	SetMessage(&msg1, HEAD_STAY, bad_msg);
+
+	struct RigMessage msg2;
+	SetMessage(&msg2, HEAD_DC, bad_msg);
 
 	parent = SockSetup(&parent_sockaddr);
 	if (parent == -1) { perror("parent socket failed to spawn"); return 1; }
@@ -51,7 +59,7 @@ int main(int argc, char** argv) {
 		if (listenstat == -1) { perror("listen error"); return 1; }
 
 		SockLoopReceive(parent, &parent_sockaddr);
-		printf("Parent will exit...");
+		printf("Parent will exit...\n");
 		break;
 	}
 
