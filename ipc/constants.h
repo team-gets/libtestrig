@@ -38,6 +38,11 @@ extern const int DC_WITH_CLIENT;
  */
 extern const int HANDLER_RET_DC;
 
+enum HEADER_TYPE {
+	HEADER_IS_STAY = 1,
+	HEADER_IS_DC = 2
+};
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VSCL

@@ -6,19 +6,6 @@
 #include "constants.h"
 #include "ipc.h"
 
-// Simple header compare
-static int HeaderIdent(uint8_t in[4]) {
-	int byte0 = (in[0] == HEAD_DC[0]) ? 1 : (in[0] == HEAD_STAY[0]) ? 2 : -1;
-	int byte1 = (in[1] == HEAD_DC[1]) ? 1 : (in[1] == HEAD_STAY[1]) ? 2 : -1;
-	int byte2 = (in[2] == HEAD_DC[2]) ? 1 : (in[2] == HEAD_STAY[2]) ? 2 : -1;
-	int byte3 = (in[3] == HEAD_DC[3]) ? 1 : (in[3] == HEAD_STAY[3]) ? 2 : -1;
-
-	if (byte0 == -1 || byte1 == -1 || byte2 == -1 || byte3 == -1) { return -1; }
-	if (byte0 == 1 && byte1 == 1 && byte2 == 1 && byte3 == 1) { return 1; }
-	if (byte0 == 2 && byte1 == 2 && byte2 == 2 && byte3 == 2) { return 2; }
-	return -1;
-}
-
 int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
 	char sockpath[5 + 32 + 5 + 1] = { 0 };
@@ -95,16 +82,16 @@ int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_o
 			if (recvstat == -1) { perror("Socket read failure"); continue; }
 
 			uint8_t headcheck[4] = { buf[0], buf[1], buf[2], buf[3] };
-			head = HeaderIdent(headcheck);
+			head = IdentifyFullHeader(headcheck);
 
 			// Pick what to do
 			switch (head) {
-			case 1: // Disconnecting
+			case HEADER_IS_DC: // Disconnecting
 				if (flags & DC_WITH_CLIENT)
 					reading = -1;
 
 				break;
-			case 2: // Continue
+			case HEADER_IS_STAY: // Continue
 				recent_success = 1;
 				break;
 			case -1: // Invalid header: don't read
@@ -181,4 +168,32 @@ int SockSend(const int fd, struct RigMessage* msg) {
 	if (nbytes == -1) { perror("Clientside socket send error"); }
 
 	return nbytes;
+}
+
+int IdentifyHeaderPart(uint8_t in[4], int idx) {
+	if (in[idx] == HEAD_STAY[idx]) {
+		return HEADER_IS_STAY;
+	}
+	else if (in[idx] == HEAD_DC[idx]) {
+		return HEADER_IS_DC;
+	}
+	else {
+		return -1;
+	}
+}
+
+int IdentifyFullHeader(uint8_t in[4]) {
+	int identity = -1;
+
+	for (int i = 0; i < 4; i++) {
+		if (i == 0) {
+			identity = IdentifyHeaderPart(in, 0);
+		}
+		else {
+			identity &= IdentifyHeaderPart(in, i);
+		}
+	}
+	printf("Ident %i\n", identity);
+
+	return identity;
 }

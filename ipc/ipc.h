@@ -64,6 +64,16 @@ int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(
  */
 int SockSend(const int fd, struct RigMessage* msg);
 
+/*
+ *
+ */
+int IdentifyHeaderPart(uint8_t in[4], int idx);
+
+/*
+ *
+ */
+int IdentifyFullHeader(uint8_t in[4]);
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VSCL
