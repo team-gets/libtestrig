@@ -5,6 +5,8 @@
 #include "ipc/message.h"
 #include "ipc/constants.h"
 
+const char* SOCKNAME = "/tmp/this_is_my_socket.sock";
+
 int main(int argc, char** argv) {
 	struct sockaddr_un parent_sockaddr;
 	struct sockaddr_un child_sockaddr;
@@ -13,20 +15,19 @@ int main(int argc, char** argv) {
 	int parent;
 	int fd;
 	int sent;
-	struct RigMessage msg;
-	uint8_t bad_head[4] = { 'H', 'E', 'L', 'L' };
-	uint8_t bad_msg[8] = { 'O', ' ', 'W', 'O', 'R', 'L', 'D', '!' };
 	uint8_t buf[4096] = { 0 };
-	SetMessage(&msg, bad_head, bad_msg);
-	
-	struct RigMessage msg1;
-	SetMessage(&msg1, HEAD_STAY, bad_msg);
 
-	struct RigMessage msg2;
-	SetMessage(&msg2, HEAD_DC, bad_msg);
+	struct RigMessage msg;
+	uint8_t data[8] = { 'H', 'E', 'L', 'L', 'O', '!', '!', '\n' };
+	SetMessage(&msg, HEAD_DC, data);
+
+	parent_sockaddr.sun_family = AF_UNIX;
+	strncpy(parent_sockaddr.sun_path, SOCKNAME, strnlen(SOCKNAME, 108));
 
 	parent = SockSetup(&parent_sockaddr);
 	if (parent == -1) { perror("parent socket failed to spawn"); return 1; }
+
+	assert(strncmp(parent_sockaddr.sun_path, SOCKNAME, strnlen(SOCKNAME, 108)) == 0);
 
 	retstat = SockBind(parent, &parent_sockaddr);
 	if (retstat == -1) { perror("parent binding failure"); return 1; }
@@ -43,16 +44,11 @@ int main(int argc, char** argv) {
 		retstat = SockConnect(fd, &parent_sockaddr);
 		if (retstat == -1) { perror("child connection failure"); return 1; }
 
-		printf("Will send multiple messages...\n");
 		sent = SockSend(fd, &msg);
-		printf("Sent %i bytes the first time\n", sent);
-		sent = SockSend(fd, &msg1);
-		printf("Sent %i bytes the second time\n", sent);
-		sent = SockSend(fd, &msg2);
-		printf("Sent %i bytes the third time\n", sent);
+		printf("Sent %i bytes\n", sent);
 
 		retstat = SockClose(parent, &child_sockaddr);
-		if (retstat == -1) { perror("child socket ret error"); return 1; }
+		if (retstat == -1) { perror("child socket close error"); return 1; }
 
 		return 0;
 		break;
@@ -66,10 +62,10 @@ int main(int argc, char** argv) {
 	}
 
 	retstat = SockClose(parent, &parent_sockaddr);
-	if (retstat == -1) { perror("parent socket ret error"); return 1; }
+	if (retstat == -1) { perror("parent socket close error"); return 1; }
 	printf("Parent received %s\n", buf);
 
-	assert(memcmp(buf, "O WORLD!O WORLD!", 16) == 0);
+	assert(memcmp(buf, "HELLO!!\n", 8) == 0);
 
 	return 0;
 }

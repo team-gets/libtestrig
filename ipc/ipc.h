@@ -15,6 +15,7 @@ extern "C" {
 #endif // _WIN32
 
 #include <stdint.h>
+#include "message.h"
 
 #ifdef __cplusplus
 } // extern "C"
@@ -23,53 +24,69 @@ extern "C" {
 #endif // __cplusplus
 
 /*
- *	A test rig message.
- *	These are unsigned chars - but more explict - on the architectures and OSes we care about
- *	(x86_64 Linux and Windows, basically whatever Maxon supports)
- */ 
-struct RigMessage {
-	// Header: Four bytes since might as well
-	uint8_t head[4];
-
-	// Data: Eight bytes as described by the EPOS2 manual's part on CAN frames.
-	uint8_t data[8];
-};
+ *	Generate a path to a socket file.
+ *
+ *	On Linux, this is a new file under /tmp/ with the .sock
+ */
+int SockGeneratePath(char* sockpath);
 
 /*
- *	Create a Unix domain socket to a random file.
+ *	Create a Unix socket to a random file.
  *
  *	Returns a nonzero int representing the file descriptor, otherwise -1.
  */
 int SockSetup(struct sockaddr_un* sockaddr_mut);
 
 /*
- *	Bind the Unix domain socket, using the path specified in the passed sockaddr_un struct.
+ *	Bind the Unix socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
 int SockBind(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Connect the Domain Socket, using the path specified in the passed sockaddr_un struct.
+ *	Set the Unix socket to listen and permit connection attempts.
+ *
+ *	Returns 0 on success, -1 on failure.
+ */
+int SockListen(const int fd, int max_backlog);
+
+/*
+ *	Connect the Unix Socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
 int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Close the socket.
+ *	Close the socket and clean up.
  */
 int SockClose(const int fd, struct sockaddr_un* sockaddr);
 
 /*
- *	Set the socket up to receive and decode bytestreams.
+ *	Set the socket up to receive and simply write out to the buffer.
  */
-int SockLoopReceive(const int fd, struct sockaddr_un* sockaddr);
+int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags);
 
 /*
- *	Send a message over the socket without waiting for a response (?)
+ *	Set the socket up to receive and loop the handler on each message.
+ */
+int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*));
+
+/*
+ *	Send a message over the socket without waiting for a response.
  */
 int SockSend(const int fd, struct RigMessage* msg);
+
+/*
+ *
+ */
+int IdentifyHeaderPart(uint8_t in[4], int idx);
+
+/*
+ *
+ */
+int IdentifyFullHeader(uint8_t in[4]);
 
 #ifdef __cplusplus
 } // extern "C"
