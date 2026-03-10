@@ -27,7 +27,7 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (fd == -1) { perror("Failed to create socket"); return -1; }
 
-	path_set = (strncmp(sockaddr_mut->sun_path, blank, 108)) ? -1 : 1;
+	path_set = (strncmp(sockaddr_mut->sun_path, blank, strnlen(sockaddr_mut->sun_path, 108)) == 0) ? -1 : 1;
 	if (path_set == -1) {
 		SockGeneratePath(sockpath);
 		memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
