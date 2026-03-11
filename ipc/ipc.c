@@ -6,6 +6,23 @@
 #include "constants.h"
 #include "ipc.h"
 
+// TODO: Evaluate if this is sufficient
+#ifdef _WIN32
+typedef int socklen_t;
+
+int close(int sock) {
+	return closesocket(sock);
+}
+
+int read(int sock, void* buf, size_t bufsize) {
+	return recv(sock, buf, bufsize, MSG_PEEK);
+}
+
+int write(int sock, void* buf, size_t bufsize) {
+	return send(sock, buf, bufsize, MSG_DONTROUTE);
+}
+#endif
+
 int SockGeneratePath(char* sockpath) {
 	strncpy(sockpath, "/tmp/", 6);
 	srand(time(NULL));

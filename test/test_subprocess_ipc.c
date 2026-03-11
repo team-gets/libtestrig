@@ -5,6 +5,10 @@
 #include "ipc/message.h"
 #include "ipc/constants.h"
 
+#ifdef _WIN32
+typedef int pid_t;
+#endif
+
 int main(int argc, char** argv) {
 	struct sockaddr_un parent_sockaddr;
 	struct sockaddr_un child_sockaddr;
@@ -31,6 +35,7 @@ int main(int argc, char** argv) {
 	retstat = SockBind(parent, &parent_sockaddr);
 	if (retstat == -1) { perror("parent binding failure"); return 1; }
 
+#ifndef _WIN32
 	pid = fork();
 	switch (pid) {
 	case -1:
@@ -64,6 +69,7 @@ int main(int argc, char** argv) {
 		printf("Parent will exit...\n");
 		break;
 	}
+#endif // WIN32
 
 	retstat = SockClose(parent, &parent_sockaddr);
 	if (retstat == -1) { perror("parent socket ret error"); return 1; }

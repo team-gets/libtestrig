@@ -6,6 +6,9 @@
 #include "ipc/constants.h"
 
 const char* SOCKNAME = "/tmp/this_is_my_socket.sock";
+#ifdef _WIN32
+typedef int pid_t;
+#endif
 
 int main(int argc, char** argv) {
 	struct sockaddr_un parent_sockaddr;
@@ -32,6 +35,7 @@ int main(int argc, char** argv) {
 	retstat = SockBind(parent, &parent_sockaddr);
 	if (retstat == -1) { perror("parent binding failure"); return 1; }
 
+#ifndef _WIN32
 	pid = fork();
 	switch (pid) {
 	case -1:
@@ -60,6 +64,7 @@ int main(int argc, char** argv) {
 		printf("Parent will exit...\n");
 		break;
 	}
+#endif
 
 	retstat = SockClose(parent, &parent_sockaddr);
 	if (retstat == -1) { perror("parent socket close error"); return 1; }
