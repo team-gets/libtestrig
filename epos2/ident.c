@@ -13,7 +13,7 @@ int AcquireDeviceInformation(struct Controller* controller, int flags) {
 
 	if (flags & (1 << 1)) {
 		strncpy(controller->Name, "EPOS2", 6);
-		strncpy(controller->Protocol, "CANopen", 6);
+		strncpy(controller->Protocol, "CANopen", 8);
 	}
 
 	// TODO: will this behave expectedly?
@@ -22,5 +22,5 @@ int AcquireDeviceInformation(struct Controller* controller, int flags) {
 	success = VCS_GetInterfaceNameSelection(controller->Name, controller->Protocol, 1,
 			controller->Interface, 64, &selection_end, &error_code);
 
-	return error_code;
+	return (success == 0) ? 0 : error_code;
 }
