@@ -1,5 +1,7 @@
 cc = meson.get_compiler('c')
 
+epos2_srcs = [ './constants.c', './ident.c' ]
+
 # Windows
 if (operating_system == 'windows')
   if not (cpu_architecture in ['x86', 'x86_64'])
