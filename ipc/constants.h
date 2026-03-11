@@ -8,7 +8,7 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-namespace VSCL {
+namespace VSCL::IPC {
 extern "C" {
 #endif // __cplusplus
 
@@ -50,5 +50,5 @@ enum HEADER_RET {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL
+} // namespace VSCL::IPC
 #endif // __cplusplus
