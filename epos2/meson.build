@@ -2,6 +2,9 @@ fs = import('fs')
 cc = meson.get_compiler('c')
 
 if (fs.is_dir(meson.current_source_dir() / 'bin'))
+
+message('Controller capabilities being built.')
+
 # Windows
 if (operating_system == 'windows')
   if not (cpu_architecture in ['x86', 'x86_64'])
@@ -15,19 +18,13 @@ elif (operating_system == 'linux')
   endif
 
   epos2 = declare_dependency(
-    version: '6.8.1.0'
+    version: '6.8.1.0',
     dependencies: cc.find_library('EposCmd',
       dirs: [meson.current_source_dir() / 'bin'],
       required: false),
   ) 
 
-  if (epos2.found())
-    message('Controller capabilities being built.')
-    epos2_srcs = [ './epos2/constants.c', './epos2/ident.c' ]
-  else
-    message('[WARNING] Controller capabilities not being built. Continuing to create library anyway')
-    epos2_srcs = [ ]
-  endif
+  epos2_srcs = [ './epos2/constants.c', './epos2/ident.c' ]
 
 # Others
 else
@@ -36,6 +33,7 @@ endif
 
 # CI etc.
 else
-epos2 = declare_dependency()
-epos2_srcs = [ ]
+  message('[WARNING] Controller capabilities not being built. Continuing to create library anyway')
+  epos2 = declare_dependency()
+  epos2_srcs = [ ]
 endif
