@@ -1,4 +1,4 @@
-name: Build
+name: Build and Test
 
 on:
   pull_request:
@@ -20,6 +20,26 @@ jobs:
   linux-build-meson:
     name: Linux
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13.0"
+      - name: Install Build Dependencies
+        run: |
+          pip3 install meson ninja
+      - name: Setup Meson
+        run: |
+          meson setup build
+      - name: Build
+        run: |
+          meson compile -C build
+      - name: Verbosely Test
+        run: |
+          meson test -v -C build
+  windows-build-meson:
+    name: Windows
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
