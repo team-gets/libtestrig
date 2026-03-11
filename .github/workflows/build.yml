@@ -62,7 +62,9 @@ jobs:
           meson setup build
       - name: Build
         run: |
-          CC=${{ matrix.compiler }} meson compile -C build
+          meson compile -C build
+        env:
+          CC: ${{ matrix.compiler }}
       - name: Verbosely Test
         run: |
           meson test -v -C build
