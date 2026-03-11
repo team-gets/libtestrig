@@ -37,7 +37,7 @@ jobs:
           meson setup build
       - name: Build
         run: |
-          CC=${{ matrix.compiler }} compile -C build
+          CC=${{ matrix.compiler }} meson compile -C build
       - name: Verbosely Test
         run: |
           meson test -v -C build
@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        compiler: ["cl.exe", "gcc.exe"]
+        compiler: ["cl.exe", "ccache.exe"]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
