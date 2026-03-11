@@ -5,6 +5,10 @@ namespace VSCL::_detail {
 extern "C" {
 #endif // __cplusplus
 
+#ifndef _WIN32
+#define INVALID_SOCKET -1
+#endif
+
 int GetSockDestination(char* dest);
 
 #ifdef __cplusplus

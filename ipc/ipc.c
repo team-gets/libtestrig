@@ -39,7 +39,6 @@ int SockGeneratePath(char* sockpath) {
 	}
 
 	strncat(sockpath, ".sock", 6);
-    printf("The sock is here %s\n", sockpath);
 	return 0;
 }
 
@@ -49,11 +48,16 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	char sockpath[64] = { 0 };
 	char blank[108] = { 0 };
 
-	char dummy[108] = { 0 };
-	SockGeneratePath(dummy);
+#ifdef _WIN32
+	WSADATA wsa_data;
+	int wsa_result;
+
+	wsa_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+	if (wsa_result != 0) { perror("Failed WSAStartup"); return -1; }
+#endif // _WIN32
 
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (fd == -1) { perror("Failed to create socket"); return -1; }
+	if (fd == INVALID_SOCKET) { perror("Failed to create socket"); return -1; }
 
 	path_set = (strncmp(
 		sockaddr_mut->sun_path, blank,
