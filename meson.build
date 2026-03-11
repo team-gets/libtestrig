@@ -9,9 +9,8 @@ valid_arch = ['x86', 'x86_64', 'aarch64', 'arm']
 ## Main Binary Definitions
 subdir('epos2')
 # hack?
-actually_epos = epos2.found() ? epos2 : declare_dependency() 
 srcs = [ 'ipc/ipc.c', 'ipc/message.c', 'ipc/constants.c' ] + epos2_srcs
-lib = shared_library('testrig', srcs, dependencies: actually_epos )
+lib = shared_library('testrig', srcs, dependencies: epos2 )
 dep = declare_dependency(include_directories: '.',
   link_with: lib, dependencies: epos2)
 
