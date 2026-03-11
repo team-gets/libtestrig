@@ -20,6 +20,10 @@ jobs:
   linux-build-meson:
     name: Linux
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        compiler: ["gcc", "clang"]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
@@ -33,18 +37,23 @@ jobs:
           meson setup build
       - name: Build
         run: |
-          meson compile -C build
+          CC=${{ matrix.compiler }} compile -C build
       - name: Verbosely Test
         run: |
           meson test -v -C build
   windows-build-meson:
     name: Windows
     runs-on: windows-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        compiler: ["cl.exe", "gcc.exe"]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13.0"
+      - uses: ilammy/msvc-dev-cmd@1.13.0
       - name: Install Build Dependencies
         run: |
           pip3 install meson ninja
@@ -53,7 +62,7 @@ jobs:
           meson setup build
       - name: Build
         run: |
-          meson compile -C build
+          CC=${{ matrix.compiler }} meson compile -C build
       - name: Verbosely Test
         run: |
           meson test -v -C build
