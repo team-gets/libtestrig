@@ -1,6 +1,6 @@
 cc = meson.get_compiler('c')
 
-epos2_srcs = [ './constants.c', './ident.c' ]
+epos2_srcs = [ ]
 
 # Windows
 if (operating_system == 'windows')
@@ -19,6 +19,8 @@ elif (operating_system == 'linux')
     dirs: [meson.current_source_dir() / 'bin'],
     required: false)) 
     #FIXME this is for CI
+
+  epos2_srcs +=  [ './epos2/constants.c', './epos2/ident.c' ]
 
 # Others
 else
