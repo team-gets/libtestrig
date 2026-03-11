@@ -3,8 +3,9 @@
 #include <string.h>
 #include <time.h>
 
-#include "constants.h"
 #include "ipc.h"
+#include "constants.h"
+#include "os.h"
 
 // TODO: Evaluate if this is sufficient
 #ifdef _WIN32
@@ -24,22 +25,32 @@ int write(int sock, void* buf, size_t bufsize) {
 #endif
 
 int SockGeneratePath(char* sockpath) {
-	strncpy(sockpath, "/tmp/", 6);
+	int retstat;
+	int baselen;
+	int dstart;
+
+	retstat = GetSockDestination(sockpath);
+	baselen = strlen(sockpath);
+
 	srand(time(NULL));
-	for (int i = 5; i < 32 + 5; i++) {
+	for (int i = baselen - 1; i < 32 + baselen - 1; i++) {
 		int start = (i % 2 == 0) ? 'a' : 'A';
 		sockpath[i] = rand() % (26 + 1) + start;
 	}
 
 	strncat(sockpath, ".sock", 6);
+    printf("The sock is here %s\n", sockpath);
 	return 0;
 }
 
 int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
 	int path_set;
-	char sockpath[5 + 32 + 5 + 1] = { 0 };
+	char sockpath[64] = { 0 };
 	char blank[108] = { 0 };
+
+	char dummy[108] = { 0 };
+	SockGeneratePath(dummy);
 
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (fd == -1) { perror("Failed to create socket"); return -1; }
