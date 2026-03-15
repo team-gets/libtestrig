@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        compiler: ["cl.exe", "cc.exe"]
+        compiler: ["cl.exe", "gcc.exe"]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
