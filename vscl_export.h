@@ -1,5 +1,5 @@
 #ifndef VSCL_API
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(__GNUC__)
 #define VSCL_API __declspec( dllimport )
 #else
 #define VSCL_API
