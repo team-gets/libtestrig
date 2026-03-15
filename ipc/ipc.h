@@ -16,6 +16,7 @@ extern "C" {
 
 #include <stdint.h>
 #include "message.h"
+#include "vscl_export.h"
 
 #ifdef __cplusplus
 } // extern "C"
@@ -28,65 +29,65 @@ extern "C" {
  *
  *	On Linux, this is a new file under /tmp/ with the .sock
  */
-int SockGeneratePath(char* sockpath);
+VSCL_EXPORT int SockGeneratePath(char* sockpath);
 
 /*
  *	Create a Unix socket to a random file.
  *
  *	Returns a nonzero int representing the file descriptor, otherwise -1.
  */
-int SockSetup(struct sockaddr_un* sockaddr_mut);
+VSCL_EXPORT int SockSetup(struct sockaddr_un* sockaddr_mut);
 
 /*
  *	Bind the Unix socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
-int SockBind(const int fd, const struct sockaddr_un* sockaddr);
+VSCL_EXPORT int SockBind(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
  *	Set the Unix socket to listen and permit connection attempts.
  *
  *	Returns 0 on success, -1 on failure.
  */
-int SockListen(const int fd, int max_backlog);
+VSCL_EXPORT int SockListen(const int fd, int max_backlog);
 
 /*
  *	Connect the Unix Socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
-int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
+VSCL_EXPORT int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
  *	Close the socket and clean up.
  */
-int SockClose(const int fd, struct sockaddr_un* sockaddr);
+VSCL_EXPORT int SockClose(const int fd, struct sockaddr_un* sockaddr);
 
 /*
  *	Set the socket up to receive and simply write out to the buffer.
  */
-int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags);
+VSCL_EXPORT int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags);
 
 /*
  *	Set the socket up to receive and loop the handler on each message.
  */
-int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*));
+VSCL_EXPORT int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*));
 
 /*
  *	Send a message over the socket without waiting for a response.
  */
-int SockSend(const int fd, struct RigMessage* msg);
+VSCL_EXPORT int SockSend(const int fd, struct RigMessage* msg);
 
 /*
- *
+ *	Identify the header byte.
  */
-int IdentifyHeaderPart(uint8_t in[4], int idx);
+VSCL_EXPORT int IdentifyHeaderPart(uint8_t in[4], int idx);
 
 /*
- *
+ *	Identify the four bytes in the header.
  */
-int IdentifyFullHeader(uint8_t in[4]);
+VSCL_EXPORT int IdentifyFullHeader(uint8_t in[4]);
 
 #ifdef __cplusplus
 } // extern "C"

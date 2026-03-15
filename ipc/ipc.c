@@ -27,10 +27,12 @@ int write(int sock, void* buf, size_t bufsize) {
 int SockGeneratePath(char* sockpath) {
 	int retstat;
 	int baselen;
-	int dstart;
+	//int dstart;
 
 	retstat = GetSockDestination(sockpath);
 	baselen = strlen(sockpath);
+
+	if (retstat != 0) { return retstat; }
 
 	srand(time(NULL));
 	for (int i = baselen - 1; i < 32 + baselen - 1; i++) {
