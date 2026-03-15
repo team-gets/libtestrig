@@ -34,7 +34,7 @@ jobs:
           pip3 install meson ninja
       - name: Setup Meson
         run: |
-          meson setup build
+          CC=${{ matrix.compiler }} meson setup build
       - name: Build
         run: |
           CC=${{ matrix.compiler }} meson compile -C build
@@ -60,6 +60,8 @@ jobs:
       - name: Setup Meson
         run: |
           meson setup build
+        env:
+          CC: ${{ matrix.compiler }}
       - name: Build
         run: |
           meson compile -C build
