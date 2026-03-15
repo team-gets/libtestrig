@@ -11,7 +11,7 @@ extern "C" {
 #define INVALID_SOCKET -1
 #endif
 
-VSCL_EXPORT int GetSockDestination(char* dest);
+VSCL_API int GetSockDestination(char* dest);
 
 #ifdef __cplusplus
 } // extern "C"
