@@ -35,7 +35,7 @@ int SockGeneratePath(char* sockpath) {
 	if (retstat != 0) { return retstat; }
 
 	srand(time(NULL));
-	for (int i = baselen - 1; i < 32 + baselen - 1; i++) {
+	for (int i = baselen; i < 32 + baselen - 1; i++) {
 		int start = (i % 2 == 0) ? 'a' : 'A';
 		sockpath[i] = rand() % (26 + 1) + start;
 	}
