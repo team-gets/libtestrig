@@ -37,7 +37,7 @@ int SockGeneratePath(char* sockpath) {
 	srand(time(NULL));
 	for (int i = baselen; i < 32 + baselen - 1; i++) {
 		int start = (i % 2 == 0) ? 'a' : 'A';
-		sockpath[i] = rand() % (26 + 1) + start;
+		sockpath[i] = rand() % (25 + 1) + start;
 	}
 
 	strncat(sockpath, ".sock", 6);
@@ -47,7 +47,7 @@ int SockGeneratePath(char* sockpath) {
 int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
 	int path_set;
-	char sockpath[64] = { 0 };
+	char sockpath[108] = { 0 };
 	char blank[108] = { 0 };
 
 #ifdef _WIN32
@@ -67,8 +67,8 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 
 	if (path_set == -1) {
 		SockGeneratePath(sockpath);
-		memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
-		strncpy(sockaddr_mut->sun_path, sockpath, 5 + 32 + 5 + 1);
+		long long int sockpathlen = strnlen(sockpath, 108);
+		strncpy(sockaddr_mut->sun_path, sockpath, sockpathlen + 1);
 	}
 
 	sockaddr_mut->sun_family = AF_UNIX;

@@ -1,7 +1,5 @@
 #define _UNICODE
 #define UNICODE
-// Windows tests will operate with wide chars
-// except for the entry point and the buf stuff?? LOL!!!
 
 #include <stdio.h>
 #include <string.h>
