@@ -68,13 +68,10 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	if (path_set == -1) {
 		SockGeneratePath(sockpath);
 		memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
+		strncpy(sockaddr_mut->sun_path, sockpath, 5 + 32 + 5 + 1);
 	}
 
 	sockaddr_mut->sun_family = AF_UNIX;
-
-	if (path_set == -1)
-		strncpy(sockaddr_mut->sun_path, sockpath, 5 + 32 + 5 + 1);
-
 	return fd;
 }
 

@@ -14,6 +14,7 @@ int GetSockDestination(char *dest) {
     if (retvalue == 0 || retstat != 0) { perror("Failed to get TEMP"); return retstat; }
     
 	strncpy(dest, usrtemp, retvalue);
+    strncat(dest, "\\", 1);
     return 0;
 
 #else
