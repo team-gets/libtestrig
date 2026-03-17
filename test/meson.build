@@ -13,7 +13,9 @@ elif (operating_system.to_lower() == 'windows')
     ) 
 
     client_exe = executable('client_exe', 'test_win_client.c',
-        dependencies: [ dep, kernel32_dep ])
+        dependencies: [ dep, kernel32_dep ],
+        install_dir: meson.project_build_root() / '..')
     server_exe = executable('server_exe', 'test_win_server.c',
-        dependencies: [ dep, kernel32_dep ])
+        dependencies: [ dep, kernel32_dep ],
+        install_dir: meson.project_build_root() / '..')
 endif

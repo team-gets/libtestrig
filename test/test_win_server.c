@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     char sockpath[108] = { 0 };
 
     // Grab preset socket path, if any
-    if (argc < 2) {
+    if (argc >= 2) {
         strncpy(sockpath, argv[1], 108);
         printf("Server will create socket at %s\n", sockpath);
     }

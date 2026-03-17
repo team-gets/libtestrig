@@ -1,5 +1,7 @@
 project('libtestrig', 'c')
 
+fs = import('fs')
+
 cc = meson.get_compiler('c')
 
 subdir('ipc')
