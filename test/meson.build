@@ -1,3 +1,6 @@
+sock_name_exe = executable('test_sock_name', 'test_sock_name.c', dependencies: dep)
+test('sockname', sock_name_exe)
+
 if (operating_system.to_lower() == 'linux')
     fork_exe = executable('test_exe', 'test_fork_ipc.c',
         dependencies: dep)
