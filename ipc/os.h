@@ -5,13 +5,13 @@ namespace VSCL::_detail {
 extern "C" {
 #endif // __cplusplus
 
-#include "vscl_export.h"
+#include "libtestrig_api.h"
 
 #ifndef _WIN32
 #define INVALID_SOCKET -1
 #endif
 
-VSCL_API int GetSockDestination(char* dest);
+TESTRIG_API int GetSockDestination(char* dest);
 
 #ifdef __cplusplus
 } // extern "C"
