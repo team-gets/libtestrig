@@ -3,15 +3,41 @@
 #include <string.h>
 #include <time.h>
 
-#include "constants.h"
 #include "ipc.h"
+#include "constants.h"
+#include "os.h"
+
+// TODO: Evaluate if this is sufficient
+#ifdef _WIN32
+typedef int socklen_t;
+
+int close(int sock) {
+	return closesocket(sock);
+}
+
+int read(int sock, void* buf, size_t bufsize) {
+	return recv(sock, buf, bufsize, MSG_PEEK);
+}
+
+int write(int sock, void* buf, size_t bufsize) {
+	return send(sock, buf, bufsize, MSG_DONTROUTE);
+}
+#endif
 
 int SockGeneratePath(char* sockpath) {
-	strncpy(sockpath, "/tmp/", 6);
+	int retstat;
+	int baselen;
+	//int dstart;
+
+	retstat = GetSockDestination(sockpath);
+	baselen = strlen(sockpath);
+
+	if (retstat != 0) { return retstat; }
+
 	srand(time(NULL));
-	for (int i = 5; i < 32 + 5; i++) {
+	for (int i = baselen; i < 32 + baselen - 1; i++) {
 		int start = (i % 2 == 0) ? 'a' : 'A';
-		sockpath[i] = rand() % (26 + 1) + start;
+		sockpath[i] = rand() % (25 + 1) + start;
 	}
 
 	strncat(sockpath, ".sock", 6);
@@ -21,11 +47,19 @@ int SockGeneratePath(char* sockpath) {
 int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
 	int path_set;
-	char sockpath[5 + 32 + 5 + 1] = { 0 };
+	char sockpath[108] = { 0 };
 	char blank[108] = { 0 };
 
+#ifdef _WIN32
+	WSADATA wsa_data;
+	int wsa_result;
+
+	wsa_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+	if (wsa_result != 0) { perror("Failed WSAStartup"); return -1; }
+#endif // _WIN32
+
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (fd == -1) { perror("Failed to create socket"); return -1; }
+	if (fd == INVALID_SOCKET) { perror("Failed to create socket"); return -1; }
 
 	path_set = (strncmp(
 		sockaddr_mut->sun_path, blank,
@@ -33,14 +67,11 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 
 	if (path_set == -1) {
 		SockGeneratePath(sockpath);
-		memset(sockaddr_mut, 0, sizeof(*sockaddr_mut));
+		long long int sockpathlen = strnlen(sockpath, 108);
+		strncpy(sockaddr_mut->sun_path, sockpath, sockpathlen + 1);
 	}
 
 	sockaddr_mut->sun_family = AF_UNIX;
-
-	if (path_set == -1)
-		strncpy(sockaddr_mut->sun_path, sockpath, 5 + 32 + 5 + 1);
-
 	return fd;
 }
 
