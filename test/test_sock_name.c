@@ -1,7 +1,14 @@
+/*
+ *  Unit test to validate Socket paths by generating three of them.
+ *  Due to the speed of these tests, the RNG seed does not change, so they are the same.
+ *  This behavior is not guaranteed normally, so it is not tested for.
+ */
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 
 #include "ipc/ipc.h"
-#include "ipc/constants.h"
 
 void check_ret(int ret) {
     if (ret != 0) {

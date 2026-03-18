@@ -6,6 +6,7 @@
 #include <windows.h>
 
 int main(int argc, char** argv) {
+    if (argc < 3) { printf("Improper invocation\n"); return -1; }
     printf("Manager starting\n");
 
     STARTUPINFO siserve;
@@ -23,18 +24,17 @@ int main(int argc, char** argv) {
     siserve.cb = sizeof(siserve);
     siclient.cb = sizeof(siclient);
 
-    WCHAR cwd[128];
-    WCHAR cmd[256];
-    WCHAR cmd2[512];
-    WCHAR cwdwild[129];
+    WCHAR cwd[128] = { 0 };
+    WCHAR cmd1[256] = { 0 };
+    WCHAR cmd2[512] = { 0 };
+
     GetCurrentDirectory(128, cwd);
+    mbstowcs(cmd1, argv[1], 256);
+    mbstowcs(cmd2, argv[2], 256);
 
-    wsprintf(cmd, L"%ls\\%ls", cwd, L"test_server.exe");
-    wsprintf(cwdwild, L"%ls\\%ls", cwd, L"*");
-
-    printf("Manager starting server with %ls\n", cmd);
+    printf("Manager starting server with %ls\n", cmd1);
     BOOL servemk = CreateProcess(NULL,
-        cmd,
+        cmd1,
         NULL,
         NULL,
         FALSE,
@@ -50,8 +50,10 @@ int main(int argc, char** argv) {
     
 
     WIN32_FIND_DATA wddata;
+    WCHAR cwdwild[130] = { 0 };
     WCHAR fname[256] = { 0 };
     wsprintf(fname, L"%ls\\", cwd);
+    wsprintf(cwdwild, L"%ls\\*", cwd);
     HANDLE hfind = FindFirstFile(cwdwild, &wddata);
 
     if (hfind != INVALID_HANDLE_VALUE) {
@@ -67,7 +69,8 @@ int main(int argc, char** argv) {
     }
 
     Sleep(1000);
-    wsprintf(cmd2, L"%ls\\%ls %ls", cwd, L"test_client.exe", fname);
+    wcscat(cmd2, L" ");
+    wcscat(cmd2, fname);
     printf("Manager starting client with %ls\n", cmd2);
     BOOL clientmk = CreateProcess(NULL,
         cmd2,
@@ -86,9 +89,12 @@ int main(int argc, char** argv) {
 
     printf("Waiting for the server and client to exit...\n");
     WaitForSingleObject(piserve.hProcess, INFINITE);
+    WaitForSingleObject(piclient.hProcess, INFINITE);
 
     CloseHandle(piserve.hProcess);
     CloseHandle(piserve.hThread);
+    CloseHandle(piclient.hProcess);
+    CloseHandle(piclient.hThread);
 
     printf("Manager exiting\n");
     return 0;
