@@ -14,11 +14,9 @@ elif (operating_system.to_lower() == 'windows')
 
     mgr_exe = executable('test_mgr', 'test_win_mgr.c')
     client_exe = executable('test_client', 'test_win_client.c',
-        dependencies: [ dep, kernel32_dep ],
-        install_dir: meson.project_build_root() / '..')
+        dependencies: [ dep, kernel32_dep ])
     server_exe = executable('test_server', 'test_win_server.c',
-        dependencies: [ dep, kernel32_dep ],
-        install_dir: meson.project_build_root() / '..')
+        dependencies: [ dep, kernel32_dep ])
 
     test('discrete', mgr_exe)
 endif
