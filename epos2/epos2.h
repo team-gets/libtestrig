@@ -25,7 +25,7 @@ enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
 /*
  *	Initializes the device and sets its state for a clean init.
  */
-int InitializeDevice();
+int InitializeDevice(struct Controller* controller, void* device_handle);
 
 /*
  *	Populates the fields of the Controller information struct.
