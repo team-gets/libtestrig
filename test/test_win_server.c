@@ -12,47 +12,18 @@
 
 int write_out_sockname(const char* sockname) {
     // not gonna open a pipe bro
-    HANDLE fout;
-    WCHAR widesock_temp[108] = { 0 };
-    WCHAR widesock[108] = { 0 };
     WCHAR cwd[128] = { 0 };
-    WCHAR where2[128] = { 0 };
-    char comeback[128] = { 0 };
+    WCHAR txt[168] = { 0 };
 
-    mbstowcs(widesock_temp, sockname, 108);
-    mbstowcs(widesock, sockname, 108);
     GetCurrentDirectory(128, cwd);
+    wsprintf(txt, L"%ls\\sock.txt", cwd);
 
-    int occurence = 0;
-    WCHAR* buf;
-    WCHAR* actual_sockname = wcstok(widesock_temp, L"\\", &buf);
-    while (actual_sockname) {
-        actual_sockname = wcstok(NULL, L"\\", &buf);
-        occurence++;
-    }
+    FILE* where2 = _wfopen(txt, L"w");
+    fwrite(sockname, 1, strlen(sockname), where2);
+    fclose(where2);
 
-    WCHAR* buf2;
-    int n = 0;
-    actual_sockname = wcstok(widesock, L"\\", &buf2);
-    while (actual_sockname && n < occurence - 1) {
-        actual_sockname = wcstok(NULL, L"\\", &buf2);
-        n++;
-    }
+    printf("Wrote socket name to %ls\n", txt);
 
-    wsprintf(where2, L"%ls\\%ls", cwd, actual_sockname);
-    printf("I will place it at %ls\n", where2);
-    wcstombs(comeback, where2, 128);
-
-    fout = CreateFileA(
-        comeback,
-        GENERIC_WRITE,
-        FILE_SHARE_WRITE,
-        NULL,
-        OPEN_EXISTING,
-        FILE_ATTRIBUTE_NORMAL,
-        NULL);
-
-    CloseHandle(fout);
     return 0;
 }
 
@@ -62,6 +33,8 @@ int main(int argc, char** argv) {
     int bytes_recv;
     int sock;
     struct sockaddr_un sockaddr;
+    memset(&sockaddr, 0, sizeof(struct sockaddr_un));
+
     char sockpath[108] = { 0 };
 
     // Grab preset socket path, if any
@@ -74,7 +47,7 @@ int main(int argc, char** argv) {
     sock = SockSetup(&sockaddr);
     if (sock == INVALID_SOCKET) { perror("Server socket is invalid"); return 1; }
     
-    printf("Making a sockname file...\n");
+    printf("Making a sockname file using socket path %s...\n", sockaddr.sun_path);
     write_out_sockname(sockaddr.sun_path);
     
     retstat = SockBind(sock, &sockaddr);

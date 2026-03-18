@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
     if (sock == INVALID_SOCKET) { perror("Client socket is invalid"); return 1; }
 
     retstat = SockConnect(sock, &sockaddr);
-    if (retstat == SOCKET_ERROR) { perror("Client socket failed to bind"); return 1; }
+    if (retstat == SOCKET_ERROR) { perror("Client socket failed to connect"); return 1; }
 
     retstat = SockSend(sock, &msg);
     if (retstat == SOCKET_ERROR) { perror("Client socket failed to send"); return 1; }

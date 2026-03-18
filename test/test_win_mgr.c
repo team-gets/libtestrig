@@ -47,6 +47,8 @@ int main(int argc, char** argv) {
         printf("Manager failed to create server: %lu\n", GetLastError());
         return -1;
     }
+
+    Sleep(1000);
     
 
     WIN32_FIND_DATA wddata;
@@ -61,6 +63,7 @@ int main(int argc, char** argv) {
             WCHAR* wideguy = wcsstr(wddata.cFileName, L".sock");
             if (wideguy != NULL) {
                 wcscat_s(fname, 256, wddata.cFileName);
+                printf("Found socket file clone\n");
                 break;
             }
         }
@@ -69,6 +72,7 @@ int main(int argc, char** argv) {
     }
 
     Sleep(1000);
+
     wcscat(cmd2, L" ");
     wcscat(cmd2, fname);
     printf("Manager starting client with %ls\n", cmd2);
