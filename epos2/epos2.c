@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "definitions.h"
-#include "ident.h"
+#include "epos2.h"
 
 int AcquireDeviceInformation(struct Controller* controller, int flags) {
 	unsigned int error_code = 0;

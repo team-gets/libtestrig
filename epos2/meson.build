@@ -24,7 +24,7 @@ elif (operating_system == 'linux')
       required: false),
   ) 
 
-  epos2_srcs = [ './epos2/constants.c', './epos2/ident.c' ]
+  epos2_srcs = [ './epos2/constants.c', './epos2/epos2.c' ]
 
 # Others
 else
