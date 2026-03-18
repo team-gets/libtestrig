@@ -19,6 +19,8 @@ int write_out_sockname(const char* sockname) {
     wsprintf(txt, L"%ls\\sock.txt", cwd);
 
     FILE* where2 = _wfopen(txt, L"w");
+    if (where2 == NULL) { exit(-1); }
+
     fwrite(sockname, 1, strlen(sockname), where2);
     fclose(where2);
 

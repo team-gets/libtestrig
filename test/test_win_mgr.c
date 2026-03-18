@@ -54,15 +54,27 @@ int main(int argc, char** argv) {
     WIN32_FIND_DATA wddata;
     WCHAR cwdwild[130] = { 0 };
     WCHAR fname[256] = { 0 };
-    wsprintf(fname, L"%ls\\", cwd);
     wsprintf(cwdwild, L"%ls\\*", cwd);
     HANDLE hfind = FindFirstFile(cwdwild, &wddata);
 
     if (hfind != INVALID_HANDLE_VALUE) {
         while (FindNextFile(hfind, &wddata)) {
-            WCHAR* wideguy = wcsstr(wddata.cFileName, L".sock");
-            if (wideguy != NULL) {
-                wcscat_s(fname, 256, wddata.cFileName);
+            if (wcscmp(wddata.cFileName, L"sock.txt") == 0) {
+
+                FILE* fsockname = _wfopen(wddata.cFileName, L"r");
+                if (fsockname == NULL) { exit(-1); }
+                char chara = fgetc(fsockname);
+                int n = 0;
+
+                while (chara != 0 && chara != EOF ) {
+                    WCHAR tempwide;
+                    mbtowc(&tempwide, &chara, 1);
+                    fname[n] = tempwide;
+                    n++;
+                    chara = fgetc(fsockname);
+                }
+
+                fclose(fsockname);
                 printf("Found socket file clone\n");
                 break;
             }
@@ -70,8 +82,6 @@ int main(int argc, char** argv) {
 
         FindClose(hfind);
     }
-
-    Sleep(1000);
 
     wcscat(cmd2, L" ");
     wcscat(cmd2, fname);
