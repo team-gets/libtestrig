@@ -28,17 +28,100 @@ unsigned int AcquireFirstDeviceInformation(struct Controller* controller_out, in
 		if (protocol_found == 0) { return error_code; }
 	}
 
+	return 0;
+}
+
+unsigned int AcquireDeviceNames(struct Controller** controllers_out, int size) {
+	int n = 0;
+	unsigned int error_code = 0;
+	int selection_end;
+
+	int name_found = VCS_GetDeviceNameSelection(
+			1, controllers_out[0]->Name, 8,
+			&selection_end, &error_code);
+	if (name_found != 0) { return error_code; }
+	n++;
+
+	while (!selection_end && n < size) {
+		name_found = VCS_GetDeviceNameSelection(
+				0, controllers_out[n]->Name, 8,
+				&selection_end, &error_code);
+
+		if (name_found != 0) { return error_code; }
+		n++;
+	}
+
+	return error_code;
+}
+
+unsigned int AcquireDeviceProtocols(struct Controller** controllers_out, int size) {
+	int n = 0;
+	unsigned int error_code = 0;
+	int selection_end;
+
+	int protocol_found = VCS_GetProtocolStackNameSelection(
+			controllers_out[0]->Name, 1,
+			controllers_out[0]->Protocol, 16,
+			&selection_end, &error_code);
+	if (protocol_found == 0) { return error_code; }
+	n++;
+
+	while (!selection_end && n < size) {
+		protocol_found = VCS_GetProtocolStackNameSelection(
+				controllers_out[n]->Name, 0,
+				controllers_out[n]->Protocol, 16,
+				&selection_end, &error_code);
+
+		if (protocol_found == 0) { return error_code; }
+		n++;
+	}
+
+	return error_code;
+}
+
+unsigned int AcquireDeviceInterfaces(struct Controller** controllers_out, int size) {
+	int n = 0;
+	unsigned int error_code = 0;
+	int selection_end;
+
 	int interface_found = VCS_GetInterfaceNameSelection(
-			controller_out->Name, controller_out->Protocol, 1,
-			controller_out->Interface, 64, &selection_end, &error_code);
+			controllers_out[0]->Name, controllers_out[0]->Protocol, 1,
+			controllers_out[0]->Interface, 64, &selection_end, &error_code);
 	if (interface_found == 0) { return error_code; }
+	n++;
+
+	while (!selection_end && n < size) {
+		interface_found = VCS_GetInterfaceNameSelection(
+				controllers_out[n]->Name, controllers_out[n]->Protocol, 0,
+				controllers_out[n]->Interface, 64, &selection_end, &error_code);
+
+		if (interface_found == 0) { return error_code; }
+		n++;
+	}
+
+	return error_code;
+}
+
+unsigned int AcquireDevicePorts(struct Controller** controllers_out, int size) {
+	int n = 0;
+	unsigned int error_code = 0;
+	int selection_end;
 
 	int port_found = VCS_GetPortNameSelection(
-			controller_out->Name, controller_out->Protocol, controller_out->Interface, 1,
-			controller_out->Port, 8, &selection_end, &error_code);
+			controllers_out[0]->Name, controllers_out[0]->Protocol, controllers_out[0]->Interface, 1,
+			controllers_out[0]->Port, 8, &selection_end, &error_code);
 	if (port_found == 0) { return error_code; }
+	n++;
 
-	return 0;
+	while (!selection_end && n < size) {
+		port_found = VCS_GetPortNameSelection(
+				controllers_out[n]->Name, controllers_out[n]->Protocol, controllers_out[n]->Interface, 0,
+				controllers_out[n]->Port, 8, &selection_end, &error_code);
+		if (port_found == 0) { return error_code; }
+		n++;
+	}
+
+	return error_code;
 }
 
 void PrintControllerCharacteristics(struct Controller* controller) {

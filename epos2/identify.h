@@ -20,6 +20,38 @@ extern "C" {
 unsigned int TESTRIG_API AcquireFirstDeviceInformation(struct Controller* controller_out, int flags);
 
 /*
+ *	@brief Finds the name of the Controllers in the array.
+ *	This operates on all connected controllers.
+ *
+ *	Refer to Page 3-25 of the manual.
+ */
+unsigned int TESTRIG_API AcquireDeviceNames(struct Controller** controllers_out, int size);
+
+/*
+ *	@brief Finds the protocol stacks of the Controller in the array.
+ *	This operates on all connected controllers.
+ *
+ *	Refer to Page 3-26 of the manual.
+ */
+unsigned int TESTRIG_API AcquireDeviceProtocols(struct Controller** controllers_out, int size);
+
+/*
+ *	@brief Finds the interfaces of the Controller in the array.
+ *	This operates on all connected controllers.
+ *
+ *	Refer to Page 3-27 of the manual.
+ */
+unsigned int TESTRIG_API AcquireDeviceInterfaces(struct Controller** controllers_out, int size);
+
+/*
+ *	@brief Finds the ports of the Controller in the array.
+ *	This operates on all connected controllers.
+ *
+ *	Refer to Page 3-28 of the manual.
+ */
+unsigned int TESTRIG_API AcquireDevicePorts(struct Controller** controllers_out, int size);
+
+/*
  *	@brief Acquire the three controllers.
  */
 unsigned int TESTRIG_API AcquireThreeDeviceInformations(struct Controller** controllers_out, int flags);
