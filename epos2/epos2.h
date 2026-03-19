@@ -24,20 +24,22 @@ enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
 
 /*
  *	Initializes the device and sets its state for a clean init.
+ *
+ *	Refer to Page 162 of the manual.
  */
-int InitializeDevice(struct Controller* controller, void* device_handle);
+unsigned int InitializeDevice(struct Controller* controller, void* device_handle);
 
 /*
  *	Populates the fields of the Controller information struct.
  *
  *	Flags are passed bitwise ORed.
  */
-int AcquireDeviceInformation(struct Controller* controller, int flags);
+unsigned int AcquireDeviceInformation(struct Controller* controller, int flags);
 
 /*
  *	Closes all connections to the controller
  */
-int CloseDevice(struct Controller* controller);
+unsigned int CloseDevice(struct Controller* controller, void* device_handle);
 
 #ifdef __cplusplus
 } // extern "C"

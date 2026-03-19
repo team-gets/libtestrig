@@ -5,13 +5,11 @@
 #include "definitions.h"
 #include "epos2.h"
 
-int InitializeDevice(struct Controller* controller, void* device_handle) {
+unsigned int InitializeDevice(struct Controller* controller, void* device_handle) {
 	unsigned int error_code;
-
-	unsigned int stacksets;
 	int ret;
 
-	device_handle = (char*)VCS_OpenDevice(controller->Name,
+	device_handle = VCS_OpenDevice(controller->Name,
 				controller->Protocol,
 				controller->Interface,
 				controller->Port,
@@ -23,12 +21,15 @@ int InitializeDevice(struct Controller* controller, void* device_handle) {
 		printf("- Protocol:	 %s\n", controller->Protocol);
 		printf("- Interface: %s\n", controller->Interface);
 		printf("- Interface: %s\n", controller->Interface);
+		return error_code;
 	};
 
-	return error_code;
+	ret = VCS_ClearFault(device_handle, 0, &error_code);
+
+	return (ret == 0 && error_code == 0) ? 0 : error_code;
 }
 
-int AcquireDeviceInformation(struct Controller* controller_out, int flags) {
+unsigned int AcquireDeviceInformation(struct Controller* controller_out, int flags) {
 	unsigned int error_code = 0;
 	int success;
 	int selection_end;
@@ -46,5 +47,14 @@ int AcquireDeviceInformation(struct Controller* controller_out, int flags) {
 	success = VCS_GetInterfaceNameSelection(controller_out->Name, controller_out->Protocol, 1,
 			controller_out->Interface, 64, &selection_end, &error_code);
 
-	return (success == 0) ? 0 : error_code;
+	return (success == 0 && error_code == 0) ? 0 : error_code;
+}
+
+unsigned int CloseDevice(struct Controller* controller, void* device_handle) {
+	unsigned int error_code;
+	int ret;
+
+	ret = VCS_CloseDevice(device_handle, &error_code);
+
+	return (ret == 0 && error_code == 0) ? 0 : error_code;
 }
