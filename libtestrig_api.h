@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef TESTRIG_API
 #if defined(_WIN32) && !defined(__GNUC__)
 #ifdef COMPILING_TESTRIG_DLL
