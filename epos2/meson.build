@@ -33,7 +33,7 @@ endif
 
 # CI etc.
 else
-  message('[WARNING] Controller capabilities not being built. Continuing to create library anyway')
+  message('[WARNING] Controller capabilities not being built. Continuing to create library anyway.')
   epos2 = declare_dependency()
   epos2_srcs = [ ]
 endif
