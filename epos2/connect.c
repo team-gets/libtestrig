@@ -1,7 +1,8 @@
 #include <stdio.h>
 
-#include "definitions.h"
 #include "connect.h"
+#include "definitions.h"
+#include "identify.h"
 
 unsigned int InitializeDevice(struct Controller* controller, void* device_handle) {
 	unsigned int error_code;
@@ -14,14 +15,16 @@ unsigned int InitializeDevice(struct Controller* controller, void* device_handle
 				&error_code);
 
 	if (device_handle == 0 && error_code != 0) {
-		printf("ERROR %uix: Failed to open device with with following characteristics:\n",
-				error_code);
+		printf("ERROR %uix: Failed to open device with with following characteristics:\n", error_code);
+		PrintControllerCharacteristics(controller);
+
 		return error_code;
 	};
 
 	ret = VCS_ClearFault(device_handle, controller->NodeId, &error_code);
 
-	return (ret == 0 && error_code == 0) ? 0 : error_code;
+	controller->State = CTRL_STATE_OPENED;
+	return (ret != 0 && error_code == 0) ? 0 : error_code;
 } // uint Open
 
 unsigned int CloseDevice(struct Controller* controller, void* device_handle) {
@@ -29,7 +32,8 @@ unsigned int CloseDevice(struct Controller* controller, void* device_handle) {
 	int ret;
 
 	ret = VCS_CloseDevice(device_handle, &error_code);
+	controller->State = CTRL_STATE_CLOSED;
 
-	return (ret == 0 && error_code == 0) ? 0 : error_code;
+	return (ret != 0 && error_code == 0) ? 0 : error_code;
 }
 

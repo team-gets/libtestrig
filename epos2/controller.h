@@ -7,7 +7,7 @@ extern "C" {
 
 enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
 	FLAG_INIT_DEFAULTS = 1,
-	FLAG_ZERO_INIT = 2
+	FLAG_ZERO_INIT = 2,
 };
 
 enum ControllerState {
