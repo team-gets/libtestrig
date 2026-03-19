@@ -1,0 +1,4 @@
+# This project will distinguish between the two,
+# should C++ only sources be introduced here.
+*.h linguist-language=C
+*.hpp linguist-language=C++
