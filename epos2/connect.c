@@ -22,9 +22,11 @@ unsigned int InitializeDevice(struct Controller* controller, void* device_handle
 	};
 
 	ret = VCS_ClearFault(device_handle, controller->NodeId, &error_code);
+	if (ret == 0) { return error_code; }
 
+	ret = VCS_SetEnableState(device_handle, controller->NodeId, &error_code);
 	controller->State = CTRL_STATE_OPENED;
-	return (ret != 0 && error_code == 0) ? 0 : error_code;
+	return error_code;
 } // uint Open
 
 unsigned int CloseDevice(struct Controller* controller, void* device_handle) {
@@ -32,8 +34,10 @@ unsigned int CloseDevice(struct Controller* controller, void* device_handle) {
 	int ret;
 
 	ret = VCS_CloseDevice(device_handle, &error_code);
-	controller->State = CTRL_STATE_CLOSED;
+	if (ret == 0) { return error_code; }
 
-	return (ret != 0 && error_code == 0) ? 0 : error_code;
+	ret = VCS_SetDisableState(device_handle, controller->NodeId, &error_code);
+	controller->State = CTRL_STATE_CLOSED;
+	return error_code;
 }
 
