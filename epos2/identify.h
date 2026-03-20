@@ -9,17 +9,6 @@ extern "C" {
 #endif // __cplusplus
 
 /*
- *	@brief Populates the fields of the Controller information struct.
- *	This only operates on the first controller that the Command Library finds.
- *
- *	Flags are passed bitwise ORed.
- *
- *	Refer to Page 162 of the manual under HELP,
- *	which describes several of the functions wrapped here.
- */
-unsigned int TESTRIG_API AcquireFirstDeviceInformation(struct Controller* controller_out, int flags);
-
-/*
  *	@brief Finds the name of the Controllers in the array.
  *	This operates on all connected controllers.
  *
@@ -52,9 +41,9 @@ unsigned int TESTRIG_API AcquireDeviceInterfaces(struct Controller** controllers
 unsigned int TESTRIG_API AcquireDevicePorts(struct Controller** controllers_out, int size);
 
 /*
- *	@brief Acquire the three controllers.
+ *	@brief Acquire the information on the set number of controllers.
  */
-unsigned int TESTRIG_API AcquireThreeDeviceInformations(struct Controller** controllers_out, int flags);
+unsigned int TESTRIG_API AcquireDeviceInfo(struct Controller** controllers_out, int size, int flags);
 
 /*
  *	@brief Print out controller characteristics.
