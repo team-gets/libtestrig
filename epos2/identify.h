@@ -1,9 +1,15 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+#include <stdint.h>
 #include "libtestrig_api.h"
 #include "controller.h"
 
 #ifdef __cplusplus
+} // extern "C" (headers)
 namespace VSCL::Rig {
 extern "C" {
 #endif // __cplusplus
@@ -14,7 +20,7 @@ extern "C" {
  *
  *	Refer to Page 3-25 of the manual.
  */
-unsigned int TESTRIG_API AcquireDeviceNames(struct Controller** controllers_out, int size);
+uint32_t TESTRIG_API AcquireDeviceNames(struct Controller** controllers_out, int size);
 
 /*
  *	@brief Finds the protocol stacks of the Controller in the array.
@@ -22,7 +28,7 @@ unsigned int TESTRIG_API AcquireDeviceNames(struct Controller** controllers_out,
  *
  *	Refer to Page 3-26 of the manual.
  */
-unsigned int TESTRIG_API AcquireDeviceProtocols(struct Controller** controllers_out, int size);
+uint32_t TESTRIG_API AcquireDeviceProtocols(struct Controller** controllers_out, int size);
 
 /*
  *	@brief Finds the interfaces of the Controller in the array.
@@ -30,7 +36,7 @@ unsigned int TESTRIG_API AcquireDeviceProtocols(struct Controller** controllers_
  *
  *	Refer to Page 3-27 of the manual.
  */
-unsigned int TESTRIG_API AcquireDeviceInterfaces(struct Controller** controllers_out, int size);
+uint32_t TESTRIG_API AcquireDeviceInterfaces(struct Controller** controllers_out, int size);
 
 /*
  *	@brief Finds the ports of the Controller in the array.
@@ -38,12 +44,19 @@ unsigned int TESTRIG_API AcquireDeviceInterfaces(struct Controller** controllers
  *
  *	Refer to Page 3-28 of the manual.
  */
-unsigned int TESTRIG_API AcquireDevicePorts(struct Controller** controllers_out, int size);
+uint32_t TESTRIG_API AcquireDevicePorts(struct Controller** controllers_out, int size);
 
 /*
  *	@brief Acquire the information on the set number of controllers.
  */
-unsigned int TESTRIG_API AcquireDeviceInfo(struct Controller** controllers_out, int size, int flags);
+uint32_t TESTRIG_API AcquireDeviceInfos(struct Controller** controllers_out, int size, int flags);
+
+/*
+ *	@brief Set the controller to be identified by the given node on the network.
+ *
+ *	Refer to 8-135 of the firmware manual. An unconfigured node is found at node 0.
+ */
+uint32_t TESTRIG_API SetDeviceNode(struct Controller* controller_out, void* handle, uint8_t new_node);
 
 /*
  *	@brief Print out controller characteristics.

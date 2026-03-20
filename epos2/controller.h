@@ -1,6 +1,13 @@
 #pragma once
 
 #ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+} // extern "C" (headers)
 namespace VSCL::Rig {
 extern "C" {
 #endif // __cplusplus
@@ -30,7 +37,7 @@ struct Controller {
 	// The name of the port used in connection.
 	char Port[8];
 	// The node of the controller.
-	unsigned short NodeId;
+	uint8_t NodeId;
 	// State of the controller.
 	enum ControllerState State;
 };

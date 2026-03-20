@@ -5,9 +5,9 @@
 #include "definitions.h"
 #include "identify.h"
 
-unsigned int AcquireDeviceNames(struct Controller** controllers_out, int size) {
+uint32_t AcquireDeviceNames(struct Controller** controllers_out, int size) {
+	uint32_t error_code = 0;
 	int n = 0;
-	unsigned int error_code = 0;
 	int selection_end;
 
 	int name_found = VCS_GetDeviceNameSelection(
@@ -28,9 +28,9 @@ unsigned int AcquireDeviceNames(struct Controller** controllers_out, int size) {
 	return error_code;
 }
 
-unsigned int AcquireDeviceProtocols(struct Controller** controllers_out, int size) {
+uint32_t AcquireDeviceProtocols(struct Controller** controllers_out, int size) {
+	uint32_t error_code = 0;
 	int n = 0;
-	unsigned int error_code = 0;
 	int selection_end;
 
 	int protocol_found = VCS_GetProtocolStackNameSelection(
@@ -53,9 +53,9 @@ unsigned int AcquireDeviceProtocols(struct Controller** controllers_out, int siz
 	return error_code;
 }
 
-unsigned int AcquireDeviceInterfaces(struct Controller** controllers_out, int size) {
+uint32_t AcquireDeviceInterfaces(struct Controller** controllers_out, int size) {
+	uint32_t error_code = 0;
 	int n = 0;
-	unsigned int error_code = 0;
 	int selection_end;
 
 	int interface_found = VCS_GetInterfaceNameSelection(
@@ -76,9 +76,9 @@ unsigned int AcquireDeviceInterfaces(struct Controller** controllers_out, int si
 	return error_code;
 }
 
-unsigned int AcquireDevicePorts(struct Controller** controllers_out, int size) {
+uint32_t AcquireDevicePorts(struct Controller** controllers_out, int size) {
+	uint32_t error_code = 0;
 	int n = 0;
-	unsigned int error_code = 0;
 	int selection_end;
 
 	int port_found = VCS_GetPortNameSelection(
@@ -98,8 +98,8 @@ unsigned int AcquireDevicePorts(struct Controller** controllers_out, int size) {
 	return error_code;
 }
 
-unsigned int AcquireDeviceInfo(struct Controller** controllers_out, int size, int flags) {
-	unsigned int error_code = 0;
+uint32_t AcquireDeviceInfos(struct Controller** controllers_out, int size, int flags) {
+	uint32_t error_code = 0;
 	
 	if (flags & (1 << 2)) { memset(controllers_out, 0, sizeof(*controllers_out)); }
 
@@ -124,6 +124,21 @@ unsigned int AcquireDeviceInfo(struct Controller** controllers_out, int size, in
 	if (error_code != 0) { return error_code; }
 
 	return 0;
+}
+uint32_t SetDeviceNode(struct Controller* controller_out, void* handle, uint8_t new_node) {
+	uint32_t error_code = 0;
+	uint32_t bytes_written = 0;
+	int ret;
+
+	ret = VCS_SetObject(
+		handle, 0,
+		0x2000, 0x00,
+		&new_node, 1,
+		&bytes_written, &error_code);
+
+	if (ret != 0) { controller_out->NodeId = new_node; }
+
+	return error_code;
 }
 
 void PrintControllerCharacteristics(struct Controller* controller) {
