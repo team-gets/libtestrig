@@ -12,11 +12,6 @@ namespace VSCL::Rig {
 extern "C" {
 #endif // __cplusplus
 
-enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
-	FLAG_INIT_DEFAULTS = 1,
-	FLAG_ZERO_INIT = 2,
-};
-
 enum ControllerState {
 	CTRL_STATE_CLOSED = 1,
 	CTRL_STATE_OPENED = 2,

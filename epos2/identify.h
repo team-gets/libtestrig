@@ -14,6 +14,11 @@ namespace VSCL::Rig {
 extern "C" {
 #endif // __cplusplus
 
+enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
+	FLAG_ACQUIRE_INIT_DEFAULTS = 1,
+	FLAG_ACQUIRE_ZERO_INIT = 2,
+};
+
 /*
  *	@brief Finds the name of the Controllers in the array.
  *	This operates on all connected controllers.
@@ -56,7 +61,7 @@ uint32_t TESTRIG_API AcquireDeviceInfos(struct Controller** controllers_out, int
  *
  *	Refer to 8-135 of the firmware manual. An unconfigured node is found at node 0.
  */
-uint32_t TESTRIG_API SetDeviceNode(struct Controller* controller_out, void* handle, uint8_t new_node);
+uint32_t TESTRIG_API SetDeviceNode(struct Controller* controller_out, void* handle, uint8_t old_node, uint8_t new_node);
 
 /*
  *	@brief Print out controller characteristics.

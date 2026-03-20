@@ -16,7 +16,7 @@ uint32_t AcquireDeviceNames(struct Controller** controllers_out, int size) {
 	if (name_found != 0) { return error_code; }
 	n++;
 
-	while (!selection_end && n < size) {
+	while (selection_end == 0 && n < size) {
 		name_found = VCS_GetDeviceNameSelection(
 				0, controllers_out[n]->Name, 8,
 				&selection_end, &error_code);
@@ -40,7 +40,7 @@ uint32_t AcquireDeviceProtocols(struct Controller** controllers_out, int size) {
 	if (protocol_found == 0) { return error_code; }
 	n++;
 
-	while (!selection_end && n < size) {
+	while (selection_end == 0 && n < size) {
 		protocol_found = VCS_GetProtocolStackNameSelection(
 				controllers_out[n]->Name, 0,
 				controllers_out[n]->Protocol, 16,
@@ -64,7 +64,7 @@ uint32_t AcquireDeviceInterfaces(struct Controller** controllers_out, int size) 
 	if (interface_found == 0) { return error_code; }
 	n++;
 
-	while (!selection_end && n < size) {
+	while (selection_end == 0 && n < size) {
 		interface_found = VCS_GetInterfaceNameSelection(
 				controllers_out[n]->Name, controllers_out[n]->Protocol, 0,
 				controllers_out[n]->Interface, 64, &selection_end, &error_code);
@@ -87,7 +87,7 @@ uint32_t AcquireDevicePorts(struct Controller** controllers_out, int size) {
 	if (port_found == 0) { return error_code; }
 	n++;
 
-	while (!selection_end && n < size) {
+	while (selection_end == 0 && n < size) {
 		port_found = VCS_GetPortNameSelection(
 				controllers_out[n]->Name, controllers_out[n]->Protocol, controllers_out[n]->Interface, 0,
 				controllers_out[n]->Port, 8, &selection_end, &error_code);
@@ -125,13 +125,14 @@ uint32_t AcquireDeviceInfos(struct Controller** controllers_out, int size, int f
 
 	return 0;
 }
-uint32_t SetDeviceNode(struct Controller* controller_out, void* handle, uint8_t new_node) {
+
+uint32_t SetDeviceNode(struct Controller* controller_out, void* handle, uint8_t old_node, uint8_t new_node) {
 	uint32_t error_code = 0;
 	uint32_t bytes_written = 0;
 	int ret;
 
 	ret = VCS_SetObject(
-		handle, 0,
+		handle, old_node,
 		0x2000, 0x00,
 		&new_node, 1,
 		&bytes_written, &error_code);
