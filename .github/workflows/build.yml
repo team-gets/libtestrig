@@ -41,6 +41,7 @@ jobs:
       - name: Verbosely Test
         run: |
           meson test -v -C build
+
   windows-build-meson:
     name: Windows
     runs-on: windows-latest
