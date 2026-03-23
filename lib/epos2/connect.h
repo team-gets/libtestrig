@@ -23,7 +23,7 @@ uint32_t TESTRIG_API CleanEnableDevice(struct Controller* controller, void* devi
  *	Refer to Page 162 of the manual under INITIALIZATION,
  *	which describes several of the methods wrapped here.
  */
-uint32_t TESTRIG_API InitializeDevice(struct Controller controller_out, void* node);
+uint32_t TESTRIG_API InitializeDevice(struct Controller* controller_out, void* node, uint8_t node_id);
 
 /*
  *	@brief Opens communication to the device and sets its state for a clean init.
@@ -35,16 +35,18 @@ uint32_t TESTRIG_API InitializeDevice(struct Controller controller_out, void* no
 uint32_t TESTRIG_API InitializeDevices(struct Controller controllers_out[], void* node_1, void* node_2, void* node_3);
 
 /*
- *
- */
-
-/*
  *	Closes all connections to the controller
  *
  *	Refer to Page 162 of the manual under CLOSING PROCEDURE,
  *	which describes several of the methods wrapped here.
  */
 uint32_t TESTRIG_API CloseDevice(struct Controller* controller, void* device_handle);
+
+/*
+ *
+ *
+ */
+uint32_t TESTRIG_API IdentifyFW(void);
 
 #ifdef __cplusplus
 } // extern "C"

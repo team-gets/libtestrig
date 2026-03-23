@@ -10,8 +10,23 @@ static void FailedOpenDevice(uint32_t error_code) {
 	printf("Failed to open device with with following characteristics:\n");
 }
 
-uint32_t InitializeDevice(struct Controller controller_out, void* node) {
+uint32_t InitializeDevice(struct Controller* controller_out, void* node, uint8_t node_id) {
 	uint32_t error_code = 0;
+
+	node = VCS_OpenDevice(controller_out->Name,
+			controller_out->Protocol,
+			controller_out->Interface,
+			controller_out->Port,
+			&error_code);
+
+	controller_out->NodeId = node_id;
+
+	if (node == 0 || error_code != 0) {
+		FailedOpenDevice(error_code);
+		PrintControllerCharacteristics(controller_out);
+	}
+	
+	CleanEnableDevice(controller_out, node);
 
 	return error_code;
 }
