@@ -25,7 +25,7 @@ enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
  *
  *	Refer to Page 3-25 of the manual.
  */
-uint32_t TESTRIG_API AcquireDeviceNames(struct Controller** controllers_out, int size);
+uint32_t TESTRIG_API AcquireDeviceNames(struct Controller controllers_out[], int size);
 
 /*
  *	@brief Finds the protocol stacks of the Controller in the array.
@@ -33,7 +33,7 @@ uint32_t TESTRIG_API AcquireDeviceNames(struct Controller** controllers_out, int
  *
  *	Refer to Page 3-26 of the manual.
  */
-uint32_t TESTRIG_API AcquireDeviceProtocols(struct Controller** controllers_out, int size);
+uint32_t TESTRIG_API AcquireDeviceProtocols(struct Controller controllers_out[], int size);
 
 /*
  *	@brief Finds the interfaces of the Controller in the array.
@@ -41,7 +41,7 @@ uint32_t TESTRIG_API AcquireDeviceProtocols(struct Controller** controllers_out,
  *
  *	Refer to Page 3-27 of the manual.
  */
-uint32_t TESTRIG_API AcquireDeviceInterfaces(struct Controller** controllers_out, int size);
+uint32_t TESTRIG_API AcquireDeviceInterfaces(struct Controller controllers_out[], int size);
 
 /*
  *	@brief Finds the ports of the Controller in the array.
@@ -49,12 +49,12 @@ uint32_t TESTRIG_API AcquireDeviceInterfaces(struct Controller** controllers_out
  *
  *	Refer to Page 3-28 of the manual.
  */
-uint32_t TESTRIG_API AcquireDevicePorts(struct Controller** controllers_out, int size);
+uint32_t TESTRIG_API AcquireDevicePorts(struct Controller controllers_out[], int size);
 
 /*
  *	@brief Acquire the information on the set number of controllers.
  */
-uint32_t TESTRIG_API AcquireDeviceInfos(struct Controller** controllers_out, int size, int flags);
+uint32_t TESTRIG_API AcquireDeviceInfos(struct Controller controllers_out[], int size, int flags);
 
 /*
  *	@brief Set the controller to be identified by the given node on the network.
