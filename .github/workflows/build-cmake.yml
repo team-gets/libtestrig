@@ -4,20 +4,22 @@ on:
   pull_request:
     branches: ["main"]
     paths:
-      - ".github/workflows/build.yml"
+      - ".github/workflows/build-cmake.yml"
       - "ipc/**/*.c"
       - "ipc/**/*.h"
-      - "**/meson.build"
+      - "**/CMakeLists.txt"
+      - "cmake/*.cmake"
   push:
     branches: ["main"]
     paths:
-      - ".github/workflows/build.yml"
+      - ".github/workflows/build-cmake.yml"
       - "ipc/**/*.c"
       - "ipc/**/*.h"
-      - "**/meson.build"
+      - "**/CMakeLists.txt"
+      - "cmake/*.cmake"
 
 jobs:
-  linux-build-meson:
+  linux-build-cmake:
     name: Linux
     runs-on: ubuntu-latest
     strategy:
@@ -33,7 +35,7 @@ jobs:
         run: |
           CC=${{ matrix.compiler }} cmake --build build
 
-  windows-build-meson:
+  windows-build-cmake:
     name: Windows
     runs-on: windows-latest
     strategy:
