@@ -30,6 +30,7 @@ else()
 endif()
 
 add_library(Libtestrig SHARED ${LIBTESTRIG_SOURCES})
+target_compile_definitions(Libtestrig PRIVATE COMPILING_TESTRIG_DLL)
 target_include_directories(Libtestrig PUBLIC ${LIB_DIR})
 
 if (EPOSCmd_FOUND)
