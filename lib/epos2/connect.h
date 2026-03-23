@@ -15,10 +15,19 @@ namespace VSCL::Rig {
 extern "C" {
 #endif // __cplusplus
 
-uint32_t CleanEnableDevice(struct Controller* controller, void* device_handle);
+uint32_t TESTRIG_API CleanEnableDevice(struct Controller* controller, void* device_handle);
 
 /*
  *	@brief Opens communication to the device and sets its state for a clean init.
+ *
+ *	Refer to Page 162 of the manual under INITIALIZATION,
+ *	which describes several of the methods wrapped here.
+ */
+uint32_t TESTRIG_API InitializeDevice(struct Controller controller_out, void* node);
+
+/*
+ *	@brief Opens communication to the device and sets its state for a clean init.
+ *	This makes a lot of assumptions
  *
  *	Refer to Page 162 of the manual under INITIALIZATION,
  *	which describes several of the methods wrapped here.

@@ -5,7 +5,7 @@
 #include "definitions.h"
 #include "identify.h"
 
-static void warnOverExpectant(const int size, const int n, const char* name) {
+static void WarnOverExpectant(const int size, const int n, const char* name) {
 	if (size <= n) { return; }
 	printf("Warning: You attempted to probe for more controllers than was connected: ");
 	printf("%i requested was greater than %i connected: ", size, n);
@@ -32,7 +32,7 @@ uint32_t AcquireDeviceNames(struct Controller controllers_out[], int size) {
 		n++;
 	}
 
-	warnOverExpectant(size, n, "naming");
+	WarnOverExpectant(size, n, "naming");
 	return error_code;
 }
 
@@ -58,7 +58,7 @@ uint32_t AcquireDeviceProtocols(struct Controller controllers_out[], int size) {
 		n++;
 	}
 
-	warnOverExpectant(size, n, "protocol finding");
+	WarnOverExpectant(size, n, "protocol finding");
 	return error_code;
 }
 
@@ -82,7 +82,7 @@ uint32_t AcquireDeviceInterfaces(struct Controller controllers_out[], int size) 
 		n++;
 	}
 
-	warnOverExpectant(size, n, "interface finding");
+	WarnOverExpectant(size, n, "interface finding");
 	return error_code;
 }
 
@@ -105,7 +105,7 @@ uint32_t AcquireDevicePorts(struct Controller controllers_out[], int size) {
 		n++;
 	}
 
-	warnOverExpectant(size, n, "port finding");
+	WarnOverExpectant(size, n, "port finding");
 	return error_code;
 }
 
@@ -158,4 +158,5 @@ void PrintControllerCharacteristics(struct Controller* controller) {
 	printf("- Node:          %i\n", controller->NodeId);
 	printf("- Protocol:	     %s\n", controller->Protocol);
 	printf("- Interface:     %s\n", controller->Interface);
+	printf("- Port:          %s\n", controller->Port);
 }

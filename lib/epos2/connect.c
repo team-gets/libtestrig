@@ -1,11 +1,19 @@
 #include <stdio.h>
 
+#include "epos2.h"
 #include "connect.h"
 #include "definitions.h"
 #include "identify.h"
 
 static void FailedOpenDevice(uint32_t error_code) {
-	printf("ERROR 0x%X: Failed to open device with with following characteristics:\n", error_code);
+	PrintError(error_code);
+	printf("Failed to open device with with following characteristics:\n");
+}
+
+uint32_t InitializeDevice(struct Controller controller_out, void* node) {
+	uint32_t error_code = 0;
+
+	return error_code;
 }
 
 uint32_t InitializeDevices(struct Controller controllers_out[], void* node_1, void* node_2, void* node_3) {
@@ -22,7 +30,7 @@ uint32_t InitializeDevices(struct Controller controllers_out[], void* node_1, vo
 	if (node_1 == 0 || error_code != 0) {
 		FailedOpenDevice(error_code);
 		PrintControllerCharacteristics(&controllers_out[0]);
-		//return error_code;
+		return error_code;
 	};
 
 	CleanEnableDevice(&controllers_out[0], node_1);
@@ -58,7 +66,7 @@ uint32_t InitializeDevices(struct Controller controllers_out[], void* node_1, vo
 	CleanEnableDevice(&controllers_out[2], node_2);
 
 	return 0;
-} // uint Open
+} // uint32_t InitializeThreeDevices
 
 uint32_t CleanEnableDevice(struct Controller* controller, void* device_handle) {
 	uint32_t error_code = 0;
