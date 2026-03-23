@@ -23,7 +23,11 @@ uint32_t CleanEnableDevice(struct Controller* controller, void* device_handle);
  *	Refer to Page 162 of the manual under INITIALIZATION,
  *	which describes several of the methods wrapped here.
  */
-uint32_t TESTRIG_API InitializeDevices(struct Controller** controllers_out, void* node_1, void* node_2, void* node_3);
+uint32_t TESTRIG_API InitializeDevices(struct Controller controllers_out[], void* node_1, void* node_2, void* node_3);
+
+/*
+ *
+ */
 
 /*
  *	Closes all connections to the controller
