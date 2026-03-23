@@ -1,4 +1,4 @@
-name: Build and Test with Meson
+name: Meson
 
 on:
   pull_request:
