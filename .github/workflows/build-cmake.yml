@@ -1,0 +1,55 @@
+name: Build and Test with CMake
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/build.yml"
+      - "ipc/**/*.c"
+      - "ipc/**/*.h"
+      - "**/meson.build"
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/build.yml"
+      - "ipc/**/*.c"
+      - "ipc/**/*.h"
+      - "**/meson.build"
+
+jobs:
+  linux-build-meson:
+    name: Linux
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        compiler: ["gcc", "clang"]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup CMake
+        run: |
+          CC=${{ matrix.compiler }} cmake -S . -B build
+      - name: Build
+        run: |
+          CC=${{ matrix.compiler }} cmake --build build
+
+  windows-build-meson:
+    name: Windows
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        compiler: ["cl.exe", "gcc.exe"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ilammy/msvc-dev-cmd@v1.13.0
+      - name: Setup CMake
+        run: |
+          cmake -S . -B build
+        env:
+          CC: ${{ matrix.compiler }}
+      - name: Build
+        run: |
+          cmake --build build
+        env:
+          CC: ${{ matrix.compiler }}
