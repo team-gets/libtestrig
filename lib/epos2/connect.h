@@ -42,12 +42,6 @@ uint32_t TESTRIG_API InitializeDevices(struct Controller controllers_out[], void
  */
 uint32_t TESTRIG_API CloseDevice(struct Controller* controller, void* device_handle);
 
-/*
- *
- *
- */
-uint32_t TESTRIG_API IdentifyFW(void);
-
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VSCL::Rig

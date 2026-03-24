@@ -95,7 +95,6 @@ uint32_t CleanEnableDevice(struct Controller* controller, void* device_handle) {
 	return error_code;
 }
 
-
 uint32_t CloseDevice(struct Controller* controller, void* device_handle) {
 	uint32_t error_code = 0;
 	int ret;

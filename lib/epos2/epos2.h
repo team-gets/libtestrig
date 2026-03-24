@@ -23,6 +23,11 @@ int TESTRIG_API DecodeError(const uint32_t error_code, char* error_msg, uint8_t 
  */
 int TESTRIG_API PrintError(const uint32_t error_code);
 
+/*
+ *	@brief Reset a device.
+ */
+uint32_t TESTRIG_API ResetDevice(void* device_handle, struct Controller* controller_in);
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VSCL::Rig

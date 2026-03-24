@@ -17,3 +17,14 @@ int PrintError(const uint32_t error_code) {
 
 	return ret;
 }
+
+uint32_t ResetDevice(void *device_handle, struct Controller *controller_in) {
+	uint32_t error_code = 0;
+	int ret = VCS_ResetDevice(device_handle, controller_in->NodeId, &error_code);
+	if (ret == 0) {
+		PrintError(error_code);
+		printf("Device failed to be reset: %s\n", controller_in->Name);
+	}
+
+	return error_code;
+}
