@@ -18,6 +18,7 @@ set(EPOS_SOURCES
 	"${EPOS_DIR}/epos2.c"
 	"${EPOS_DIR}/connect.c"
 	"${EPOS_DIR}/definitions.c"
+	"${EPOS_DIR}/manage.c"
 	"${EPOS_DIR}/identify.c")
 
 set(LIBTESTRIG_SOURCES ${IPC_SOURCES})

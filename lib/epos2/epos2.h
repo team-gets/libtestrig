@@ -5,6 +5,7 @@
 #include "controller.h"
 #include "identify.h"
 #include "connect.h"
+#include "manage.h"
 
 #ifdef __cplusplus
 namespace VSCL::Rig {

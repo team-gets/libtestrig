@@ -25,7 +25,7 @@ elif (operating_system == 'linux')
   ) 
 
   epos2_srcs = [ './epos2/epos2.c', './epos2/definitions.c',
-      './epos2/identify.c', './epos2/connect.c' ]
+      './epos2/identify.c', './epos2/connect.c', './epos2/manage.c' ]
 
 # Others
 else
