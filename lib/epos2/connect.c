@@ -84,6 +84,7 @@ uint32_t InitializeDevices(struct Controller controllers_out[], void* node_1, vo
 } // uint32_t InitializeThreeDevices
 
 uint32_t CleanEnableDevice(struct Controller* controller, void* device_handle) {
+	if (device_handle == 0) { return 0x2000000B; }
 	uint32_t error_code = 0;
 	int ret;
 
@@ -96,6 +97,7 @@ uint32_t CleanEnableDevice(struct Controller* controller, void* device_handle) {
 }
 
 uint32_t CloseDevice(struct Controller* controller, void* device_handle) {
+	if (device_handle == 0) { return 0x2000000B; }
 	uint32_t error_code = 0;
 	int ret;
 

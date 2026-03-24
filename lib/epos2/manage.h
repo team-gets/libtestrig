@@ -15,6 +15,9 @@ namespace VSCL::Rig {
 extern "C" {
 #endif // __cplusplus
 
+/*
+ *	Attempt to abort the test rig.
+ */
 uint32_t TESTRIG_API RigAbort(const struct Controller* controller_in, void* device_handle);
 
 #ifdef __cplusplus

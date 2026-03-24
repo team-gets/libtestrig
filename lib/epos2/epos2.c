@@ -19,6 +19,7 @@ int PrintError(const uint32_t error_code) {
 }
 
 uint32_t ResetDevice(void *device_handle, struct Controller *controller_in) {
+	if (device_handle == 0) { return 0x2000000B; }
 	uint32_t error_code = 0;
 	int ret = VCS_ResetDevice(device_handle, controller_in->NodeId, &error_code);
 	if (ret == 0) {
