@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.30..4.0)
 project(libtestrig
 	LANGUAGES C)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
+set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(IPC_DIR "${LIB_DIR}/ipc")
 set(EPOS_DIR "${LIB_DIR}/epos2")
 
