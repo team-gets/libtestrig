@@ -26,13 +26,14 @@ uint32_t TESTRIG_API CleanEnableDevice(struct Controller* controller, void* devi
 uint32_t TESTRIG_API InitializeDevice(struct Controller* controller_out, void* node, uint8_t node_id);
 
 /*
- *	@brief Opens communication to the device and sets its state for a clean init.
- *	This makes a lot of assumptions
+ *	@brief Opens communication to the devices in a gateway configuraton,
+ *	and sets its state for a clean init.
  *
  *	Refer to Page 162 of the manual under INITIALIZATION,
  *	which describes several of the methods wrapped here.
  */
-uint32_t TESTRIG_API InitializeDevices(struct Controller controllers_out[], void* node_1, void* node_2, void* node_3);
+uint32_t TESTRIG_API InitializeDevices(
+	struct Controller controllers_out[], void* handles_out[], uint8_t num);
 
 /*
  *	Closes all connections to the controller

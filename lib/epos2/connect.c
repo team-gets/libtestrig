@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 
 #include "epos2.h"
 #include "connect.h"
@@ -31,10 +32,11 @@ uint32_t InitializeDevice(struct Controller* controller_out, void* node, uint8_t
 	return error_code;
 }
 
-uint32_t InitializeDevices(struct Controller controllers_out[], void* node_1, void* node_2, void* node_3) {
+uint32_t InitializeDevices(struct Controller controllers_out[], void* handles_out[], uint8_t num) {
 	uint32_t error_code = 0;
+	assert(num > 1);
 
-	node_1 = VCS_OpenDevice(controllers_out[0].Name,
+	handles_out[0] = VCS_OpenDevice(controllers_out[0].Name,
 			controllers_out[0].Protocol,
 			controllers_out[0].Interface,
 			controllers_out[0].Port,
@@ -42,43 +44,28 @@ uint32_t InitializeDevices(struct Controller controllers_out[], void* node_1, vo
 
 	controllers_out[0].NodeId = 1;
 
-	if (node_1 == 0 || error_code != 0) {
+	if (handles_out[0] == 0 || error_code != 0) {
 		FailedOpenDevice(error_code);
 		PrintControllerCharacteristics(&controllers_out[0]);
 		return error_code;
 	};
 
-	CleanEnableDevice(&controllers_out[0], node_1);
+	CleanEnableDevice(&controllers_out[0], handles_out[0]);
 
-	node_2 = VCS_OpenSubDevice(node_1,
-			controllers_out[1].Name,
-			controllers_out[1].Protocol,
-			&error_code);
+	for (uint8_t i = 1; i < num; i++) {
+		handles_out[i] = VCS_OpenSubDevice(handles_out[i],
+				controllers_out[i].Name,
+				controllers_out[i].Protocol,
+				&error_code);
 
-	controllers_out[1].NodeId = 2;
+		controllers_out[1].NodeId = 2;
 
-	if (node_2 == 0 || error_code != 0) {
-		FailedOpenDevice(error_code);
-		PrintControllerCharacteristics(&controllers_out[1]);
-		return error_code;
-	};
-
-	CleanEnableDevice(&controllers_out[1], node_2);
-
-	node_3 = VCS_OpenSubDevice(node_2,
-			controllers_out[2].Name,
-			controllers_out[2].Protocol,
-			&error_code);
-
-	if (node_3 == 0 || error_code != 0) {
-		FailedOpenDevice(error_code);
-		PrintControllerCharacteristics(&controllers_out[2]);
-		return error_code;
-	};
-
-	controllers_out[2].NodeId = 3;
-
-	CleanEnableDevice(&controllers_out[2], node_2);
+		if (handles_out[i] == 0 || error_code != 0) {
+			FailedOpenDevice(error_code);
+			PrintControllerCharacteristics(&controllers_out[i]);
+			return error_code;
+		}
+	}
 
 	return 0;
 } // uint32_t InitializeThreeDevices
