@@ -5,7 +5,7 @@
 #include "ipc/message.h"
 #include "ipc/constants.h"
 
-int main(int argc, char** argv) {
+int main(void) {
 	struct sockaddr_un parent_sockaddr;
 	struct sockaddr_un child_sockaddr;
 	pid_t pid;

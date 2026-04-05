@@ -7,7 +7,7 @@
 
 const char* SOCKNAME = "/tmp/this_is_my_socket.sock";
 
-int main(int argc, char** argv) {
+int main(void) {
 	struct sockaddr_un parent_sockaddr;
 	struct sockaddr_un child_sockaddr;
 	pid_t pid;

@@ -17,7 +17,7 @@ void check_ret(int ret) {
     }
 }
 
-int main(int argc, char** argv) {
+int main(void) {
     char sock1[108] = { 0 };
     char sock2[108] = { 0 };
     char sock3[108] = { 0 };
