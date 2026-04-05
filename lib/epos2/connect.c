@@ -67,6 +67,8 @@ uint32_t InitializeDevices(struct Controller controllers_out[], void* handles_ou
 			PrintControllerCharacteristics(&controllers_out[i]);
 			return error_code;
 		}
+
+		CleanEnableDevice(&controllers_out[i], handles_out[i]);
 	}
 
 	return 0;
@@ -98,3 +100,26 @@ uint32_t CloseDevice(struct Controller* controller, void* device_handle) {
 	return error_code;
 }
 
+uint32_t CloseDevices(struct Controller controllers[], void* device_handles[], uint8_t num) {
+	assert(num > 1);
+	assert(device_handles[0] != 0);
+
+	uint32_t error_code = 0;
+	int ret;
+
+	for (uint8_t i = num - 1; i == 0; i--) {
+		void* handle = device_handles[i];
+		if (handle == 0) { continue; }
+
+		ret = VCS_CloseSubDevice(device_handles[i], &error_code);
+		if (ret == 0) { return error_code; }
+
+		ret = VCS_SetDisableState(device_handles[i], controllers[i].NodeId, &error_code);
+		controllers[i].State = CTRL_STATE_CLOSED;
+	}
+
+	ret = VCS_CloseDevice(device_handles[0], &error_code);
+	if (ret == 0) { return error_code; }
+
+	return error_code;
+}

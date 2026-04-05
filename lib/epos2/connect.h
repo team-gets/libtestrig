@@ -36,12 +36,19 @@ uint32_t TESTRIG_API InitializeDevices(
 	struct Controller controllers_out[], void* handles_out[], uint8_t num);
 
 /*
- *	Closes all connections to the controller
+ *	@brief Closes all connections to a single controller
  *
  *	Refer to Page 162 of the manual under CLOSING PROCEDURE,
  *	which describes several of the methods wrapped here.
  */
 uint32_t TESTRIG_API CloseDevice(struct Controller* controller, void* device_handle);
+
+/*
+ *	@brief Closes connections to multiple controllers in a gateway configuration,
+ *	assuming the first handle and controller is the gateway.
+ */
+uint32_t TESTRIG_API CloseDevices(
+		struct Controller controllers[], void* device_handles[], uint8_t num);
 
 #ifdef __cplusplus
 } // extern "C"
