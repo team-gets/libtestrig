@@ -7,6 +7,7 @@ on:
       - ".github/workflows/build-cmake.yml"
       - "ipc/**/*.c"
       - "ipc/**/*.h"
+      - "test/*.c"
       - "**/CMakeLists.txt"
       - "cmake/*.cmake"
   push:
@@ -15,6 +16,7 @@ on:
       - ".github/workflows/build-cmake.yml"
       - "ipc/**/*.c"
       - "ipc/**/*.h"
+      - "test/*.c"
       - "**/CMakeLists.txt"
       - "cmake/*.cmake"
 
