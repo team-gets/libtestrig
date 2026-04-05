@@ -1,17 +1,17 @@
-name: Build and Test
+name: Meson
 
 on:
   pull_request:
     branches: ["main"]
     paths:
-      - ".github/workflows/build.yml"
+      - ".github/workflows/build-meson.yml"
       - "ipc/**/*.c"
       - "ipc/**/*.h"
       - "**/meson.build"
   push:
     branches: ["main"]
     paths:
-      - ".github/workflows/build.yml"
+      - ".github/workflows/build-meson.yml"
       - "ipc/**/*.c"
       - "ipc/**/*.h"
       - "**/meson.build"
@@ -41,6 +41,7 @@ jobs:
       - name: Verbosely Test
         run: |
           meson test -v -C build
+
   windows-build-meson:
     name: Windows
     runs-on: windows-latest

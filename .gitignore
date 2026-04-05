@@ -2,3 +2,8 @@ build
 compile_commands.json
 .cache
 .meson-subproject-wrap-hash.txt
+
+*.a*
+*.so*
+*.lib
+*.dll

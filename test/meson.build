@@ -14,8 +14,6 @@ elif (operating_system.to_lower() == 'windows')
         dependencies: cc.find_library('Kernel32',
         required: true),
     ) 
-
-message(meson.project_source_root() / 'build')
     
     dllcopy = [find_program('python'),
         meson.project_source_root() / 'test' / 'copy_dlls.meson.py',
