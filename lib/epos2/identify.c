@@ -1,9 +1,30 @@
 #include <stdio.h>
-#include <string.h>
 
+#include "epos2.h"
 #include "controller.h"
 #include "definitions.h"
 #include "identify.h"
+
+static void PrintNamingError(uint8_t error_code) {
+	printf("While identifying device names:\n\t");
+	PrintError(error_code);
+}
+
+static void PrintProtocolIdentError(uint8_t error_code, const char* name) {
+	printf("While identifying device protocol stacks for device %s:\n\t", name);
+	PrintError(error_code);
+}
+
+static void PrintInterfaceIdentError(uint8_t error_code, const char* name, const char* protocol) {
+	printf("While identifying device interface for device %s on protocol %s:\n\t", name, protocol);
+	PrintError(error_code);
+}
+
+static void PrintPortIdentError(uint8_t error_code, const char* name, const char* protocol, const char* iface) {
+	printf("While identifying device interface for device %s on protocol %s and interface %s:\n\t",
+			name, protocol, iface);
+	PrintError(error_code);
+}
 
 uint32_t IdentifyDeviceNames(void) {
 	uint32_t error_code = 0;
@@ -14,21 +35,27 @@ uint32_t IdentifyDeviceNames(void) {
 	int name_found = VCS_GetDeviceNameSelection(
 			1, name, 8,
 			&selection_end, &error_code);
-	if (name_found != 0) { return error_code; }
+	if (name_found != 0) {
+		PrintNamingError(error_code);
+		return error_code;
+	}
 
 	printf("Found device name(s):\n");
 	printf("%i. %s\n", n, name);
-
 	n++;
 
 	while (selection_end == 0) {
+		char subname[8] = { 0 };
 		name_found = VCS_GetDeviceNameSelection(
-				0, name, 8,
-				&selection_end, &error_code);
+			0, subname, 8,
+			&selection_end, &error_code);
 
-		if (name_found != 0) { return error_code; }
+		if (name_found != 0) {
+			PrintNamingError(error_code);
+			return error_code;
+		}
+
 		printf("%i. %s\n", n, name);
-
 		n++;
 	}
 
@@ -45,22 +72,29 @@ uint32_t IdentifyDeviceProtocols(char* device_name) {
 			device_name, 1,
 			protocol, 16,
 			&selection_end, &error_code);
-	if (protocol_found == 0) { return error_code; }
+
+	if (protocol_found == 0) {
+		PrintProtocolIdentError(error_code, device_name);
+		return error_code;
+	}
 
 	printf("Found device protocol stacks associated with %s(s):\n", device_name);
 	printf("%i. %s\n", n, protocol);
-
 	n++;
 
 	while (selection_end == 0) {
+		char subprotocol[16] = { 0 };
 		protocol_found = VCS_GetProtocolStackNameSelection(
-				device_name, 0,
-				protocol, 16,
-				&selection_end, &error_code);
+			device_name, 0,
+			subprotocol, 16,
+			&selection_end, &error_code);
 
-		if (protocol_found == 0) { return error_code; }
+		if (protocol_found == 0) {
+			PrintProtocolIdentError(error_code, device_name);
+			return error_code;
+		}
+
 		printf("%i. %s\n", n, protocol);
-
 		n++;
 	}
 
@@ -76,22 +110,28 @@ uint32_t IdentifyDeviceInterfaces(char* device_name, char* protocol_stack) {
 	int interface_found = VCS_GetInterfaceNameSelection(
 			device_name, protocol_stack, 1,
 			device_interface, 64, &selection_end, &error_code);
-	if (interface_found == 0) { return error_code; }
+
+	if (interface_found == 0) {
+		PrintInterfaceIdentError(error_code, device_name, protocol_stack);
+		return error_code;
+	}
 
 	printf("Found device protocol stacks associated with %s and %s (s):\n", device_name, protocol_stack);
 	printf("%i. %s\n", n, device_interface);
-
 	n++;
 
 	while (selection_end == 0) {
+		char subdevice_interface[64] = { 0 };
 		interface_found = VCS_GetInterfaceNameSelection(
 				device_name, protocol_stack, 0,
-				device_interface, 64, &selection_end, &error_code);
+				subdevice_interface, 64, &selection_end, &error_code);
 
-		if (interface_found == 0) { return error_code; }
+		if (interface_found == 0) {
+			PrintInterfaceIdentError(error_code, device_name, protocol_stack);
+			return error_code;
+		}
 
 		printf("%i. %s\n", n, device_interface);
-
 		n++;
 	}
 
@@ -107,22 +147,28 @@ uint32_t IdentifyDevicePorts(char* device_name, char* protocol_stack, char* devi
 	int port_found = VCS_GetPortNameSelection(
 			device_name, protocol_stack, device_interface, 1,
 			device_port, 8, &selection_end, &error_code);
-	if (port_found == 0) { return error_code; }
+	if (port_found == 0) {
+		PrintPortIdentError(error_code, device_name, protocol_stack, device_interface);
+		return error_code;
+	}
 
 	printf("Found device protocol stacks associated with %s, %s, and %s (s):\n",
 			device_name, protocol_stack, device_interface);
 	printf("%i. %s\n", n, device_port);
-
 	n++;
 
 	while (selection_end == 0) {
+		char subdevice_port[8] = { 0 };
 		port_found = VCS_GetPortNameSelection(
 				device_name, protocol_stack, device_interface, 0,
-				device_port, 8, &selection_end, &error_code);
-		if (port_found == 0) { return error_code; }
+				subdevice_port, 8, &selection_end, &error_code);
+
+		if (port_found == 0) {
+			PrintPortIdentError(error_code, device_name, protocol_stack, device_interface);
+			return error_code;
+		}
 
 		printf("%i. %s\n", n, device_port);
-
 		n++;
 	}
 
