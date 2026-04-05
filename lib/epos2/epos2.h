@@ -29,6 +29,18 @@ int TESTRIG_API PrintError(const uint32_t error_code);
  */
 uint32_t TESTRIG_API ResetDevice(void* device_handle, struct Controller* controller_in);
 
+/*
+ *	@brief Setup that's tooled to our configuration.
+ */
+uint32_t TESTRIG_API SetupTestrigAsCANGateway(
+	struct Controller controllers[3], void* handles[3], int default_init);
+
+/*
+ *	@brief Cleanup that's tooled to our configuration.
+ */
+uint32_t TESTRIG_API CleanupTestrig(
+	struct Controller controllers[3], void* handles[3]);
+
 #ifdef __cplusplus
 } // extern "C"
 } // namespace VSCL::Rig
