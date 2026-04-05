@@ -48,17 +48,19 @@ uint32_t InitializeDevices(struct Controller controllers_out[], void* handles_ou
 		FailedOpenDevice(error_code);
 		PrintControllerCharacteristics(&controllers_out[0]);
 		return error_code;
-	};
+	}
 
 	CleanEnableDevice(&controllers_out[0], handles_out[0]);
 
 	for (uint8_t i = 1; i < num; i++) {
+		if (handles_out[i] == NULL) { break; }
+
 		handles_out[i] = VCS_OpenSubDevice(handles_out[i],
 				controllers_out[i].Name,
 				controllers_out[i].Protocol,
 				&error_code);
 
-		controllers_out[1].NodeId = 2;
+		controllers_out[i].NodeId = i + 1;
 
 		if (handles_out[i] == 0 || error_code != 0) {
 			FailedOpenDevice(error_code);
