@@ -36,6 +36,9 @@ jobs:
       - name: Build
         run: |
           CC=${{ matrix.compiler }} cmake --build build
+      - name: Verbosely Test
+        run: |
+          ctest --verbose --output-on-failure --test-dir build/test
 
   windows-build-cmake:
     name: Windows
@@ -57,3 +60,6 @@ jobs:
           cmake --build build
         env:
           CC: ${{ matrix.compiler }}
+      - name: Verbosely Test
+        run: |
+          ctest --verbose --output-on-failure --test-dir build/test

@@ -30,14 +30,16 @@ else()
 	message("Controller capabilities not being built.")
 endif()
 
-add_library(Libtestrig SHARED ${LIBTESTRIG_SOURCES})
-target_compile_definitions(Libtestrig PRIVATE COMPILING_TESTRIG_DLL)
-target_include_directories(Libtestrig PUBLIC ${LIB_DIR})
+add_library(testrig SHARED ${LIBTESTRIG_SOURCES})
+target_compile_definitions(testrig PRIVATE COMPILING_TESTRIG_DLL)
+target_include_directories(testrig PUBLIC ${LIB_DIR})
 
 if (WIN32)
-	target_link_libraries(Libtestrig PRIVATE Ws2_32)
+	target_link_libraries(testrig PRIVATE Ws2_32)
 endif()
 
 if (EPOSCmd_FOUND)
-	target_link_libraries(Libtestrig PUBLIC EPOSCmd)
+	target_link_libraries(testrig PUBLIC EPOSCmd)
 endif()
+
+add_subdirectory("${CMAKE_SOURCE_DIR}/test")
