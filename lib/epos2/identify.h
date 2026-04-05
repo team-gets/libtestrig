@@ -20,48 +20,34 @@ enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
 };
 
 /*
- *	@brief Finds the name of the Controllers in the array.
- *	This operates on all connected controllers.
+ *	@brief Prints out potential device names.
  *
  *	Refer to Page 3-25 of the manual.
  */
-uint32_t TESTRIG_API AcquireDeviceNames(struct Controller controllers_out[], int size);
+uint32_t TESTRIG_API IdentifyDeviceNames(void);
 
 /*
- *	@brief Finds the protocol stacks of the Controller in the array.
- *	This operates on all connected controllers.
+ *	@brief Finds the protocol stacks associated with the device name.
+ *	This passed name is not mutated.
  *
  *	Refer to Page 3-26 of the manual.
  */
-uint32_t TESTRIG_API AcquireDeviceProtocols(struct Controller controllers_out[], int size);
+uint32_t TESTRIG_API IdentifyDeviceProtocols(char* device_name);
 
 /*
- *	@brief Finds the interfaces of the Controller in the array.
- *	This operates on all connected controllers.
+ *	@brief Finds the interfaces associated with the device name and protocol.
+ *	Passed fields are not mutated.
  *
  *	Refer to Page 3-27 of the manual.
  */
-uint32_t TESTRIG_API AcquireDeviceInterfaces(struct Controller controllers_out[], int size);
+uint32_t TESTRIG_API IdentifyDeviceInterfaces(char* device_name, char* protocol_stack);
 
 /*
- *	@brief Finds the ports of the Controller in the array.
- *	This operates on all connected controllers.
+ *	@brief Finds the ports assoiated with the device name, protocol, and interface.
  *
  *	Refer to Page 3-28 of the manual.
  */
-uint32_t TESTRIG_API AcquireDevicePorts(struct Controller controllers_out[], int size);
-
-/*
- *	@brief Acquire the information on the set number of controllers.
- */
-uint32_t TESTRIG_API AcquireDeviceInfos(struct Controller controllers_out[], int size, int flags);
-
-/*
- *	@brief Set the controller to be identified by the given node on the network.
- *
- *	Refer to 8-135 of the firmware manual. An unconfigured node is found at node 0.
- */
-uint32_t TESTRIG_API SetDeviceNode(struct Controller* controller_out, void* handle, uint8_t old_node, uint8_t new_node);
+uint32_t TESTRIG_API IdentifyDevicePorts(char* device_name, char* protocol_stack, char* device_interface);
 
 /*
  *	@brief Print out controller characteristics.
