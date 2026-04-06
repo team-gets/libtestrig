@@ -64,11 +64,12 @@ int parse_opt(const char* arg, struct parsed_args* parsed) {
 	return ret;
 }
 
-void parse_args(int argc, char** argv, struct parsed_args* parsed) {
+void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* others) {
 	memset(parsed, 0, sizeof(struct parsed_args));
 	parsed->mode = CLI_MODE_CMD;
 	parsed->action = ACTION_HELP;
 	int action_set = 0;
+	size_t data_size = 0; 
 
 	for (unsigned int i = 1; i < (unsigned int)argc; i++) {
 		const char* arg = argv[i];
@@ -85,8 +86,18 @@ void parse_args(int argc, char** argv, struct parsed_args* parsed) {
 		else {
 			if (!action_set) {
 				result = parse_act(arg, parsed);
+				action_set = 1;
 			}
 			else {
+				size_t strsize = strnlen(arg, 255) + 1;
+				size_t idx = others->size;
+				others->size++;
+
+				data_size += strsize;
+				others->data = (char**)realloc(others->data, others->size * sizeof(char*));
+				others->data[idx] = (char*)malloc(strsize);
+
+				strncpy(others->data[idx], arg, strsize);
 				result = 1;
 			}
 		}

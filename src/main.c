@@ -12,6 +12,17 @@ int main(int argc, char** argv) {
 	}
 
 	struct parsed_args parsed;
-	parse_args(argc, argv, &parsed);
+	other_args others = { 0, 0 };
+	parse_args(argc, argv, &parsed, &others);
+
+	for (uint8_t i = 0; i < others.size; i++) {
+		printf("The others were %s at loc %u\n", others.data[i], i);
+	}
+
+	for (uint8_t i = 0; i < others.size; i++) {
+		free(others.data[i]);
+	}
+	free(others.data);
+
 	return 0;
 }

@@ -68,4 +68,4 @@ int is_opt(const char* arg);
 int parse_flag(const char* flag, struct parsed_args* parsed);
 int parse_opt(const char* opt, struct parsed_args* parsed);
 int parse_act(const char* act, struct parsed_args* parsed);
-void parse_args(int argc, char** argv, struct parsed_args* parsed);
+void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* others);
