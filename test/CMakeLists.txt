@@ -13,6 +13,10 @@ if (WIN32)
 	target_link_libraries(test_server PRIVATE testrig)
 	target_link_libraries(test_client PRIVATE testrig)
 
+	target_copy_dll(test_mgr)
+	target_copy_dll(test_server)
+	target_copy_dll(test_client)
+
 	add_test(NAME discrete COMMAND test_mgr $<TARGET_FILE:test_server> $<TARGET_FILE:test_client>)
 else()
 	add_executable(test_fork "${CMAKE_CURRENT_LIST_DIR}/test_fork_ipc.c")
@@ -24,4 +28,3 @@ else()
 	add_test(NAME forking COMMAND test_fork)
 	add_test(NAME preset_path COMMAND test_preset_path)
 endif()
-
