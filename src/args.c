@@ -42,6 +42,7 @@ int parse_act(const char* act, struct parsed_args* parsed) {
 	else if (!strncmp("open", act, 5))		{ parsed->action = ACTION_OPEN; ret = 1; }
 	else if (!strncmp("record", act, 7))	{ parsed->action = ACTION_RECORD; ret = 1; }
 	else if (!strncmp("close", act, 6))		{ parsed->action = ACTION_CLOSE; ret = 1; }
+	else if (!strncmp("help", act, 5))		{ parsed->action = ACTION_HELP; ret = 1; }
 
 	return ret;
 }
