@@ -10,4 +10,5 @@ valid_os = ['windows', 'linux']
 valid_arch = ['x86', 'x86_64', 'aarch64', 'arm']
 
 subdir('lib')
+subdir('src')
 subdir('test')
