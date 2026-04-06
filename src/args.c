@@ -23,9 +23,9 @@ int is_opt(const char* arg) {
 }
 
 int parse_flag(const char* flag, struct parsed_args* parsed) {
-	const char* name = strstr(flag, "--");
+	const char* name = strstr(flag, "--") + 2;
 	int ret = 0;
-	
+
 	if		(!strncmp("daemon", name, 7))	{ parsed->action = ACTION_DAEMON; ret = 1; }
 	else if (!strncmp("detach", name, 7)) 	{ parsed->mode = CLI_MODE_DETACHED; ret = 1; }
 	else if (!strncmp("verbose", name, 8))	{ parsed->verbosity = 1; ret = 1; }
@@ -51,7 +51,7 @@ int parse_opt(const char* arg, struct parsed_args* parsed) {
 	int ret = 0;
 	int i = 0;
 	char opt = opts[i];
-	
+
 	while (opt != 0) {
 		switch (opt) {
 		case 'v':
@@ -72,6 +72,7 @@ int validate_combo(enum cli_mode mode, enum cli_action action) {
 	case CLI_MODE_DETACHED:
 		switch (action) {
 		case ACTION_DAEMON:
+		case ACTION_HELP:
 			return 1;
 		default:
 			return 0;
@@ -116,13 +117,13 @@ void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* o
 				strncpy(others->data[idx], arg, strsize);
 				result = 1;
 			}
-		}
+		} // if ()
 
 		if (!result) { die_invalid_arg(arg); }
-	}
+	} // for ()
 
 	if (!validate_combo(parsed->mode, parsed->action)) {
 		printf("Invalid combination: %s and %s\n", mode_map[parsed->mode], action_map[parsed->action]);
 		exit(-1);
 	}
-}
+} // void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* others)
