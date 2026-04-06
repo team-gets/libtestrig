@@ -1,3 +1,3 @@
 cli = executable('testrig',
   dependencies: [ dep ],
-  sources: [ 'main.c' ])
+  sources: [ 'main.c', 'args.c' ])
