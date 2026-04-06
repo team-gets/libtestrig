@@ -39,6 +39,27 @@ int parse_flag(const char* flag, struct parsed_args* parsed) {
 	}
 }
 
+int parse_opt(const char* arg, struct parsed_args* parsed) {
+	const char* opts = strstr(arg, "-");
+	int ret = 0;
+	int i = 0;
+	char opt = opts[i];
+	
+	while (opt != 0) {
+		switch (opt) {
+		case 'v':
+			parsed->verbosity = 1;
+			ret = 1;
+			break;
+		}
+
+		opt = opts[i];
+		i++;
+	}
+
+	return ret;
+}
+
 void parse_args(int argc, char** argv, struct parsed_args* parsed) {
 	memset(parsed, 0, sizeof(struct parsed_args));
 	parsed->mode = CLI_MODE_CMD;
@@ -54,7 +75,7 @@ void parse_args(int argc, char** argv, struct parsed_args* parsed) {
 			result = parse_flag(arg, parsed);
 		}
 		else if (is_an_opt) {
-			result = 1;
+			result = parse_opt(arg, parsed);
 		}
 		else {
 			result = 1;
