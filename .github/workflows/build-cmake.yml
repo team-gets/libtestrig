@@ -62,4 +62,4 @@ jobs:
           CC: ${{ matrix.compiler }}
       - name: Verbosely Test
         run: |
-          ctest --verbose --output-on-failure --test-dir build/test
+          ctest --verbose --output-on-failure --test-dir build/test -C Debug
