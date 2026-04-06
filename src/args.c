@@ -8,6 +8,9 @@ static void die_invalid_arg(const char* arg) {
 	exit(-1);
 }
 
+static char* mode_map[] = { "command", "detach" };
+static char* action_map[] = { "help", "ident", "status", "open", "record", "close" };
+
 int is_flag(const char* arg) { return (strstr(arg, "--") == NULL) ? 0 : 1; }
 int is_opt(const char* arg) {
 	char* subarg;
@@ -64,12 +67,26 @@ int parse_opt(const char* arg, struct parsed_args* parsed) {
 	return ret;
 }
 
+int validate_combo(enum cli_mode mode, enum cli_action action) {
+	switch (mode) {
+	case CLI_MODE_DETACHED:
+		switch (action) {
+		case ACTION_DAEMON:
+			return 1;
+		default:
+			return 0;
+		}
+	case CLI_MODE_CMD:
+	default:
+		return 1;
+	}
+}
+
 void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* others) {
 	memset(parsed, 0, sizeof(struct parsed_args));
 	parsed->mode = CLI_MODE_CMD;
 	parsed->action = ACTION_HELP;
 	int action_set = 0;
-	size_t data_size = 0; 
 
 	for (unsigned int i = 1; i < (unsigned int)argc; i++) {
 		const char* arg = argv[i];
@@ -93,7 +110,6 @@ void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* o
 				size_t idx = others->size;
 				others->size++;
 
-				data_size += strsize;
 				others->data = (char**)realloc(others->data, others->size * sizeof(char*));
 				others->data[idx] = (char*)malloc(strsize);
 
@@ -103,5 +119,10 @@ void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* o
 		}
 
 		if (!result) { die_invalid_arg(arg); }
+	}
+
+	if (!validate_combo(parsed->mode, parsed->action)) {
+		printf("Invalid combination: %s and %s\n", mode_map[parsed->mode], action_map[parsed->action]);
+		exit(-1);
 	}
 }
