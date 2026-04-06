@@ -38,4 +38,3 @@ void free_other_args(other_args* others) {
 	free(others->data);
 }
 
-

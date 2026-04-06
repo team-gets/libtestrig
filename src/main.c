@@ -16,22 +16,24 @@ int main(int argc, char** argv) {
 	struct parsed_args parsed;
 	other_args others = { 0, 0 };
 	parse_args(argc, argv, &parsed, &others);
+	int ret = 0;
 
-	int detach;
 	switch (parsed.mode) {
 	case CLI_MODE_DETACHED:
-		detach = detach_program();
+		ret = detach_program();
 		break;
 	case CLI_MODE_CMD:
 	default:
+		if (parsed.fun == NULL) {
+			printf("unimplemented\n");
+		}
+		else {
+			ret = parsed.fun(&others);
+		}
 		break;
-	}
-
-	for (uint8_t i = 0; i < others.size; i++) {
-		printf("The others were %s at loc %u\n", others.data[i], i);
 	}
 
 	free_other_args(&others);
 
-	return 0;
+	return ret;
 }

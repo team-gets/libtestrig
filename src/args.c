@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "help.h"
 #include "args.h"
 
 static void die_invalid_arg(const char* arg) {
@@ -10,6 +12,7 @@ static void die_invalid_arg(const char* arg) {
 
 static char* mode_map[] = { "command", "detach" };
 static char* action_map[] = { "help", "ident", "status", "open", "record", "close" };
+static int(*fun_map[])(other_args*) = { &help_me, NULL, NULL, NULL, NULL, NULL };
 
 int is_flag(const char* arg) { return (strstr(arg, "--") == NULL) ? 0 : 1; }
 int is_opt(const char* arg) {
@@ -29,6 +32,7 @@ int parse_flag(const char* flag, struct parsed_args* parsed) {
 	if		(!strncmp("daemon", name, 7))	{ parsed->action = ACTION_DAEMON; ret = 1; }
 	else if (!strncmp("detach", name, 7)) 	{ parsed->mode = CLI_MODE_DETACHED; ret = 1; }
 	else if (!strncmp("verbose", name, 8))	{ parsed->verbosity = 1; ret = 1; }
+	else if (!strncmp("help", name, 5))		{ parsed->action = ACTION_HELP; ret = 1; }
 
 	return ret;
 }
@@ -123,6 +127,7 @@ void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* o
 		if (!result) { die_invalid_arg(arg); }
 	} // for ()
 
+	parsed->fun = fun_map[parsed->action];
 	if (!validate_combo(parsed->mode, parsed->action)) {
 		printf("Invalid combination: %s and %s\n", mode_map[parsed->mode], action_map[parsed->action]);
 		exit(-1);

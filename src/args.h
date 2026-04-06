@@ -56,7 +56,7 @@ struct parsed_args {
 	uint8_t verbosity;
 
 	// Operate on the passed immmutable strings.
-	int(*fun)(other_args**);
+	int(*fun)(other_args*);
 };
 
 int is_flag(const char* arg);
