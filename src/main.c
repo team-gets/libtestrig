@@ -9,7 +9,6 @@
 
 int main(int argc, char** argv) {
 	if (argc < 2 || argc > 255) {
-		printf("Usage: testrig <options>\n");
 		return -1;
 	}
 
@@ -25,7 +24,7 @@ int main(int argc, char** argv) {
 	case CLI_MODE_CMD:
 	default:
 		if (parsed.fun == NULL) {
-			printf("unimplemented\n");
+			printf("unimplemented action\n");
 		}
 		else {
 			ret = parsed.fun(&others);
