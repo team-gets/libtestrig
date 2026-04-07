@@ -2,6 +2,7 @@
 #include <string.h>
 #include "help.h"
 
+static void print_hline(int);
 
 int help_me(other_args* which) {
 	if (which == NULL || which->size == 0) { print_usage(); return 0; };
@@ -19,35 +20,47 @@ int help_me(other_args* which) {
 }
 
 void print_usage(void) {
-	printf("Usage: testrig <action> [<args>]\n");
+	printf("Usage: testrig [options] <action> [<args>]\n");
+	print_hline(5);
+	printf("Options:\n"
+		   "--detach       Detach the process from the shell.\n"
+		   "--daemon       Operate in daemon mode.\n"
+		   "--verbose      Operate verbosely\n");
+	print_hline(5);
+	printf("Actions:\n"
+		   "help       Print out detailed help for a specific action.\n"
+		   "ident      Identify connected controllers.\n"
+		   "stat       Determine the status of connected controllers.\n"
+		   "open       Open connection to a device.\n"
+		   "record     Request a CAN frame and print it out to stdout.\n"
+		   "close      Close connection to device and release it.\n");
+	printf("\n");
 }
-
-static void print_hline(int);
 
 void printhelp_help(void) {
 	printf("testrig help me oh mah gawd\n");
-	print_hline(3);
+	print_hline(5);
 	printf("Print help about the program or a specific action."
 		   "\n");
 }
 
 void printhelp_ident(void) {
 	printf("testrig ident\n");
-	print_hline(3);
+	print_hline(5);
 	printf("Identify connected devices."
 		   "\n");
 }
 
 void printhelp_stat(void) {
 	printf("testrig stat\n");
-	print_hline(3);
+	print_hline(5);
 	printf("Determine the status of connected devices."
 		   "\n");
 }
 
 void printhelp_daemon(void) {
 	printf("testrig daemon mode\n");
-	print_hline(3);
+	print_hline(5);
 	printf("The process serves as a mediator between the controllers\n"
 		   "and other processes through an opened Unix socket,\n"
 		   "continuously listening for connections and sending parsed controller data "
@@ -57,21 +70,21 @@ void printhelp_daemon(void) {
 
 void printhelp_open(void) {
 	printf("testrig open\n");
-	print_hline(3);
+	print_hline(5);
 	printf("Open connection to the connected controller network."
 		   "\n");
 }
 
 void printhelp_record(void) {
 	printf("testrig record\n");
-	print_hline(3);
+	print_hline(5);
 	printf("Request a CAN frame and send it to stdout."
 		   "\n");
 }
 
 void printhelp_close(void) {
 	printf("testrig close\n");
-	print_hline(3);
+	print_hline(5);
 	printf("Close connection to the connected controller network and release them."
 		   "\n");
 }
