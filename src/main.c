@@ -5,10 +5,12 @@
 #include "epos2/epos2.h"
 
 #include "actions.h"
+#include "help.h"
 #include "args.h"
 
 int main(int argc, char** argv) {
 	if (argc < 2 || argc > 255) {
+		print_usage();
 		return -1;
 	}
 

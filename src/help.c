@@ -19,7 +19,7 @@ int help_me(other_args* which) {
 }
 
 void print_usage(void) {
-	printf("Usage: testrig <options>\n");
+	printf("Usage: testrig <action> [<args>]\n");
 }
 
 static void print_hline(int);

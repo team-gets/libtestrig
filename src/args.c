@@ -12,7 +12,8 @@ static void die_invalid_arg(const char* arg) {
 
 static char* mode_map[] = { "command", "detach" };
 static char* action_map[] = { "help", "ident", "status", "open", "record", "close" };
-static int(*fun_map[])(other_args*) = { &help_me, NULL, NULL, NULL, NULL, NULL };
+static int(*fun_map[])(other_args*) = {
+	&help_me, &testrig_ident, &testrig_stat, &testrig_open, &testrig_record, &testrig_close };
 
 int is_flag(const char* arg) { return (strstr(arg, "--") == NULL) ? 0 : 1; }
 int is_opt(const char* arg) {

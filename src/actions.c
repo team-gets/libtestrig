@@ -30,6 +30,42 @@ int detach_program(void) {
 #endif
 }
 
+int testrig_ident(other_args* others) {
+	if (!other_args_is_valid(others)) { return 1; }
+
+	return 0;
+}
+
+int testrig_stat(other_args* others) {
+	if (!other_args_is_valid(others)) { return 1; }
+
+	return 0;
+}
+
+int testrig_daemon(other_args* others) {
+	if (!other_args_is_valid(others)) { return 1; }
+
+	return 0;
+}
+
+int testrig_open(other_args* others) {
+	if (!other_args_is_valid(others)) { return 1; }
+
+	return 0;
+}
+
+int testrig_record(other_args* others) {
+	if (!other_args_is_valid(others)) { return 1; }
+
+	return 0;
+}
+
+int testrig_close(other_args* others) {
+	if (!other_args_is_valid(others)) { return 1; }
+
+	return 0;
+}
+
 void free_other_args(other_args* others) {
 	for (uint8_t i = 0; i < others->size; i++) {
 		free(others->data[i]);
