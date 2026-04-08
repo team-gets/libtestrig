@@ -36,7 +36,7 @@ int detach_program(void) {
 }
 
 int testrig_ident(other_args* others) {
-	if (!other_args_is_valid(others)) { return 1; }
+	if (others->data == NULL) { return 1; }
 
 	IdentifyDeviceNames();
 
@@ -44,13 +44,13 @@ int testrig_ident(other_args* others) {
 }
 
 int testrig_stat(other_args* others) {
-	if (!other_args_is_valid(others)) { return 1; }
+	if (others->data == NULL) { return 1; }
 
 	return 0;
 }
 
 int testrig_daemon(other_args* others) {
-	if (!other_args_is_valid(others)) { return 1; }
+	if (others->data == NULL) { return 1; }
 
 	struct sockaddr_un sockaddr = { 0 };
 	int retstat = 0;
@@ -74,19 +74,19 @@ int testrig_daemon(other_args* others) {
 }
 
 int testrig_open(other_args* others) {
-	if (!other_args_is_valid(others)) { return 1; }
+	if (others->data == NULL) { return 1; }
 
 	return 0;
 }
 
 int testrig_request(other_args* others) {
-	if (!other_args_is_valid(others)) { return 1; }
+	if (others->data == NULL) { return 1; }
 
 	return 0;
 }
 
 int testrig_close(other_args* others) {
-	if (!other_args_is_valid(others)) { return 1; }
+	if (others->data == NULL) { return 1; }
 
 	return 0;
 }
