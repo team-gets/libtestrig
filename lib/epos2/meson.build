@@ -17,12 +17,12 @@ elif (operating_system == 'linux')
   where_epos2 = where_bin / 'libEposCmd.so.6.8.1.0'
 
   ftd2xx = declare_dependency(
-    link_args: [ '-L'+where_bin, where_ftd2xx ]
+    link_args: [ where_ftd2xx ]
   )
 
   epos2 = declare_dependency(
     dependencies: ftd2xx,
-    link_args: [ '-L'+where_bin, where_epos2  ],
+    link_args: [ where_epos2 ],
     version: '6.8.1.0'
   ) 
 

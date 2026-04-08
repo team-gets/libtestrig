@@ -61,7 +61,7 @@ jobs:
       - name: Install Build Dependencies
         run: |
           pip3 install meson ninja
-          echo | python "${{ github.workspace }}/bin/acquire_epos_cmdlib.py"
+          echo "" | python "${{ github.workspace }}/bin/acquire_epos_cmdlib.py"
       - name: Setup Meson
         run: |
           meson setup build
