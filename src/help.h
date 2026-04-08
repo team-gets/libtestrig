@@ -11,5 +11,5 @@ void printhelp_ident(void);
 void printhelp_stat(void);
 void printhelp_daemon(void);
 void printhelp_open(void);
-void printhelp_record(void);
+void printhelp_request(void);
 void printhelp_close(void);

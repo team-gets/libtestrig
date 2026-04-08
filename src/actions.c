@@ -54,7 +54,7 @@ int testrig_open(other_args* others) {
 	return 0;
 }
 
-int testrig_record(other_args* others) {
+int testrig_request(other_args* others) {
 	if (!other_args_is_valid(others)) { return 1; }
 
 	return 0;

@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include "other_args.h"
-#include "actions.h"
 
 enum cli_mode {
 	CLI_MODE_CMD = 0,
@@ -42,7 +41,7 @@ enum cli_action {
 	/*
 	 *	Request a CAN frame and record it to stdout.
 	 */
-	ACTION_RECORD = 5,
+	ACTION_REQUEST = 5,
 	
 	/*
 	 *	Close communications to the controller network.

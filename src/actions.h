@@ -17,7 +17,7 @@ int testrig_ident(other_args* others);
 int testrig_stat(other_args* others);
 int testrig_daemon(other_args* others);
 int testrig_open(other_args* others);
-int testrig_record(other_args* others);
+int testrig_request(other_args* others);
 int testrig_close(other_args* others);
 
 void free_other_args(other_args* others);
