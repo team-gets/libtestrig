@@ -25,8 +25,8 @@ int detach_program(void) {
 		return -1;
 		break;
 	case 0:
-		setsid();
-		return 0;
+		if (setsid() == -1) { perror("Failed to detach"); return -1; }
+		else { return 0; }
 		break;
 	default:
 		return pid;
@@ -66,8 +66,8 @@ int testrig_daemon(other_args* others) {
 
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
 	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING) {
-		// something that doesn't use the SockReadOut stuff because I would like to handle it
-		// differently
+		printf("unimplemented\n");
+		break;
 	}
 
 	return 0;

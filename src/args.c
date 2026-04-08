@@ -12,9 +12,11 @@ static void die_invalid_arg(const char* arg) {
 }
 
 static char* mode_map[] = { "command", "detach" };
-static char* action_map[] = { "help", "ident", "status", "open", "request", "close" };
+static char* action_map[] = { "help", "ident", "status", "daemon",
+	"open", "request", "close" };
 static int(*fun_map[])(other_args*) = {
-	&help_me, &testrig_ident, &testrig_stat, &testrig_open, &testrig_request, &testrig_close };
+	&help_me, &testrig_ident, &testrig_stat, &testrig_daemon,
+	&testrig_open, &testrig_request, &testrig_close };
 
 int is_flag(const char* arg) { return (strstr(arg, "--") == NULL) ? 0 : 1; }
 int is_opt(const char* arg) {
@@ -79,7 +81,6 @@ int validate_combo(enum cli_mode mode, enum cli_action action) {
 	case CLI_MODE_DETACHED:
 		switch (action) {
 		case ACTION_DAEMON:
-		case ACTION_HELP:
 			return 1;
 		default:
 			return 0;

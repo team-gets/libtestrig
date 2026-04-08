@@ -36,8 +36,8 @@ int main(int argc, char** argv) {
 	else if (ret == 0) {
 		ret = parsed.fun(&others);
 	}
+	else { ret = 0; }
 
 	free_other_args(&others);
-
 	return ret;
 }
