@@ -67,6 +67,7 @@ if __name__ == "__main__":
     elif i_am == "Linux":
         attempt_code = attempt_dl(linux_link, archive_name)
         libname = "libEposCmd.so.6.8.1.0"
+        other_libname = "libftd2xx.so"
         dirname = arch
 
     if (attempt_code != 0):
@@ -89,7 +90,7 @@ if __name__ == "__main__":
 
             if (not dirname in root):
                 continue
-            if (libname in f or (other_libname != "" and other_libname in f)):
+            if (libname in f or other_libname in f):
                 os.rename(join(root, f), join(dirs["lib_dir"], f))
 
     shutil.rmtree(wherego)
