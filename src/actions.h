@@ -11,7 +11,7 @@
 #include "other_args.h"
 #include "args.h"
 
-int detach_program(void);
+int detach_program(enum cli_action action, other_args* others);
 
 int testrig_ident(other_args* others);
 int testrig_stat(other_args* others);
@@ -21,3 +21,10 @@ int testrig_request(other_args* others);
 int testrig_close(other_args* others);
 
 void free_other_args(other_args* others);
+
+enum TESTRIG_DAEMON_STATE {
+	TESTRIG_DAEMON_NONE = 1,
+	TESTRIG_DAEMON_LISTENING = 2,
+	TESTRIG_DAEMON_CLEANING = 3,
+	TESTRIG_DAEMON_STOPPED = 4
+};

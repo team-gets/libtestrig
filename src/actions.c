@@ -8,9 +8,13 @@
 #endif // _WIN32
 
 #include "args.h"
+#include "ipc/ipc.h"
+#include "epos2/identify.h"
 #include "actions.h"
 
-int detach_program(void) {
+extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS;
+
+int detach_program(enum cli_action action, other_args* others) {
 #if _WIN32
 #else
 	pid_t pid = fork();
@@ -33,6 +37,8 @@ int detach_program(void) {
 int testrig_ident(other_args* others) {
 	if (!other_args_is_valid(others)) { return 1; }
 
+	IdentifyDeviceNames();
+
 	return 0;
 }
 
@@ -44,6 +50,24 @@ int testrig_stat(other_args* others) {
 
 int testrig_daemon(other_args* others) {
 	if (!other_args_is_valid(others)) { return 1; }
+
+	struct sockaddr_un sockaddr = { 0 };
+	int retstat = 0;
+
+	int sock = SockSetup(&sockaddr);
+	if (sock == -1) { return -1; }
+
+	retstat = SockBind(sock, &sockaddr);
+	if (retstat == -1) { return -1; }
+
+	retstat = SockListen(sock, 1);
+	if (retstat == -1) { return -1; }
+
+	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
+	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING) {
+		// something that doesn't use the SockReadOut stuff because I would like to handle it
+		// differently
+	}
 
 	return 0;
 }

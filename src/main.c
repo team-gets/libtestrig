@@ -8,6 +8,8 @@
 #include "help.h"
 #include "args.h"
 
+enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_NONE;
+
 int main(int argc, char** argv) {
 	if (argc < 2 || argc > 255) {
 		print_usage();
@@ -21,7 +23,7 @@ int main(int argc, char** argv) {
 
 	switch (parsed.mode) {
 	case CLI_MODE_DETACHED:
-		ret = detach_program();
+		ret = detach_program(parsed.action, &others);
 		break;
 	case CLI_MODE_CMD:
 	default:
