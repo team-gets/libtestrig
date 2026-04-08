@@ -4,6 +4,7 @@ import os
 import platform
 import shutil
 import subprocess
+import time
 
 from os.path import join, abspath
 dirs = {
@@ -53,6 +54,7 @@ if __name__ == "__main__":
     libname: str = ""
     other_libname: str = ""
     dirname: str = ""
+    extension: str = ""
 
     show_eula = input("The binary to install is property of maxon group. " \
                       "By using this tool, you agree to the terms laid out by the EULA " \
@@ -63,12 +65,14 @@ if __name__ == "__main__":
         libname = "EposCmd.dll"
         other_libname = "EposCmd.lib"
         dirname = "Microsoft Visual C++"
+        extension = ".dll"
 
     elif i_am == "Linux":
         attempt_code = attempt_dl(linux_link, archive_name)
         libname = "libEposCmd.so.6.8.1.0"
         other_libname = "libftd2xx.so"
         dirname = arch
+        extension = ".so"
 
     if (attempt_code != 0):
         print(f"Please visit {listing_link} for a manual download.")
@@ -91,7 +95,12 @@ if __name__ == "__main__":
             if (not dirname in root):
                 continue
             if (libname in f or other_libname in f):
-                os.rename(join(root, f), join(dirs["lib_dir"], f))
+                stripped = f.split(extension)[0] + extension
+                wherestrip = join(dirs["lib_dir"], stripped)
+                os.rename(join(root, f), wherestrip)
+
+                if (i_am == "Linux"):
+                    os.chmod(wherestrip, 0o755)
 
     shutil.rmtree(wherego)
     os.remove(archive_name)
