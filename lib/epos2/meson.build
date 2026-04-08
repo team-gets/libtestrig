@@ -13,13 +13,17 @@ elif (operating_system == 'linux')
     error('Unsupported architecture')
   endif
 
+  where_ftd2xx = where_bin / 'libftd2xx.so.1.4.8'
+  where_epos2 = where_bin / 'libEposCmd.so.6.8.1.0'
+
   ftd2xx = declare_dependency(
-    link_args: meson.project_source_root() / 'bin' / 'libftd2xx.so.1.4.8'
+    link_args: [ '-L'+where_bin, where_ftd2xx ]
   )
 
   epos2 = declare_dependency(
     dependencies: ftd2xx,
-    link_args: meson.project_source_root() / 'bin' / 'libEposCmd.so.6.8.1.0'
+    link_args: [ '-L'+where_bin, where_epos2  ],
+    version: '6.8.1.0'
   ) 
 
   epos2_srcs = [ './epos2/epos2.c', './epos2/definitions.c',

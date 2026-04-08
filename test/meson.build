@@ -3,12 +3,19 @@ test('sockname', sock_name_exe)
 
 if (operating_system.to_lower() == 'linux')
     fork_exe = executable('test_exe', 'test_fork_ipc.c',
-        dependencies: dep)
+        dependencies: dep,
+        install_dir: where_bin,
+        install_rpath: std_rpath,
+        install: true)
     preset_path_exe = executable('preset_path_exe', 'test_preset_sockpath.c',
-        dependencies: dep)
+        dependencies: dep,
+        install_dir: where_bin,
+        install_rpath: std_rpath,
+        install: true)
 
     test('forking', fork_exe)
     test('preset_path', preset_path_exe)
+
 elif (operating_system.to_lower() == 'windows')
     kernel32_dep = declare_dependency(
         dependencies: cc.find_library('Kernel32',
