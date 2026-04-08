@@ -11,7 +11,7 @@
 #include "other_args.h"
 #include "args.h"
 
-int detach_program(enum cli_action action, other_args* others);
+int detach_program(void);
 
 int testrig_ident(other_args* others);
 int testrig_stat(other_args* others);

@@ -23,17 +23,18 @@ int main(int argc, char** argv) {
 
 	switch (parsed.mode) {
 	case CLI_MODE_DETACHED:
-		ret = detach_program(parsed.action, &others);
+		ret = detach_program();
 		break;
 	case CLI_MODE_CMD:
 	default:
-		if (parsed.fun == NULL) {
-			printf("unimplemented action\n");
-		}
-		else {
-			ret = parsed.fun(&others);
-		}
 		break;
+	}
+
+	if (parsed.fun == NULL) {
+		printf("unimplemented action\n");
+	}
+	else if (ret == 0) {
+		ret = parsed.fun(&others);
 	}
 
 	free_other_args(&others);

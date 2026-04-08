@@ -14,7 +14,7 @@
 
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS;
 
-int detach_program(enum cli_action action, other_args* others) {
+int detach_program(void) {
 #if _WIN32
 #else
 	pid_t pid = fork();
@@ -25,7 +25,8 @@ int detach_program(enum cli_action action, other_args* others) {
 		return -1;
 		break;
 	case 0:
-		return setsid();
+		setsid();
+		return 0;
 		break;
 	default:
 		return pid;
