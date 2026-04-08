@@ -85,6 +85,7 @@ if __name__ == "__main__":
     shutil.unpack_archive(archive_name, wherego)
 
     print("Processing contents...")
+    bins = [ ]
 
     for (root, dirnames, files) in os.walk(wherego):
         for f in files:
@@ -98,12 +99,16 @@ if __name__ == "__main__":
                 stripped = f.split(extension)[0] + extension
                 wherestrip = join(dirs["lib_dir"], stripped)
                 os.rename(join(root, f), wherestrip)
+                bins.append(wherestrip)
 
                 if (i_am == "Linux"):
                     os.chmod(wherestrip, 0o755)
 
     shutil.rmtree(wherego)
     os.remove(archive_name)
+    if (i_am == "Linux"):
+        for binary in bins:
+            subprocess.run(["patchelf", "--set-rpath", "$ORIGIN", binary])
 
     where_eula = join(dirs["lib_dir"], "EULA.txt")
     print(f"The following can be found at {where_eula}")
