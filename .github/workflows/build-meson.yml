@@ -34,7 +34,7 @@ jobs:
       - name: Install Build Dependencies
         run: |
           pip3 install meson ninja
-          apt install patchelf -y
+          sudo apt install patchelf -y
           echo | python "${{ github.workspace }}/bin/acquire_epos_cmdlib.py"
       - name: Setup Meson
         run: |
