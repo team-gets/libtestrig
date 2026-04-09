@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #ifdef _WIN32
-#include <windows.h>
+//#include <windows.h> // holy cow there is some include order stuff with windows.h
 #else
 #include <unistd.h>
 #endif // _WIN32
