@@ -45,7 +45,8 @@ jobs:
       - name: Verbosely Test
         run: |
           LD_LIBRARY_PATH=$(realpath build/test) meson test -v -C build
-
+        # above is a HACK!!
+        
   windows-build-meson:
     name: Windows
     runs-on: windows-latest
@@ -60,6 +61,7 @@ jobs:
           python-version: "3.13.0"
       - uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Install Build Dependencies
+        shell: "pwsh"
         run: |
           pip3 install meson ninja
           echo "" | python "${{ github.workspace }}/bin/acquire_epos_cmdlib.py"
