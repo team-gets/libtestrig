@@ -53,13 +53,13 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        compiler: ["cl.exe", "gcc.exe"]
+        compiler: ["gcc.exe"] #, "cl.exe"]
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13.0"
-      - uses: ilammy/msvc-dev-cmd@v1.13.0
+      #- uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Install Build Dependencies
         shell: "pwsh"
         run: |

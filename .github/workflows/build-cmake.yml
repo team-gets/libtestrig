@@ -48,10 +48,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        compiler: ["cl.exe", "gcc.exe"]
+        compiler: ["gcc.exe"] #, "cl.exe"]
     steps:
       - uses: actions/checkout@v5
-      - uses: ilammy/msvc-dev-cmd@v1.13.0
+      #- uses: ilammy/msvc-dev-cmd@v1.13.0
       - name: Install Build Dependencies
         run: echo "" | python "${{ github.workspace }}/bin/acquire_epos_cmdlib.py"
       - name: Setup CMake
