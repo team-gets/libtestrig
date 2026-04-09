@@ -19,29 +19,18 @@ linux_link = "https://www.maxongroup.us/medias/sys_master/root/9443687202846/EPO
 def get_mfg(arch: str) -> str:
     return "intel" if "x86" in arch else "arm"
 
-def win_process_contents(unzipped_dir: str|os.PathLike, arch: str) -> int:
-    orig_wd: os.PathLike = os.curdir
-    my_mfg = get_mfg(arch)
-    os.chdir(unzipped_dir)
+def get_curl(operating: str) -> str:
+    return "curl" if "Linux" else "curl.exe"
 
-    return 0
-
-def linux_process_contents(unzipped_dir: str|os.PathLike, arch: str) -> int:
-    orig_wd: os.PathLike = os.curdir
-    my_mfg = get_mfg(arch)
-    os.chdir(join(unzipped_dir, "lib", my_mfg, arch))
-
-    return 0
-
-def attempt_dl(link: str, outf: str|os.PathLike) -> int:
+def attempt_dl(link: str, outf: str|os.PathLike, operating: str) -> int:
     try:
-        lib_get = subprocess.run([f"curl \"{link}\" --output {outf}"], shell=True)
+        lib_get = subprocess.run([f"{get_curl(operating)} \"{link}\" --output {outf}"], shell=True)
 
     except Exception as excepter:
         print(excepter)
         return 1
 
-    return 0
+    return lib_get.returncode
 
 if __name__ == "__main__":
     i_am = platform.system()
@@ -61,14 +50,14 @@ if __name__ == "__main__":
                       "that is included inside of the archive.")
 
     if i_am == "Windows":
-        attempt_code = attempt_dl(windows_link, archive_name)
-        libname = "EposCmd.dll"
-        other_libname = "EposCmd.lib"
+        attempt_code = attempt_dl(windows_link, archive_name, i_am)
+        libname = "EposCmd64.dll"
+        other_libname = "EposCmd64.lib"
         dirname = "Microsoft Visual C++"
         extension = ".dll"
 
     elif i_am == "Linux":
-        attempt_code = attempt_dl(linux_link, archive_name)
+        attempt_code = attempt_dl(linux_link, archive_name, i_am)
         libname = "libEposCmd.so.6.8.1.0"
         other_libname = "libftd2xx.so"
         dirname = arch
@@ -97,6 +86,8 @@ if __name__ == "__main__":
                 continue
             if (libname in f or other_libname in f):
                 stripped = f.split(extension)[0] + extension
+                actual_bin = stripped if i_am == "Linux" else f
+
                 wherestrip = join(dirs["lib_dir"], stripped)
                 os.rename(join(root, f), wherestrip)
                 bins.append(wherestrip)
