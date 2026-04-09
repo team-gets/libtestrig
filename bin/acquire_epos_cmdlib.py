@@ -20,7 +20,7 @@ def get_mfg(arch: str) -> str:
     return "intel" if "x86" in arch else "arm"
 
 def get_curl(operating: str) -> str:
-    return "curl" if "Linux" else "curl.exe"
+    return "curl" if (operating == "Linux") else "curl.exe"
 
 def attempt_dl(link: str, outf: str|os.PathLike, operating: str) -> int:
     try:
