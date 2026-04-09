@@ -7,7 +7,7 @@ if (operating_system == 'windows')
     error('Unsupported architecture')
   endif
 
-  where_epos2 = where_bin / 'EposCmd64.so'
+  where_epos2 = where_bin / 'EposCmd64.dll'
   epos2 = declare_dependency(
     link_args: [ where_epos2 ],
     version: '6.8.1.0'
