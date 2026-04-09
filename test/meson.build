@@ -3,11 +3,6 @@ dllcopy_libtestrig = [pyexe,
     lib.full_path(),
     meson.project_source_root() / 'build' / 'test']
 
-dllcopy_ftd2xx = [pyexe,
-    meson.project_source_root() / 'test' / 'copy_dlls.meson.py',
-    where_ftd2xx,
-    meson.project_source_root() / 'build' / 'test']
-
 dllcopy_epos2 = [pyexe,
     meson.project_source_root() / 'test' / 'copy_dlls.meson.py',
     where_epos2,
@@ -18,6 +13,11 @@ _move_dlls_tests2 = custom_target('_dll_copy2', command: dllcopy_epos2, output: 
 _test_deps = [ _move_dlls_tests1, _move_dlls_tests2 ]
 
 if (operating_system == 'linux')
+  dllcopy_ftd2xx = [pyexe,
+      meson.project_source_root() / 'test' / 'copy_dlls.meson.py',
+      where_ftd2xx,
+      meson.project_source_root() / 'build' / 'test']
+
   _move_dlls_tests3 = custom_target('_dll_copy3', command: dllcopy_ftd2xx, output: 'dll_copy_result3')
   _test_deps += _move_dlls_tests3
 endif

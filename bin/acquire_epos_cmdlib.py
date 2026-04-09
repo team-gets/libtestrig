@@ -24,7 +24,9 @@ def get_curl(operating: str) -> str:
 
 def attempt_dl(link: str, outf: str|os.PathLike, operating: str) -> int:
     try:
-        lib_get = subprocess.run([f"{get_curl(operating)} \"\"{link}\"\" --output \"\"{outf}\"\""], shell=True)
+        lib_get = subprocess.run([get_curl(operating),
+                                  "--output", f"{outf}",
+                                  f"{link}"])
 
     except Exception as excepter:
         print(excepter)
@@ -79,7 +81,7 @@ if __name__ == "__main__":
     for (root, dirnames, files) in os.walk(wherego):
         for f in files:
             if "EULA.txt" in f:
-                os.rename(join(root, f), join(dirs["lib_dir"], f))
+                os.replace(join(root, f), join(dirs["lib_dir"], f))
                 continue
 
             if (not dirname in root):
@@ -89,7 +91,7 @@ if __name__ == "__main__":
                 actual_bin = stripped if i_am == "Linux" else f
 
                 wherestrip = join(dirs["lib_dir"], stripped)
-                os.rename(join(root, f), wherestrip)
+                os.replace(join(root, f), wherestrip)
                 bins.append(wherestrip)
 
                 if (i_am == "Linux"):
@@ -104,9 +106,14 @@ if __name__ == "__main__":
     where_eula = join(dirs["lib_dir"], "EULA.txt")
     print(f"The following can be found at {where_eula}")
 
-    with open(where_eula, "r") as f:
-        for line in f.readlines():
-            print(line)
+    try:
+        with open(where_eula, "r", encoding="utf-8") as f:
+            for line in f.readlines():
+                print(line)
+    except:
+        pass
+
 
     print(f"Done! Make sure to read the maxon EULA at {where_eula}")
     exit(0)
+
