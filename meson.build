@@ -2,6 +2,7 @@ project('libtestrig', 'c', default_options: ['warning_level=3'])
 
 fs = import('fs')
 cc = meson.get_compiler('c')
+pyexe = find_program('python')
 
 ## Machine info
 operating_system = host_machine.system()

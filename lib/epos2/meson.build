@@ -26,9 +26,6 @@ elif (operating_system == 'linux')
     version: '6.8.1.0'
   ) 
 
-  fix_epos2_rpath = [find_program('patchelf'), '--set-rpath', std_rpath, where_epos2]
-  fix_epos2_tgt = custom_target('fix_epos2_rpath', command: fix_epos2_rpath, output: 'fix_epos2_rpath')
-
   epos2_srcs = [ './epos2/epos2.c', './epos2/definitions.c',
       './epos2/identify.c', './epos2/connect.c', './epos2/manage.c' ]
 

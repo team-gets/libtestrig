@@ -1,14 +1,14 @@
-dllcopy_libtestrig = [find_program('python'),
+dllcopy_libtestrig = [pyexe,
     meson.project_source_root() / 'test' / 'copy_dlls.meson.py',
     lib.full_path(),
     meson.project_source_root() / 'build' / 'test']
 
-dllcopy_ftd2xx = [find_program('python'),
+dllcopy_ftd2xx = [pyexe,
     meson.project_source_root() / 'test' / 'copy_dlls.meson.py',
     where_ftd2xx,
     meson.project_source_root() / 'build' / 'test']
 
-dllcopy_epos2 = [find_program('python'),
+dllcopy_epos2 = [pyexe,
     meson.project_source_root() / 'test' / 'copy_dlls.meson.py',
     where_epos2,
     meson.project_source_root() / 'build' / 'test']
@@ -19,8 +19,8 @@ _move_dlls_tests3 = custom_target('_dll_copy3', command: dllcopy_ftd2xx, output:
 
 _test_deps = [ _move_dlls_tests1, _move_dlls_tests2, _move_dlls_tests3 ]
 
-sock_name_exe = executable('test_sock_name', 'test_sock_name.c', dependencies: dep)
-test('sockname', sock_name_exe, depends: [ _test_deps ])
+sock_name_exe = executable('test_sock_name', 'test_sock_name.c', build_rpath: std_rpath, dependencies: dep)
+test('sockname', sock_name_exe,  depends: [ _test_deps ])
 
 if (operating_system.to_lower() == 'linux')
     fork_exe = executable('test_exe', 'test_fork_ipc.c',
@@ -30,8 +30,8 @@ if (operating_system.to_lower() == 'linux')
         dependencies: dep,
         build_rpath: std_rpath)
 
-    test('forking', fork_exe, depends: [ _test_deps ])
-    test('preset_path', preset_path_exe, depends: [ _test_deps ])
+    test('forking', fork_exe, depends: _test_deps)
+    test('preset_path', preset_path_exe, depends: _test_deps)
 
 elif (operating_system.to_lower() == 'windows')
     kernel32_dep = declare_dependency(
@@ -39,17 +39,11 @@ elif (operating_system.to_lower() == 'windows')
         required: true),
     ) 
     
-    dllcopy = [find_program('python'),
-        meson.project_source_root() / 'test' / 'copy_dlls.meson.py',
-        lib.full_path(),
-        meson.project_source_root() / 'build' / 'test']
-
     mgr_exe = executable('test_mgr', 'test_win_mgr.c')
     client_exe = executable('test_client', 'test_win_client.c',
             dependencies: [ dep, kernel32_dep ])
     server_exe = executable('test_server', 'test_win_server.c',
             dependencies: [ dep, kernel32_dep ])
-
 
     test('discrete', mgr_exe,
         args: [ server_exe.full_path(), client_exe.full_path() ],
