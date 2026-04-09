@@ -7,6 +7,12 @@ if (operating_system == 'windows')
     error('Unsupported architecture')
   endif
 
+  where_epos2 = where_bin / 'EposCmd64.so'
+  epos2 = declare_dependency(
+    link_args: [ where_epos2 ],
+    version: '6.8.1.0'
+  )
+
 # Linux
 elif (operating_system == 'linux')
   if not (cpu_architecture in valid_arch)
@@ -26,10 +32,11 @@ elif (operating_system == 'linux')
     version: '6.8.1.0'
   ) 
 
-  epos2_srcs = [ './epos2/epos2.c', './epos2/definitions.c',
-      './epos2/identify.c', './epos2/connect.c', './epos2/manage.c' ]
-
 # Others
 else
   error('Unsupported operating system')
 endif
+
+epos2_srcs = [ './epos2/epos2.c', './epos2/definitions.c',
+    './epos2/identify.c', './epos2/connect.c', './epos2/manage.c' ]
+

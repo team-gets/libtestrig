@@ -15,9 +15,13 @@ dllcopy_epos2 = [pyexe,
 
 _move_dlls_tests1 = custom_target('_dll_copy1', command: dllcopy_libtestrig, output: 'dll_copy_result1')
 _move_dlls_tests2 = custom_target('_dll_copy2', command: dllcopy_epos2, output: 'dll_copy_result2')
-_move_dlls_tests3 = custom_target('_dll_copy3', command: dllcopy_ftd2xx, output: 'dll_copy_result3')
+_test_deps = [ _move_dlls_tests1, _move_dlls_tests2 ]
 
-_test_deps = [ _move_dlls_tests1, _move_dlls_tests2, _move_dlls_tests3 ]
+if (operating_system == 'linux')
+  _move_dlls_tests3 = custom_target('_dll_copy3', command: dllcopy_ftd2xx, output: 'dll_copy_result3')
+  _test_deps += _move_dlls_tests3
+endif
+
 
 sock_name_exe = executable('test_sock_name', 'test_sock_name.c', build_rpath: std_rpath, dependencies: dep)
 test('sockname', sock_name_exe,  depends: [ _test_deps ])
