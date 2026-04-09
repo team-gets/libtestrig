@@ -24,7 +24,7 @@ def get_curl(operating: str) -> str:
 
 def attempt_dl(link: str, outf: str|os.PathLike, operating: str) -> int:
     try:
-        lib_get = subprocess.run([f"{get_curl(operating)} \"{link}\" --output {outf}"], shell=True)
+        lib_get = subprocess.run([f"{get_curl(operating)} \"\"{link}\"\" --output \"\"{outf}\"\""], shell=True)
 
     except Exception as excepter:
         print(excepter)
