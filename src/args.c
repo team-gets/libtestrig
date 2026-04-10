@@ -12,7 +12,7 @@ static void die_invalid_arg(const char* arg) {
 }
 
 static char* mode_map[] = { "command", "detach" };
-static char* action_map[] = { "help", "ident", "status", "daemon",
+char* action_map[] = { "help", "ident", "status", "daemon",
 	"open", "request", "close" };
 static int(*fun_map[])(other_args*) = {
 	&help_me, &testrig_ident, &testrig_stat, &testrig_daemon,

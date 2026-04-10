@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 
 	switch (parsed.mode) {
 	case CLI_MODE_DETACHED:
-		ret = detach_program();
+		ret = detach_program(argv, parsed.action, &others);
 		break;
 	case CLI_MODE_CMD:
 	default:

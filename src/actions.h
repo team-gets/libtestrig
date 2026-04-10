@@ -1,7 +1,7 @@
 /*
  *	Actions methods
  *
- *	Returns what a program would.
+ *	This is the end, so it returns what a program would.
  *	0 (success) or 1 (failure)
  */
 
@@ -11,7 +11,7 @@
 #include "other_args.h"
 #include "args.h"
 
-int detach_program(void);
+int detach_program(char** argv, enum cli_action act, const other_args* others);
 
 int testrig_ident(other_args* others);
 int testrig_stat(other_args* others);
