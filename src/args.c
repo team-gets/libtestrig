@@ -20,8 +20,8 @@ static int(*fun_map[])(other_args*) = {
 
 int is_flag(const char* arg) { return (strstr(arg, "--") == NULL) ? 0 : 1; }
 int is_opt(const char* arg) {
-	char* subarg;
-	if ((subarg = strstr(arg, "-"))) {
+	const char* subarg = strstr(arg, "-");
+	if (subarg) {
 		return (strstr(subarg, "-")) ? 1 : 0;
 	}
 	else {
