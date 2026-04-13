@@ -5,6 +5,7 @@
 #include "help.h"
 #include "args.h"
 #include "actions.h"
+#include "daemon.h"
 
 static void die_invalid_arg(const char* arg) {
 	printf("error: invalid argument \"%s\"\n", arg);

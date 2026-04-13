@@ -7,6 +7,7 @@
 #include "actions.h"
 #include "help.h"
 #include "args.h"
+#include "daemon.h"
 
 enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_NONE;
 
