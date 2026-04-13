@@ -10,7 +10,6 @@
 //#include <windows.h> // holy cow there is some include order stuff with windows.h
 #else
 #include <unistd.h>
-#include <signal.h>
 #endif // _WIN32
 
 extern char* action_map[];

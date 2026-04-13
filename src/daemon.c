@@ -1,12 +1,17 @@
+#define _XOPEN_SOURCE_EXTENDED 1
+#define _XOPEN_SOURCE 600
+
 #include <stdio.h>
-#include "ipc/ipc.h"
+#include <string.h>
 #include "daemon.h"
+#include "ipc/os.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
 //#include <windows.h> // holy cow there is some include order stuff with windows.h
 typedef int socklen_t;
 #else
+#include <ftw.h>
 #include <unistd.h>
 #include <signal.h>
 #endif // _WIN32
@@ -19,8 +24,32 @@ static void interrupt_catcher(int sig, siginfo_t* info, void* ucontext) {
 	if (sig != SIGINT || info->si_signo != SIGINT) { return; }
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_STOPPED;
 }
+
+static int impl_look_for_sock_ext(const char* fpath, const struct stat* sb, int tflag, struct FTW* ftwbuf) {
+	return 0;
+}
 #endif // _WIN32
 
+static int seek_sock_ext(char* sock) {
+#ifdef _WIN32
+#else
+	char* orig = { 0 };
+	strncpy(orig, sock, 108);
+
+	int walker = nftw(sock, impl_look_for_sock_ext, 10, FTW_MOUNT | FTW_PHYS);
+#endif
+}
+
+int seek_daemon(struct sockaddr_un* sockaddr) {
+	char sock[108] = { 0 };
+	int dest = GetSockDestination(sock);
+	if (dest) { return 1; }
+
+	sockaddr->sun_family = AF_UNIX;
+	strncpy(sockaddr->sun_path, sock, 108);
+
+	return 0;
+}
 
 int testrig_daemon(other_args* others) {
 	struct sockaddr_un sockaddr = { 0 };
@@ -79,25 +108,28 @@ int testrig_daemon(other_args* others) {
 		int sent = SockSend(accepted, &reply);
 		if (sent != 12) { continue; }
 
+
+
 		DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CONNECTED;
-	}
+		printf("Daemon accepted connection...\n");
 
-	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_CONNECTED) {
-		// this isn't cfg right
-		int accepted = SockConnect(sock, &sockaddr);
-		if (accepted == -1) { perror("daemon connect failure"); continue; }
+		while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_CONNECTED) {
+			// this isn't cfg right
+			int accepted = SockConnect(sock, &sockaddr);
+			if (accepted == -1) { perror("daemon connect failure"); continue; }
 
-		uint8_t buf[12] = { 0 };
+			uint8_t buf[12] = { 0 };
 #ifdef _WIN32
-		int recvd = recv(accepted, buf, 12, MSG_PEEK);
+			int recvd = recv(accepted, buf, 12, MSG_PEEK);
 #else
-		int recvd = read(accepted, buf, 12);
+			int recvd = read(accepted, buf, 12);
 #endif
-		if (recvd != 12) { continue; } // TODO: some contingency?
+			if (recvd != 12) { continue; } // TODO: some contingency?
 
-		// TODO: proper impl that pipes this stuff (into a socket or file or stdout)
-		printf("The message... %s\n", buf);
-		break;
+			// TODO: proper impl that pipes this stuff (into a socket or file or stdout)
+			printf("The message... %s\n", buf);
+			break;
+		}
 	}
 
 	SockClose(sock, &sockaddr);
