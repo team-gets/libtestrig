@@ -40,7 +40,7 @@ int detach_program(char** argv, enum cli_action act, const other_args* others) {
 	strncpy(cmd, argv[0], strnlen(argv[0], 128) + 1);
 	strncat(cmd, action_map[act], 10);
 
-	for (uint8_t i = 0; i < others->size, i++) {
+	for (uint8_t i = 0; i < others->size; i++) {
 		strncat(cmd, " ", 2);
 		strncat(cmd, others->data[i], 128);
 	}
