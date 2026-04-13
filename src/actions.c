@@ -1,5 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "ipc/ipc.h"
+#include "epos2/identify.h"
+#include "args.h"
+#include "actions.h"
 
 #ifdef _WIN32
 //#include <windows.h> // holy cow there is some include order stuff with windows.h
@@ -12,11 +16,6 @@ int read(int sock, void* buf, size_t bufsize) {
 #include <unistd.h>
 #include <signal.h>
 #endif // _WIN32
-
-#include "args.h"
-#include "ipc/ipc.h"
-#include "epos2/identify.h"
-#include "actions.h"
 
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS;
 extern char* action_map[];
