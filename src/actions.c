@@ -54,7 +54,7 @@ int detach_program(char** argv, enum cli_action act, const other_args* others) {
 			0,
 			NULL,
 			NULL,
-			&si
+			&si,
 			&pi
 		);
 
