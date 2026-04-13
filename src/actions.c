@@ -10,6 +10,7 @@ int read(int sock, void* buf, size_t bufsize) {
 }
 #else
 #include <unistd.h>
+#include <signal.h>
 #endif // _WIN32
 
 #include "args.h"
@@ -19,6 +20,15 @@ int read(int sock, void* buf, size_t bufsize) {
 
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS;
 extern char* action_map[];
+
+#ifdef _WIN32
+
+#else
+static void interrupt_catcher(int sig, siginfo_t* info, void* ucontext) {
+	if (sig != SIGINT || info->si_signo != SIGINT) { return; }
+	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_STOPPED;
+}
+#endif // _WIN32
 
 int detach_program(char** argv, enum cli_action act, const other_args* others) {
 #if _WIN32
@@ -96,6 +106,17 @@ int testrig_daemon(other_args* others) {
 	retstat = SockListen(sock, 1);
 	if (retstat == -1) { return -1; }
 
+#ifdef _WIN32
+#else
+	struct sigaction act = { 0 };
+	act.sa_flags = SA_SIGINFO;
+	act.sa_sigaction = &interrupt_catcher;
+
+	int sigint_bound = sigaction(SIGINT, &act, NULL);
+	if (sigint_bound == -1) { perror("daemon signal capture"); return -1; }
+#endif // _WIN32
+
+	printf("Waiting for connection...\n");
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
 	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING) {
 		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
@@ -128,8 +149,9 @@ int testrig_daemon(other_args* others) {
 	}
 
 	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_CONNECTED) {
-		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
-		if (accepted == -1) { perror("daemon accept failure"); continue; }
+		// this isn't cfg right
+		int accepted = SockConnect(sock, &sockaddr);
+		if (accepted == -1) { perror("daemon connect failure"); continue; }
 
 		uint8_t buf[12] = { 0 };
 		int recvd = read(accepted, buf, 12);
@@ -141,6 +163,7 @@ int testrig_daemon(other_args* others) {
 	}
 
 	SockClose(sock, &sockaddr);
+	printf("Stopping...\n");
 	return 0;
 }
 
