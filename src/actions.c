@@ -7,11 +7,6 @@
 
 #ifdef _WIN32
 //#include <windows.h> // holy cow there is some include order stuff with windows.h
-
-// FIXME: this wraparound kinda sucks
-int read(int sock, void* buf, size_t bufsize) {
-	return recv(sock, buf, bufsize, MSG_PEEK);
-}
 #else
 #include <unistd.h>
 #include <signal.h>
@@ -21,7 +16,6 @@ extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS;
 extern char* action_map[];
 
 #ifdef _WIN32
-
 #else
 static void interrupt_catcher(int sig, siginfo_t* info, void* ucontext) {
 	if (sig != SIGINT || info->si_signo != SIGINT) { return; }
