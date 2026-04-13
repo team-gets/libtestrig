@@ -27,8 +27,35 @@ TESTRIG_API struct RigMessage {
 	uint8_t data[8];
 };
 
+/* 
+ *	Signal to the listener process to continue listening on the socket.
+ *
+ *	The listener process does not accept messages without this header.
+ */
+TESTRIG_API extern const uint8_t HEAD_STAY[4];
+
+/*
+ *	Signal to the listener process to stop listening on the socket and close.
+ */
+TESTRIG_API extern const uint8_t HEAD_DC[4];
+
+/*
+ *	Synchronize message header. Sent back and forth to confirm connection.
+ */
+TESTRIG_API extern const uint8_t HEAD_SYNC[4];
+
 // Convenience function that encapsulates copying to the header and data fields.
 TESTRIG_API int SetMessage(struct RigMessage* msg, const uint8_t* head, const uint8_t* data);
+
+/*
+ *	The type of header.
+ */
+TESTRIG_API enum HEADER_TYPE {
+	HEADER_IS_STAY = 1,
+	HEADER_IS_DC = 2,
+	HEADER_IS_SYNC = 4,
+};
+
 
 #ifdef __cplusplus
 } // extern "C"

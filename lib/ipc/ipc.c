@@ -7,8 +7,8 @@
 #include "constants.h"
 #include "os.h"
 
-// TODO: Evaluate if this is sufficient
 #ifdef _WIN32
+// TODO: Evaluate if this is sufficient (it is honestly kind of smelly)
 typedef int socklen_t;
 
 int close(int sock) {
@@ -115,6 +115,7 @@ int SockClose(const int fd, struct sockaddr_un* sockaddr) {
 	return closestat;
 }
 
+// TODO: reevaluate necessity for inclusion
 int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags) {
 	int recvstat;
 	int acceptstat;
@@ -231,6 +232,9 @@ int IdentifyHeaderPart(uint8_t in[4], int idx) {
 	}
 	else if (in[idx] == HEAD_DC[idx]) {
 		return HEADER_IS_DC;
+	}
+	else if (in[idx] == HEAD_SYNC[idx]) {
+		return HEADER_IS_SYNC;
 	}
 	else {
 		return -1;

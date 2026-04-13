@@ -3,6 +3,11 @@
 
 #ifdef _WIN32
 //#include <windows.h> // holy cow there is some include order stuff with windows.h
+
+// FIXME: this wraparound kinda sucks
+int read(int sock, void* buf, size_t bufsize) {
+	return recv(sock, buf, bufsize, MSG_PEEK);
+}
 #else
 #include <unistd.h>
 #endif // _WIN32
@@ -17,6 +22,7 @@ extern char* action_map[];
 
 int detach_program(char** argv, enum cli_action act, const other_args* others) {
 #if _WIN32
+	return -1;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;
 	char cmd[1024] = { 0 };
@@ -75,9 +81,8 @@ int testrig_stat(other_args* others) {
 	return 0;
 }
 
+// TODO: impl sigaction
 int testrig_daemon(other_args* others) {
-	if (others->data == NULL) { return 1; }
-
 	struct sockaddr_un sockaddr = { 0 };
 	int retstat = 0;
 
@@ -98,10 +103,44 @@ int testrig_daemon(other_args* others) {
 
 		uint8_t msg[12] = { 0 };
 		int synced = read(accepted, msg, 12);
+		if (synced != 12) { continue; }
 
-		DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_STOPPED;
+		uint8_t head[4] = { 0 };
+		memcpy(head, msg, 4);
+
+		int header = IdentifyFullHeader(head);
+		if (header != HEADER_IS_SYNC) { continue; }
+
+		// What i want:
+		// - It should read the msg
+		// - It should check if it's a sync msg
+		// - It should reply (i think i can do this with bytestreasm)
+		// - It should connect back to another socket to send the data!
+		struct RigMessage reply;
+		uint8_t blank[8] = { 0 };
+		int set = SetMessage(&reply, HEAD_SYNC, blank);
+		if (!set) { continue; }
+
+		int sent = SockSend(accepted, &reply);
+		if (sent != 12) { continue; }
+
+		DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CONNECTED;
 	}
 
+	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_CONNECTED) {
+		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
+		if (accepted == -1) { perror("daemon accept failure"); continue; }
+
+		uint8_t buf[12] = { 0 };
+		int recvd = read(accepted, buf, 12);
+		if (recvd != 12) { continue; } // TODO: some contingency?
+
+		// TODO: proper impl that pipes this stuff (into a socket or file or stdout)
+		printf("The message... %s\n", buf);
+		break;
+	}
+
+	SockClose(sock, &sockaddr);
 	return 0;
 }
 
