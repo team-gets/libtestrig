@@ -7,21 +7,7 @@
 
 #ifdef _WIN32
 //#include <windows.h> // holy cow there is some include order stuff with windows.h
-// TODO: Evaluate if this is sufficient (it is honestly kind of smelly)
 typedef int socklen_t;
-
-static int close(int sock) {
-	return closesocket(sock);
-}
-
-static int read(int sock, void* buf, size_t bufsize) {
-	return recv(sock, buf, bufsize, MSG_PEEK);
-}
-
-static int write(int sock, void* buf, size_t bufsize) {
-	return send(sock, buf, bufsize, MSG_DONTROUTE);
-}
-
 #else
 #include <unistd.h>
 #include <signal.h>
@@ -131,7 +117,11 @@ int testrig_daemon(other_args* others) {
 		if (accepted == -1) { perror("daemon accept failure"); continue; }
 
 		uint8_t msg[12] = { 0 };
+#ifdef _WIN32
+		int synced = recv(accepted, msg, 12, MSG_PEEK);
+#else
 		int synced = read(accepted, msg, 12);
+#endif
 		if (synced != 12) { continue; }
 
 		uint8_t head[4] = { 0 };
@@ -162,7 +152,11 @@ int testrig_daemon(other_args* others) {
 		if (accepted == -1) { perror("daemon connect failure"); continue; }
 
 		uint8_t buf[12] = { 0 };
+#ifdef _WIN32
+		int recvd = recv(accepted, buf, 12, MSG_PEEK);
+#else
 		int recvd = read(accepted, buf, 12);
+#endif
 		if (recvd != 12) { continue; } // TODO: some contingency?
 
 		// TODO: proper impl that pipes this stuff (into a socket or file or stdout)

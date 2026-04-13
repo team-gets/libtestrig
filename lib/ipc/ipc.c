@@ -10,18 +10,6 @@
 #ifdef _WIN32
 // TODO: Evaluate if this is sufficient (it is honestly kind of smelly)
 typedef int socklen_t;
-
-static int close(int sock) {
-	return closesocket(sock);
-}
-
-static int read(int sock, void* buf, size_t bufsize) {
-	return recv(sock, buf, bufsize, MSG_PEEK);
-}
-
-static int write(int sock, void* buf, size_t bufsize) {
-	return send(sock, buf, bufsize, MSG_DONTROUTE);
-}
 #endif
 
 int SockGeneratePath(char* sockpath) {
@@ -109,7 +97,12 @@ int SockConnect(const int fd, const struct sockaddr_un* sockaddr) {
 int SockClose(const int fd, struct sockaddr_un* sockaddr) {
 	int closestat;
 
+
+#ifdef _WIN32
+	closestat = closesocket(fd);
+#else
 	closestat = close(fd);
+#endif
 	remove(sockaddr->sun_path);
 
 	return closestat;
@@ -133,7 +126,11 @@ int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_o
 		// While a child is connected to this socket...
 		while (reading != -1) {
 			uint8_t buf[12] = { 0 };
-			recvstat = read(acceptstat, buf, sizeof(buf));
+#ifdef _WIN32
+			recvstat = recv(acceptstat, buf, 12, MSG_PEEK);
+#else
+			recvstat = read(acceptstat, buf, 12);
+#endif
 
 			if (recvstat == -1) { perror("Socket read failure"); continue; }
 
@@ -193,7 +190,11 @@ int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(
 		// While a child is connected to this socket...
 		while (reading != -1) {
 			uint8_t buf[12] = { 0 };
-			recvstat = read(acceptstat, buf, sizeof(buf));
+#ifdef _WIN32
+			recvstat = recv(acceptstat, buf, 12, MSG_PEEK);
+#else
+			recvstat = read(acceptstat, buf, 12);
+#endif
 
 			if (recvstat == -1) { perror("Socket read failure"); continue; }
 
@@ -220,7 +221,11 @@ int SockSend(const int fd, struct RigMessage* msg) {
 		buf[i + 4] = msg->data[i];
 	}
 
+#ifdef _WIN32
+	nbytes = send(fd, buf, 12, MSG_DONTROUTE);
+#else
 	nbytes = write(fd, buf, 12);
+#endif
 	if (nbytes == -1) { perror("Clientside socket send error"); }
 
 	return nbytes;
