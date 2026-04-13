@@ -7,21 +7,6 @@ extern "C" {
 #ifdef _WIN32
 #include <winsock2.h>
 #include <afunix.h>
-
-// TODO: Evaluate if this is sufficient (it is honestly kind of smelly)
-typedef int socklen_t;
-
-static int close(int sock) {
-	return closesocket(sock);
-}
-
-static int read(int sock, void* buf, size_t bufsize) {
-	return recv(sock, buf, bufsize, MSG_PEEK);
-}
-
-static int write(int sock, void* buf, size_t bufsize) {
-	return send(sock, buf, bufsize, MSG_DONTROUTE);
-}
 #else
 #include <sys/socket.h>
 #include <sys/types.h>
