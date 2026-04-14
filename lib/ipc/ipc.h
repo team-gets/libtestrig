@@ -27,7 +27,7 @@ extern "C" {
 /*
  *	Generate a path to a socket file.
  *
- *	On Linux, this is a new file under /tmp/ with the .sock
+ *	This is in a temporary path with the .rigsock extension.
  */
 TESTRIG_API int SockGeneratePath(char* sockpath);
 

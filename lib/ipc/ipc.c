@@ -28,7 +28,7 @@ int SockGeneratePath(char* sockpath) {
 		sockpath[i] = rand() % (25 + 1) + start;
 	}
 
-	strncat(sockpath, ".sock", 6);
+	strncat(sockpath, ".rigsock", 9);
 	return 0;
 }
 

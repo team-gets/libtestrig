@@ -5,7 +5,7 @@
 #include "ipc/message.h"
 #include "ipc/constants.h"
 
-const char* SOCKNAME = "/tmp/this_is_my_socket.sock";
+const char* SOCKNAME = "/tmp/this_is_my_socket.rigsock";
 
 int main(void) {
 	struct sockaddr_un parent_sockaddr;

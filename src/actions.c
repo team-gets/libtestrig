@@ -82,7 +82,27 @@ int testrig_open(other_args* others) {
 }
 
 int testrig_request(other_args* others) {
-	if (others->data == NULL) { return 1; }
+	//if (others->data == NULL) { return 1; }
+
+	// need to impl a daemon autolaunches
+
+	struct sockaddr_un sockaddr = { 0 };
+	struct sockaddr_un daemon_sockaddr = { 0 };
+	int setup = SockSetup(&sockaddr);
+	if (setup == -1) { return 1; }
+
+	int not_sought = seek_daemon(&daemon_sockaddr);
+	if (not_sought) { printf("not found"); SockClose(setup, &sockaddr); return 1; }
+
+	int conn = SockConnect(setup, &daemon_sockaddr);
+	if (conn == -1) { return 1; }
+
+	struct RigMessage msg = { 0 };
+	SetMessage(&msg, HEAD_SYNC, MESSAGE_BLANK);
+
+	// oh.. I need to impl a two-way thing
+	int nbytes = SockSend(setup, &msg);
+	if (nbytes == -1) { return 1; }
 
 	return 0;
 }

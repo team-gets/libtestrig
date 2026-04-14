@@ -44,6 +44,16 @@ TESTRIG_API extern const uint8_t HEAD_DC[4];
  */
 TESTRIG_API extern const uint8_t HEAD_SYNC[4];
 
+/*
+ *	Synchronize message header. Sent back and forth to confirm connection.
+ */
+TESTRIG_API extern const uint8_t HEAD_IDENT[4];
+
+/*
+ *	Blank message.
+ */
+TESTRIG_API extern const uint8_t MESSAGE_BLANK[8];
+
 // Convenience function that encapsulates copying to the header and data fields.
 TESTRIG_API int SetMessage(struct RigMessage* msg, const uint8_t* head, const uint8_t* data);
 

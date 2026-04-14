@@ -21,14 +21,15 @@ static char sockf[108] = { 0 };
 
 #ifdef _WIN32
 #else
-static void interrupt_catcher(int sig, siginfo_t* info, void* ucontext) {
+static void interrupt_catcher(int sig, siginfo_t* info, [[ maybe_unused ]] void* ucontext) {
 	if (sig != SIGINT || info->si_signo != SIGINT) { return; }
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_STOPPED;
 }
 
-static int impl_look_for_sock_ext(const char* fpath, const struct stat* sb, int tflag, struct FTW* ftwbuf) {
+static int impl_look_for_sock_ext(const char* fpath,
+		[[ maybe_unused ]] const struct stat* sb, [[ maybe_unused ]] int tflag, [[ maybe_unused ]] struct FTW* ftwbuf) {
 	if (tflag == FTW_F) {
-		const char* ext = strstr(fpath, ".sock");
+		const char* ext = strstr(fpath, ".rigsock");
 		if (ext != NULL) {
 			strncpy(sockf, fpath, 108);
 			return 1;
@@ -42,7 +43,7 @@ static int impl_look_for_sock_ext(const char* fpath, const struct stat* sb, int 
 static int seek_sock_ext(char* sock) {
 #ifdef _WIN32
 #else
-	char* orig = { 0 };
+	char orig[108] = { 0 };
 	strncpy(orig, sock, 108);
 
 	int walker = nftw(sock, impl_look_for_sock_ext, 10, FTW_MOUNT | FTW_PHYS);
@@ -60,7 +61,13 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 
 	sockaddr->sun_family = AF_UNIX;
 
-	seek_sock_ext(sock);
+	//struct RigMessage identmsg = { 0 };
+	//SetMessage(&identmsg, HEAD_IDENT, MESSAGE_BLANK);
+
+	// FIXME: this hopes that we clean up after ourselves and that only one exists
+	int not_sought = seek_sock_ext(sock);
+	if (not_sought) { return 1; }
+
 	strncpy(sockaddr->sun_path, sockf, 108);
 	memset(sockf, 0, 108);
 
