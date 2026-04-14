@@ -17,6 +17,7 @@ typedef int socklen_t;
 #endif // _WIN32
 
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS;
+static char sockf[108] = { 0 };
 
 #ifdef _WIN32
 #else
@@ -26,6 +27,14 @@ static void interrupt_catcher(int sig, siginfo_t* info, void* ucontext) {
 }
 
 static int impl_look_for_sock_ext(const char* fpath, const struct stat* sb, int tflag, struct FTW* ftwbuf) {
+	if (tflag == FTW_F) {
+		const char* ext = strstr(fpath, ".sock");
+		if (ext != NULL) {
+			strncpy(sockf, fpath, 108);
+			return 1;
+		};
+	}
+
 	return 0;
 }
 #endif // _WIN32
@@ -37,6 +46,10 @@ static int seek_sock_ext(char* sock) {
 	strncpy(orig, sock, 108);
 
 	int walker = nftw(sock, impl_look_for_sock_ext, 10, FTW_MOUNT | FTW_PHYS);
+	if (walker != 1) { perror("finder fail"); return 1; }
+
+	printf("The sock %s\n", sockf);
+	return 0;
 #endif
 }
 
@@ -46,7 +59,10 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 	if (dest) { return 1; }
 
 	sockaddr->sun_family = AF_UNIX;
-	strncpy(sockaddr->sun_path, sock, 108);
+
+	seek_sock_ext(sock);
+	strncpy(sockaddr->sun_path, sockf, 108);
+	memset(sockf, 0, 108);
 
 	return 0;
 }
