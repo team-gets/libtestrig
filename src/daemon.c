@@ -1,5 +1,7 @@
+// NOLINTBEGIN
 #define _XOPEN_SOURCE_EXTENDED 1
 #define _XOPEN_SOURCE 600
+// NOLINTEND
 
 #include <stdio.h>
 #include <string.h>
@@ -16,7 +18,7 @@ typedef int socklen_t;
 #include <signal.h>
 #endif // _WIN32
 
-extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS;
+extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
 static char sockf[108] = { 0 };
 
 #ifdef _WIN32

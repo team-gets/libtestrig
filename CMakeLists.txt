@@ -6,6 +6,7 @@ project(libtestrig
 
 include(target_copy_dll)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(IPC_DIR "${LIB_DIR}/ipc")
 set(EPOS_DIR "${LIB_DIR}/epos2")

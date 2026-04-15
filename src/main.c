@@ -9,7 +9,7 @@
 #include "args.h"
 #include "daemon.h"
 
-enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_NONE;
+enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_NONE; // NOLINT
 
 int main(int argc, char** argv) {
 	if (argc < 2 || argc > 255) {
