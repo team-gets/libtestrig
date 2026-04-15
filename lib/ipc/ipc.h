@@ -61,16 +61,6 @@ TESTRIG_API int vscl_sock_connect(const int fd, const struct sockaddr_un* sockad
 TESTRIG_API int vscl_sock_close(const int fd, struct sockaddr_un* sockaddr);
 
 /*
- *	Set the socket up to receive and simply write out to the buffer.
- */
-TESTRIG_API int vscl_sock_read_out(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags);
-
-/*
- *	Set the socket up to receive and loop the handler on each message.
- */
-TESTRIG_API int vscl_sock_read_and_handle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*));
-
-/*
  *	Send a message over the socket without waiting for a response.
  */
 TESTRIG_API int vscl_sock_send(const int fd, struct rig_message* msg);
