@@ -9,12 +9,6 @@ extern "C" {
 #include "libtestrig_api.h"
 #include "controller.h"
 
-#ifdef __cplusplus
-} // extern "C" (headers)
-namespace VSCL::Rig {
-extern "C" {
-#endif // __cplusplus
-
 uint32_t TESTRIG_API vscl_clean_enable_device(struct controller* controller, void* device_handle);
 
 /*
@@ -52,5 +46,4 @@ uint32_t TESTRIG_API vscl_close_devices(
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL::Rig
-#endif // __cplusplus
+#endif

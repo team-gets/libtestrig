@@ -20,12 +20,6 @@ extern "C" {
 #include "ipc/os.h"
 #include "libtestrig_api.h"
 
-#ifdef __cplusplus
-} // extern "C"
-namespace VSCL {
-extern "C" {
-#endif // __cplusplus
-
 /*
  *	Generate a path to a socket file.
  *
@@ -93,5 +87,4 @@ TESTRIG_API int vscl_identify_full_header(uint8_t in[4]);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL
 #endif

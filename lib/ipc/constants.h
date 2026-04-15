@@ -7,12 +7,6 @@ extern "C" {
 #include <stdint.h>
 #include "libtestrig_api.h"
 
-#ifdef __cplusplus
-}
-namespace VSCL::IPC {
-extern "C" {
-#endif // __cplusplus
-
 /*
  *	Socket read flag
  *
@@ -32,5 +26,4 @@ TESTRIG_API enum HEADER_RET {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL::IPC
 #endif // __cplusplus

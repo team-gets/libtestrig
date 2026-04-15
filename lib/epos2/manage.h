@@ -9,11 +9,6 @@ extern "C" {
 #include "epos2.h"
 #include "controller.h"
 
-#ifdef __cplusplus
-} // extern "C" (headers)
-namespace VSCL::Rig {
-extern "C" {
-#endif // __cplusplus
 
 /*
  *	Attempt to abort the test rig.
@@ -22,5 +17,4 @@ uint32_t TESTRIG_API vscl_rig_abort(const struct controller* controller_in, void
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL::Rig
 #endif // __cplusplus

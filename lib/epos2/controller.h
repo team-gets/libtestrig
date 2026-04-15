@@ -6,12 +6,6 @@ extern "C" {
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-} // extern "C" (headers)
-namespace VSCL::Rig {
-extern "C" {
-#endif // __cplusplus
-
 enum CONTROLLER_STATE {
 	CTRL_STATE_CLOSED = 1,
 	CTRL_STATE_OPENED = 2,
@@ -39,5 +33,4 @@ struct controller {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL::Rig
 #endif // __cplusplus

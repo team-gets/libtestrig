@@ -8,12 +8,6 @@ extern "C" {
 #include "libtestrig_api.h"
 #include "controller.h"
 
-#ifdef __cplusplus
-} // extern "C" (headers)
-namespace VSCL::Rig {
-extern "C" {
-#endif // __cplusplus
-
 enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
 	FLAG_ACQUIRE_INIT_DEFAULTS = 1,
 	FLAG_ACQUIRE_ZERO_INIT = 2,
@@ -57,5 +51,4 @@ void TESTRIG_API vscl_print_controller_characteristics(struct controller* contro
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL::Rig
 #endif // __cplusplus

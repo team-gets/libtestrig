@@ -8,7 +8,6 @@
 #include "manage.h"
 
 #ifdef __cplusplus
-namespace VSCL::Rig {
 extern "C" {
 #endif // __cplusplus
 
@@ -43,5 +42,4 @@ uint32_t TESTRIG_API vscl_cleanup_testrig(
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL::Rig
 #endif // __cplusplus

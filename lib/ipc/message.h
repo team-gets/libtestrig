@@ -8,12 +8,6 @@ extern "C" {
 #include <stdint.h>
 #include "libtestrig_api.h"
 
-#ifdef __cplusplus
-} // extern "C"
-namespace VSCL {
-extern "C" {
-#endif // __cplusplus
-
 /*
  *	A test rig message.
  *	These are unsigned chars - but more explict - on the architectures and OSes we care about
@@ -69,5 +63,4 @@ TESTRIG_API enum HEADER_TYPE {
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL
 #endif
