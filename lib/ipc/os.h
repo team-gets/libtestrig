@@ -11,7 +11,7 @@ extern "C" {
 #define INVALID_SOCKET -1
 #endif
 
-TESTRIG_API int GetSockDestination(char* dest);
+TESTRIG_API int get_sock_destination(char* dest);
 
 #ifdef __cplusplus
 } // extern "C"

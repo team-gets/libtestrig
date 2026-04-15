@@ -4,7 +4,7 @@
 
 #include "os.h"
 
-int GetSockDestination(char *dest) {
+int get_sock_destination(char *dest) {
 #ifdef _WIN32
     size_t retvalue;
     char usrtemp[76] = { 0 };

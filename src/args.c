@@ -77,7 +77,7 @@ int parse_opt(const char* arg, struct parsed_args* parsed) {
 	return ret;
 }
 
-int validate_combo(enum cli_mode mode, enum cli_action action) {
+int validate_combo(enum CLI_MODE mode, enum CLI_ACTION action) {
 	switch (mode) {
 	case CLI_MODE_DETACHED:
 		switch (action) {

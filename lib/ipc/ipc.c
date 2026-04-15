@@ -12,12 +12,12 @@
 typedef int socklen_t;
 #endif
 
-int SockGeneratePath(char* sockpath) {
+int sock_generate_path(char* sockpath) {
 	int retstat;
 	int baselen;
 	//int dstart;
 
-	retstat = GetSockDestination(sockpath);
+	retstat = get_sock_destination(sockpath);
 	baselen = strlen(sockpath);
 
 	if (retstat != 0) { return retstat; }
@@ -32,7 +32,7 @@ int SockGeneratePath(char* sockpath) {
 	return 0;
 }
 
-int SockSetup(struct sockaddr_un* sockaddr_mut) {
+int sock_setup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
 	int path_set;
 	char sockpath[108] = { 0 };
@@ -54,7 +54,7 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 		strnlen(sockaddr_mut->sun_path, 108)) == 0) ? -1 : 1;
 
 	if (path_set == -1) {
-		SockGeneratePath(sockpath);
+		sock_generate_path(sockpath);
 		long long int sockpathlen = strnlen(sockpath, 108);
 		strncpy(sockaddr_mut->sun_path, sockpath, sockpathlen + 1);
 	}
@@ -63,7 +63,7 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	return fd;
 }
 
-int SockBind(const int fd, const struct sockaddr_un* sockaddr) {
+int sock_bind(const int fd, const struct sockaddr_un* sockaddr) {
 	int bindstat;
 	socklen_t socklen;
 
@@ -74,7 +74,7 @@ int SockBind(const int fd, const struct sockaddr_un* sockaddr) {
 	return bindstat;
 }
 
-int SockListen(const int fd, int max_backlog) {
+int sock_listen(const int fd, int max_backlog) {
 	int listenstat;
 
 	listenstat = listen(fd, max_backlog);
@@ -83,7 +83,7 @@ int SockListen(const int fd, int max_backlog) {
 	return listenstat;
 }
 
-int SockConnect(const int fd, const struct sockaddr_un* sockaddr) {
+int sock_connect(const int fd, const struct sockaddr_un* sockaddr) {
 	int connstat;
 	socklen_t socklen;
 
@@ -94,7 +94,7 @@ int SockConnect(const int fd, const struct sockaddr_un* sockaddr) {
 	return connstat;
 }
 
-int SockClose(const int fd, struct sockaddr_un* sockaddr) {
+int sock_close(const int fd, struct sockaddr_un* sockaddr) {
 	int closestat;
 
 
@@ -109,7 +109,7 @@ int SockClose(const int fd, struct sockaddr_un* sockaddr) {
 }
 
 // TODO: reevaluate necessity for inclusion
-int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags) {
+int sock_read_out(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags) {
 	int recvstat;
 	int acceptstat;
 	int head;
@@ -135,7 +135,7 @@ int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_o
 			if (recvstat == -1) { perror("Socket read failure"); continue; }
 
 			uint8_t headcheck[4] = { buf[0], buf[1], buf[2], buf[3] };
-			head = IdentifyFullHeader(headcheck);
+			head = identify_full_header(headcheck);
 
 			// Pick what to do
 			switch (head) {
@@ -175,7 +175,7 @@ int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_o
 	return 0;
 }
 
-int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*)) {
+int sock_read_and_handle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*)) {
 	int recvstat;
 	int acceptstat;
 	int handlestat;
@@ -209,7 +209,7 @@ int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(
 	return 0;
 }
 
-int SockSend(const int fd, struct RigMessage* msg) {
+int sock_send(const int fd, struct rig_message* msg) {
 	int nbytes;
 	uint8_t buf[12] = { 0 };
 
@@ -231,7 +231,7 @@ int SockSend(const int fd, struct RigMessage* msg) {
 	return nbytes;
 }
 
-int IdentifyHeaderPart(uint8_t in[4], int idx) {
+int identify_header_part(uint8_t in[4], int idx) {
 	if (in[idx] == HEAD_STAY[idx]) {
 		return HEADER_IS_STAY;
 	}
@@ -246,15 +246,15 @@ int IdentifyHeaderPart(uint8_t in[4], int idx) {
 	}
 }
 
-int IdentifyFullHeader(uint8_t in[4]) {
+int identify_full_header(uint8_t in[4]) {
 	int identity = -1;
 
 	for (int i = 0; i < 4; i++) {
 		if (i == 0) {
-			identity = IdentifyHeaderPart(in, 0);
+			identity = identify_header_part(in, 0);
 		}
 		else {
-			identity &= IdentifyHeaderPart(in, i);
+			identity &= identify_header_part(in, i);
 		}
 	}
 

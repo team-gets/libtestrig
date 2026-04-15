@@ -19,7 +19,7 @@ extern "C" {
  *	These are unsigned chars - but more explict - on the architectures and OSes we care about
  *	(x86_64 Linux and Windows, basically whatever Maxon supports)
  */ 
-TESTRIG_API struct RigMessage {
+TESTRIG_API struct rig_message {
 	// Header: Four bytes to avoid collisions while keeping messages small.
 	uint8_t head[4];
 
@@ -55,7 +55,7 @@ TESTRIG_API extern const uint8_t HEAD_IDENT[4];
 TESTRIG_API extern const uint8_t MESSAGE_BLANK[8];
 
 // Convenience function that encapsulates copying to the header and data fields.
-TESTRIG_API int SetMessage(struct RigMessage* msg, const uint8_t* head, const uint8_t* data);
+TESTRIG_API int set_message(struct rig_message* msg, const uint8_t* head, const uint8_t* data);
 
 /*
  *	The type of header.

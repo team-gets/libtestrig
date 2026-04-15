@@ -12,7 +12,7 @@ namespace VSCL::Rig {
 extern "C" {
 #endif // __cplusplus
 
-enum ControllerState {
+enum CONTROLLER_STATE {
 	CTRL_STATE_CLOSED = 1,
 	CTRL_STATE_OPENED = 2,
 };
@@ -22,19 +22,19 @@ enum ControllerState {
  *
  *	Refer to the parameters passed to VCS_OpenDevice, Page 13 of the Manual.
  */
-struct Controller {
+struct controller {
 	// The name of the controller.
-	char Name[8];
+	char name[8];
 	// The name of the communication protocol.
-	char Protocol[16];
+	char protocol[16];
 	// The name of the connection interface.
-	char Interface[64];
+	char interface[64];
 	// The name of the port used in connection.
-	char Port[8];
+	char port[8];
 	// The node of the controller.
-	uint8_t NodeId;
+	uint8_t node_id;
 	// State of the controller.
-	enum ControllerState State;
+	enum CONTROLLER_STATE state;
 };
 
 #ifdef __cplusplus

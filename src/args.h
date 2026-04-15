@@ -3,12 +3,12 @@
 #include <stdint.h>
 #include "other_args.h"
 
-enum cli_mode {
+enum CLI_MODE {
 	CLI_MODE_CMD = 0,
 	CLI_MODE_DETACHED = 1
 };
 
-enum cli_action {
+enum CLI_ACTION {
 	/*
 	 *	Print help for this program.
 	 *
@@ -50,8 +50,8 @@ enum cli_action {
 };
 
 struct parsed_args {
-	enum cli_mode mode;
-	enum cli_action action;
+	enum CLI_MODE mode;
+	enum CLI_ACTION action;
 	uint8_t verbosity;
 
 	// Operate on the passed immmutable strings.
@@ -65,4 +65,4 @@ int parse_flag(const char* flag, struct parsed_args* parsed);
 int parse_opt(const char* opt, struct parsed_args* parsed);
 int parse_act(const char* act, struct parsed_args* parsed);
 void parse_args(int argc, char** argv, struct parsed_args* parsed, other_args* others);
-int validate_combo(enum cli_mode mode, enum cli_action action);
+int validate_combo(enum CLI_MODE mode, enum CLI_ACTION action);

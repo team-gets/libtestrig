@@ -14,7 +14,7 @@
 
 extern char* action_map[];
 
-int detach_program(char** argv, enum cli_action act, const other_args* others) {
+int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 #if _WIN32
 	return -1;
 	PROCESS_INFORMATION pi;
@@ -64,7 +64,7 @@ int detach_program(char** argv, enum cli_action act, const other_args* others) {
 int testrig_ident(other_args* others) {
 	if (others->data == NULL) { return 1; }
 
-	IdentifyDeviceNames();
+	identify_device_names();
 
 	return 0;
 }
@@ -88,20 +88,20 @@ int testrig_request(other_args* others) {
 
 	struct sockaddr_un sockaddr = { 0 };
 	struct sockaddr_un daemon_sockaddr = { 0 };
-	int setup = SockSetup(&sockaddr);
+	int setup = sock_setup(&sockaddr);
 	if (setup == -1) { return 1; }
 
 	int not_sought = seek_daemon(&daemon_sockaddr);
-	if (not_sought) { printf("not found"); SockClose(setup, &sockaddr); return 1; }
+	if (not_sought) { printf("not found"); sock_close(setup, &sockaddr); return 1; }
 
-	int conn = SockConnect(setup, &daemon_sockaddr);
+	int conn = sock_connect(setup, &daemon_sockaddr);
 	if (conn == -1) { return 1; }
 
-	struct RigMessage msg = { 0 };
-	SetMessage(&msg, HEAD_SYNC, MESSAGE_BLANK);
+	struct rig_message msg = { 0 };
+	set_message(&msg, HEAD_SYNC, MESSAGE_BLANK);
 
 	// oh.. I need to impl a two-way thing
-	int nbytes = SockSend(setup, &msg);
+	int nbytes = sock_send(setup, &msg);
 	if (nbytes == -1) { return 1; }
 
 	return 0;

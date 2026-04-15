@@ -29,65 +29,65 @@ extern "C" {
  *
  *	This is in a temporary path with the .rigsock extension.
  */
-TESTRIG_API int SockGeneratePath(char* sockpath);
+TESTRIG_API int sock_generate_path(char* sockpath);
 
 /*
  *	Create a Unix socket to a random file.
  *
  *	Returns a nonzero int representing the file descriptor, otherwise -1.
  */
-TESTRIG_API int SockSetup(struct sockaddr_un* sockaddr_mut);
+TESTRIG_API int sock_setup(struct sockaddr_un* sockaddr_mut);
 
 /*
  *	Bind the Unix socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
-TESTRIG_API int SockBind(const int fd, const struct sockaddr_un* sockaddr);
+TESTRIG_API int sock_bind(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
  *	Set the Unix socket to listen and permit connection attempts.
  *
  *	Returns 0 on success, -1 on failure.
  */
-TESTRIG_API int SockListen(const int fd, int max_backlog);
+TESTRIG_API int sock_listen(const int fd, int max_backlog);
 
 /*
  *	Connect the Unix Socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
-TESTRIG_API int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
+TESTRIG_API int sock_connect(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
  *	Close the socket and clean up.
  */
-TESTRIG_API int SockClose(const int fd, struct sockaddr_un* sockaddr);
+TESTRIG_API int sock_close(const int fd, struct sockaddr_un* sockaddr);
 
 /*
  *	Set the socket up to receive and simply write out to the buffer.
  */
-TESTRIG_API int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags);
+TESTRIG_API int sock_read_out(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags);
 
 /*
  *	Set the socket up to receive and loop the handler on each message.
  */
-TESTRIG_API int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*));
+TESTRIG_API int sock_read_and_handle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*));
 
 /*
  *	Send a message over the socket without waiting for a response.
  */
-TESTRIG_API int SockSend(const int fd, struct RigMessage* msg);
+TESTRIG_API int sock_send(const int fd, struct rig_message* msg);
 
 /*
  *	Identify the header byte.
  */
-TESTRIG_API int IdentifyHeaderPart(uint8_t in[4], int idx);
+TESTRIG_API int identify_header_part(uint8_t in[4], int idx);
 
 /*
  *	Identify the four bytes in the header.
  */
-TESTRIG_API int IdentifyFullHeader(uint8_t in[4]);
+TESTRIG_API int identify_full_header(uint8_t in[4]);
 
 #ifdef __cplusplus
 } // extern "C"

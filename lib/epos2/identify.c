@@ -5,28 +5,28 @@
 #include "definitions.h"
 #include "identify.h"
 
-static void PrintNamingError(uint8_t error_code) {
+static void print_naming_error(uint8_t error_code) {
 	printf("While identifying device names:\n\t");
-	PrintError(error_code);
+	print_error(error_code);
 }
 
-static void PrintProtocolIdentError(uint8_t error_code, const char* name) {
+static void print_protocol_ident_error(uint8_t error_code, const char* name) {
 	printf("While identifying device protocol stacks for device %s:\n\t", name);
-	PrintError(error_code);
+	print_error(error_code);
 }
 
-static void PrintInterfaceIdentError(uint8_t error_code, const char* name, const char* protocol) {
+static void print_interface_ident_error(uint8_t error_code, const char* name, const char* protocol) {
 	printf("While identifying device interface for device %s on protocol %s:\n\t", name, protocol);
-	PrintError(error_code);
+	print_error(error_code);
 }
 
-static void PrintPortIdentError(uint8_t error_code, const char* name, const char* protocol, const char* iface) {
+static void print_port_ident_error(uint8_t error_code, const char* name, const char* protocol, const char* iface) {
 	printf("While identifying device interface for device %s on protocol %s and interface %s:\n\t",
 			name, protocol, iface);
-	PrintError(error_code);
+	print_error(error_code);
 }
 
-uint32_t IdentifyDeviceNames(void) {
+uint32_t identify_device_names(void) {
 	uint32_t error_code = 0;
 	int n = 1;
 	int selection_end;
@@ -36,7 +36,7 @@ uint32_t IdentifyDeviceNames(void) {
 			1, name, 8,
 			&selection_end, &error_code);
 	if (name_found != 0) {
-		PrintNamingError(error_code);
+		print_naming_error(error_code);
 		return error_code;
 	}
 
@@ -51,7 +51,7 @@ uint32_t IdentifyDeviceNames(void) {
 			&selection_end, &error_code);
 
 		if (name_found != 0) {
-			PrintNamingError(error_code);
+			print_naming_error(error_code);
 			return error_code;
 		}
 
@@ -74,7 +74,7 @@ uint32_t IdentifyDeviceProtocols(char* device_name) {
 			&selection_end, &error_code);
 
 	if (protocol_found == 0) {
-		PrintProtocolIdentError(error_code, device_name);
+		print_protocol_ident_error(error_code, device_name);
 		return error_code;
 	}
 
@@ -90,7 +90,7 @@ uint32_t IdentifyDeviceProtocols(char* device_name) {
 			&selection_end, &error_code);
 
 		if (protocol_found == 0) {
-			PrintProtocolIdentError(error_code, device_name);
+			print_protocol_ident_error(error_code, device_name);
 			return error_code;
 		}
 
@@ -112,7 +112,7 @@ uint32_t IdentifyDeviceInterfaces(char* device_name, char* protocol_stack) {
 			device_interface, 64, &selection_end, &error_code);
 
 	if (interface_found == 0) {
-		PrintInterfaceIdentError(error_code, device_name, protocol_stack);
+		print_interface_ident_error(error_code, device_name, protocol_stack);
 		return error_code;
 	}
 
@@ -127,7 +127,7 @@ uint32_t IdentifyDeviceInterfaces(char* device_name, char* protocol_stack) {
 				subdevice_interface, 64, &selection_end, &error_code);
 
 		if (interface_found == 0) {
-			PrintInterfaceIdentError(error_code, device_name, protocol_stack);
+			print_interface_ident_error(error_code, device_name, protocol_stack);
 			return error_code;
 		}
 
@@ -148,7 +148,7 @@ uint32_t IdentifyDevicePorts(char* device_name, char* protocol_stack, char* devi
 			device_name, protocol_stack, device_interface, 1,
 			device_port, 8, &selection_end, &error_code);
 	if (port_found == 0) {
-		PrintPortIdentError(error_code, device_name, protocol_stack, device_interface);
+		print_port_ident_error(error_code, device_name, protocol_stack, device_interface);
 		return error_code;
 	}
 
@@ -164,7 +164,7 @@ uint32_t IdentifyDevicePorts(char* device_name, char* protocol_stack, char* devi
 				subdevice_port, 8, &selection_end, &error_code);
 
 		if (port_found == 0) {
-			PrintPortIdentError(error_code, device_name, protocol_stack, device_interface);
+			print_port_ident_error(error_code, device_name, protocol_stack, device_interface);
 			return error_code;
 		}
 
@@ -176,10 +176,10 @@ uint32_t IdentifyDevicePorts(char* device_name, char* protocol_stack, char* devi
 }
 
 
-void PrintControllerCharacteristics(struct Controller* controller) {
-	printf("- Name:          %s\n", controller->Name);
-	printf("- Node:          %i\n", controller->NodeId);
-	printf("- Protocol:	     %s\n", controller->Protocol);
-	printf("- Interface:     %s\n", controller->Interface);
-	printf("- Port:          %s\n", controller->Port);
+void print_controller_characteristics(struct controller* controller) {
+	printf("- Name:          %s\n", controller->name);
+	printf("- Node:          %i\n", controller->node_id);
+	printf("- Protocol:	     %s\n", controller->protocol);
+	printf("- Interface:     %s\n", controller->interface);
+	printf("- Port:          %s\n", controller->port);
 }
