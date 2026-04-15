@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
+#include "libtestrig_api.h"
 
 typedef struct {
-	uint8_t size;
+	vscl_byte_t size;
 	char** data;
 } other_args;

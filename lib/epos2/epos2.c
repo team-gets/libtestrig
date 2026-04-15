@@ -4,7 +4,7 @@
 
 const char* DEFAULT_NAME = "EPOS2"; // NOLINT
 
-int vscl_decode_error(const uint32_t error_code, char* error_msg, uint8_t max_size) {
+int vscl_decode_error(const uint32_t error_code, char* error_msg, vscl_byte_t max_size) {
 	int ret = VCS_GetErrorInfo(error_code, error_msg, max_size);
 	if (ret == 0) { printf("ERROR: Failed to decode error\n"); }
 
@@ -35,7 +35,7 @@ uint32_t vscl_setup_testrig_as_can_gateway(struct controller controllers[3], voi
 	uint32_t error_code = 0;
 
 	if (default_init != 0) {
-		for (uint8_t i = 0; i < 3; i++) {
+		for (vscl_byte_t i = 0; i < 3; i++) {
 			struct controller controller = controllers[i];
 			strncpy(controller.name, "EPOS4", 6); // Initial testing shows this
 			strncpy(controller.protocol, "CANopen", 8);

@@ -52,7 +52,7 @@ enum CLI_ACTION {
 struct parsed_args {
 	enum CLI_MODE mode;
 	enum CLI_ACTION action;
-	uint8_t verbosity;
+	vscl_byte_t verbosity;
 
 	// Operate on the passed immmutable strings.
 	int(*fun)(other_args*);

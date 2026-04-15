@@ -26,7 +26,7 @@ struct controller {
 	// The name of the port used in connection.
 	char port[8];
 	// The node of the controller.
-	uint8_t node_id;
+	vscl_byte_t node_id;
 	// State of the controller.
 	enum CONTROLLER_STATE state;
 };

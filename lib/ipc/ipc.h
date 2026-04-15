@@ -14,7 +14,8 @@ extern "C" {
 #include <sys/unistd.h>
 #endif // _WIN32
 
-#include <stdint.h>
+#include <limits.h>
+#include <assert.h>
 
 #include "ipc/message.h"
 #include "ipc/os.h"
@@ -68,12 +69,12 @@ TESTRIG_API int vscl_sock_send(const int fd, struct rig_message* msg);
 /*
  *	Identify the header byte.
  */
-TESTRIG_API int vscl_identify_header_part(uint8_t in[4], int idx);
+TESTRIG_API int vscl_identify_header_part(vscl_byte_t in[4], int idx);
 
 /*
  *	Identify the four bytes in the header.
  */
-TESTRIG_API int vscl_identify_full_header(uint8_t in[4]);
+TESTRIG_API int vscl_identify_full_header(vscl_byte_t in[4]);
 
 #ifdef __cplusplus
 } // extern "C"

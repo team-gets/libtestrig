@@ -106,7 +106,7 @@ int testrig_daemon(other_args* others) {
 		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
 		if (accepted == -1) { perror("daemon accept failure"); continue; }
 
-		uint8_t msg[12] = { 0 };
+		vscl_byte_t msg[12] = { 0 };
 #ifdef _WIN32
 		int synced = recv(accepted, msg, 12, MSG_PEEK);
 #else
@@ -114,7 +114,7 @@ int testrig_daemon(other_args* others) {
 #endif
 		if (synced != 12) { continue; }
 
-		uint8_t head[4] = { 0 };
+		vscl_byte_t head[4] = { 0 };
 		memcpy(head, msg, 4);
 
 		int header = vscl_identify_full_header(head);
@@ -126,7 +126,7 @@ int testrig_daemon(other_args* others) {
 		// - It should reply (i think i can do this with bytestreasm)
 		// - It should connect back to another socket to send the data!
 		struct rig_message reply;
-		uint8_t blank[8] = { 0 };
+		vscl_byte_t blank[8] = { 0 };
 		int set = vscl_set_message(&reply, HEAD_SYNC, blank);
 		if (!set) { continue; }
 
@@ -143,7 +143,7 @@ int testrig_daemon(other_args* others) {
 			int accepted = vscl_sock_connect(sock, &sockaddr);
 			if (accepted == -1) { perror("daemon connect failure"); continue; }
 
-			uint8_t buf[12] = { 0 };
+			vscl_byte_t buf[12] = { 0 };
 #ifdef _WIN32
 			int recvd = recv(accepted, buf, 12, MSG_PEEK);
 #else

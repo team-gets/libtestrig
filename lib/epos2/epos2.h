@@ -16,7 +16,7 @@ extern const char* default_name;
 /*
  *	@brief Decode a given error code to its corresponding message.
  */
-int TESTRIG_API vscl_decode_error(const uint32_t error_code, char* error_msg, uint8_t max_size);
+int TESTRIG_API vscl_decode_error(const uint32_t error_code, char* error_msg, vscl_byte_t max_size);
 
 /*
  *	@brief Decode and print an error code's corresponding message.

@@ -11,7 +11,7 @@ static void vscl_failed_open_device(uint32_t error_code) {
 	printf("Failed to open device with with following characteristics:\n");
 }
 
-uint32_t vscl_initialize_device(struct controller* controller_out, void* node, uint8_t node_id) {
+uint32_t vscl_initialize_device(struct controller* controller_out, void* node, vscl_byte_t node_id) {
 	uint32_t error_code = 0;
 
 	node = VCS_OpenDevice(controller_out->name,
@@ -32,7 +32,7 @@ uint32_t vscl_initialize_device(struct controller* controller_out, void* node, u
 	return error_code;
 }
 
-uint32_t vscl_initialize_devices(struct controller controllers_out[], void* handles_out[], uint8_t num) {
+uint32_t vscl_initialize_devices(struct controller controllers_out[], void* handles_out[], vscl_byte_t num) {
 	if (num < 1) { printf("Invalid device array size.\n"); return 0x06040043; } // "General Parameter Error"
 	uint32_t error_code = 0;
 
@@ -58,7 +58,7 @@ uint32_t vscl_initialize_devices(struct controller controllers_out[], void* hand
 		return error_code;
 	}
 
-	for (uint8_t i = 1; i < num; i++) {
+	for (vscl_byte_t i = 1; i < num; i++) {
 		if (handles_out[i] == NULL) { break; }
 
 		handles_out[i] = VCS_OpenSubDevice(handles_out[i],
@@ -134,7 +134,7 @@ uint32_t vscl_close_device(struct controller* controller, void* device_handle) {
 	return error_code;
 }
 
-uint32_t vscl_close_devices(struct controller controllers[], void* device_handles[], uint8_t num) {
+uint32_t vscl_close_devices(struct controller controllers[], void* device_handles[], vscl_byte_t num) {
 	if (num < 1) { printf("Invalid device array size.\n"); return 0x06040043; } // General Parameter Error
 	if (device_handles[0] == 0) {
 		printf("At head of CloseDevices():\n");
@@ -148,7 +148,7 @@ uint32_t vscl_close_devices(struct controller controllers[], void* device_handle
 	uint32_t error_code = 0;
 	int ret;
 
-	for (uint8_t i = num - 1; i == 0; i--) {
+	for (vscl_byte_t i = num - 1; i == 0; i--) {
 		void* handle = device_handles[i];
 		if (handle == 0) { continue; }
 

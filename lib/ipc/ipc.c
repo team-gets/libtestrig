@@ -110,7 +110,7 @@ int vscl_sock_close(const int fd, struct sockaddr_un* sockaddr) {
 
 int vscl_sock_send(const int fd, struct rig_message* msg) {
 	int nbytes;
-	uint8_t buf[12] = { 0 };
+	vscl_byte_t buf[12] = { 0 };
 
 	for (int i = 0; i < 4; i++) {
 		buf[i] = msg->head[i];
@@ -130,7 +130,7 @@ int vscl_sock_send(const int fd, struct rig_message* msg) {
 	return nbytes;
 }
 
-int vscl_identify_header_part(uint8_t in[4], int idx) {
+int vscl_identify_header_part(vscl_byte_t in[4], int idx) {
 	if (in[idx] == HEAD_STAY[idx]) {
 		return HEADER_IS_STAY;
 	}
@@ -145,7 +145,7 @@ int vscl_identify_header_part(uint8_t in[4], int idx) {
 	}
 }
 
-int vscl_identify_full_header(uint8_t in[4]) {
+int vscl_identify_full_header(vscl_byte_t in[4]) {
 	int identity = -1;
 
 	for (int i = 0; i < 4; i++) {
