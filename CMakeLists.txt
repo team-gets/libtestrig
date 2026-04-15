@@ -25,9 +25,20 @@ set(EPOS_SOURCES
 
 set(LIBTESTRIG_SOURCES ${IPC_SOURCES} ${EPOS_SOURCES})
 
-find_package(EposCmd REQUIRED)
-if (EposCmd-FOUND)
-	message("-- Found EPOS Command Library")
+if (WIN32)
+	add_library(EposCmd SHARED IMPORTED)
+	set_target_properties(EposCmd PROPERTIES
+		IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/bin/EposCmd64.dll"
+		IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/bin/EposCmd64.lib")
+
+	set(EposCmd-FOUND TRUE)
+else()
+	add_library(EposCmd SHARED IMPORTED)
+	set_target_properties(EposCmd PROPERTIES
+		IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/bin/libEposCmd.so"
+		IMPORTED_IMPLIB "")
+
+	set(EposCmd-FOUND TRUE)
 endif()
 
 add_library(libtestrig SHARED ${LIBTESTRIG_SOURCES})
