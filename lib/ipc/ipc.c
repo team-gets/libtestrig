@@ -12,12 +12,12 @@
 typedef int socklen_t;
 #endif
 
-int sock_generate_path(char* sockpath) {
+int vscl_sock_generate_path(char* sockpath) {
 	int retstat;
 	int baselen;
 	//int dstart;
 
-	retstat = get_sock_destination(sockpath);
+	retstat = vscl_get_sock_destination(sockpath);
 	baselen = strlen(sockpath);
 
 	if (retstat != 0) { return retstat; }
@@ -32,7 +32,7 @@ int sock_generate_path(char* sockpath) {
 	return 0;
 }
 
-int sock_setup(struct sockaddr_un* sockaddr_mut) {
+int vscl_sock_setup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
 	int path_set;
 	char sockpath[108] = { 0 };
@@ -54,7 +54,7 @@ int sock_setup(struct sockaddr_un* sockaddr_mut) {
 		strnlen(sockaddr_mut->sun_path, 108)) == 0) ? -1 : 1;
 
 	if (path_set == -1) {
-		sock_generate_path(sockpath);
+		vscl_sock_generate_path(sockpath);
 		long long int sockpathlen = strnlen(sockpath, 108);
 		strncpy(sockaddr_mut->sun_path, sockpath, sockpathlen + 1);
 	}
@@ -63,7 +63,7 @@ int sock_setup(struct sockaddr_un* sockaddr_mut) {
 	return fd;
 }
 
-int sock_bind(const int fd, const struct sockaddr_un* sockaddr) {
+int vscl_sock_bind(const int fd, const struct sockaddr_un* sockaddr) {
 	int bindstat;
 	socklen_t socklen;
 
@@ -74,7 +74,7 @@ int sock_bind(const int fd, const struct sockaddr_un* sockaddr) {
 	return bindstat;
 }
 
-int sock_listen(const int fd, int max_backlog) {
+int vscl_sock_listen(const int fd, int max_backlog) {
 	int listenstat;
 
 	listenstat = listen(fd, max_backlog);
@@ -83,7 +83,7 @@ int sock_listen(const int fd, int max_backlog) {
 	return listenstat;
 }
 
-int sock_connect(const int fd, const struct sockaddr_un* sockaddr) {
+int vscl_sock_connect(const int fd, const struct sockaddr_un* sockaddr) {
 	int connstat;
 	socklen_t socklen;
 
@@ -94,7 +94,7 @@ int sock_connect(const int fd, const struct sockaddr_un* sockaddr) {
 	return connstat;
 }
 
-int sock_close(const int fd, struct sockaddr_un* sockaddr) {
+int vscl_sock_close(const int fd, struct sockaddr_un* sockaddr) {
 	int closestat;
 
 
@@ -109,7 +109,7 @@ int sock_close(const int fd, struct sockaddr_un* sockaddr) {
 }
 
 // TODO: reevaluate necessity for inclusion
-int sock_read_out(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags) {
+int vscl_sock_read_out(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags) {
 	int recvstat;
 	int acceptstat;
 	int head;
@@ -135,7 +135,7 @@ int sock_read_out(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf
 			if (recvstat == -1) { perror("Socket read failure"); continue; }
 
 			uint8_t headcheck[4] = { buf[0], buf[1], buf[2], buf[3] };
-			head = identify_full_header(headcheck);
+			head = vscl_identify_full_header(headcheck);
 
 			// Pick what to do
 			switch (head) {
@@ -175,7 +175,7 @@ int sock_read_out(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf
 	return 0;
 }
 
-int sock_read_and_handle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*)) {
+int vscl_sock_read_and_handle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*)) {
 	int recvstat;
 	int acceptstat;
 	int handlestat;
@@ -209,7 +209,7 @@ int sock_read_and_handle(const int fd, struct sockaddr_un* sockaddr, int(*handle
 	return 0;
 }
 
-int sock_send(const int fd, struct rig_message* msg) {
+int vscl_sock_send(const int fd, struct rig_message* msg) {
 	int nbytes;
 	uint8_t buf[12] = { 0 };
 
@@ -231,7 +231,7 @@ int sock_send(const int fd, struct rig_message* msg) {
 	return nbytes;
 }
 
-int identify_header_part(uint8_t in[4], int idx) {
+int vscl_identify_header_part(uint8_t in[4], int idx) {
 	if (in[idx] == HEAD_STAY[idx]) {
 		return HEADER_IS_STAY;
 	}
@@ -246,15 +246,15 @@ int identify_header_part(uint8_t in[4], int idx) {
 	}
 }
 
-int identify_full_header(uint8_t in[4]) {
+int vscl_identify_full_header(uint8_t in[4]) {
 	int identity = -1;
 
 	for (int i = 0; i < 4; i++) {
 		if (i == 0) {
-			identity = identify_header_part(in, 0);
+			identity = vscl_identify_header_part(in, 0);
 		}
 		else {
-			identity &= identify_header_part(in, i);
+			identity &= vscl_identify_header_part(in, i);
 		}
 	}
 

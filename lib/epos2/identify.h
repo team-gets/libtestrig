@@ -24,7 +24,7 @@ enum ACQUIRE_DEVICE_INFORMATION_FLAGS {
  *
  *	Refer to Page 3-25 of the manual.
  */
-uint32_t TESTRIG_API identify_device_names(void);
+uint32_t TESTRIG_API vscl_identify_device_names(void);
 
 /*
  *	@brief Finds the protocol stacks associated with the device name.
@@ -32,7 +32,7 @@ uint32_t TESTRIG_API identify_device_names(void);
  *
  *	Refer to Page 3-26 of the manual.
  */
-uint32_t TESTRIG_API identify_device_protocols(char* device_name);
+uint32_t TESTRIG_API vscl_identify_device_protocols(char* device_name);
 
 /*
  *	@brief Finds the interfaces associated with the device name and protocol.
@@ -40,19 +40,19 @@ uint32_t TESTRIG_API identify_device_protocols(char* device_name);
  *
  *	Refer to Page 3-27 of the manual.
  */
-uint32_t TESTRIG_API identify_device_interfaces(char* device_name, char* protocol_stack);
+uint32_t TESTRIG_API vscl_identify_device_interfaces(char* device_name, char* protocol_stack);
 
 /*
  *	@brief Finds the ports assoiated with the device name, protocol, and interface.
  *
  *	Refer to Page 3-28 of the manual.
  */
-uint32_t TESTRIG_API identify_device_ports(char* device_name, char* protocol_stack, char* device_interface);
+uint32_t TESTRIG_API vscl_identify_device_ports(char* device_name, char* protocol_stack, char* device_interface);
 
 /*
  *	@brief Print out controller characteristics.
  */
-void TESTRIG_API print_controller_characteristics(struct controller* controller_out);
+void TESTRIG_API vscl_print_controller_characteristics(struct controller* controller_out);
 
 
 #ifdef __cplusplus

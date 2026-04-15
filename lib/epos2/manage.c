@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "manage.h"
 
-uint32_t rig_abort(const struct controller* controller_in, void* device_handle) {
+uint32_t vscl_rig_abort(const struct controller* controller_in, void* device_handle) {
 	uint32_t error_code = 0;
 	if (device_handle == 0) {
 		printf("At head of RigAbort():\n");
@@ -15,7 +15,7 @@ uint32_t rig_abort(const struct controller* controller_in, void* device_handle) 
 
 	int ret = VCS_SetQuickStopState(device_handle, controller_in->node_id, &error_code);
 	if (ret == 0) {
-		print_error(error_code);
+		vscl_print_error(error_code);
 		printf("DANGER: Failed to abort rig operations!\n");
 	}
 	else {

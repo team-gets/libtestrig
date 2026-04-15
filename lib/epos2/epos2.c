@@ -4,34 +4,34 @@
 
 const char* DEFAULT_NAME = "EPOS2"; // NOLINT
 
-int decode_error(const uint32_t error_code, char* error_msg, uint8_t max_size) {
+int vscl_decode_error(const uint32_t error_code, char* error_msg, uint8_t max_size) {
 	int ret = VCS_GetErrorInfo(error_code, error_msg, max_size);
 	if (ret == 0) { printf("ERROR: Failed to decode error\n"); }
 
 	return ret;
 }
 
-int print_error(const uint32_t error_code) {
+int vscl_print_error(const uint32_t error_code) {
 	char msg[64] = { 0 };
-	int ret = decode_error(error_code, msg, 64);
+	int ret = vscl_decode_error(error_code, msg, 64);
 	printf("ERROR 0x%X: %s\n", error_code, msg);
 
 	return ret;
 }
 
-uint32_t reset_device(void *device_handle, struct controller* controller_in) {
+uint32_t vscl_reset_device(void *device_handle, struct controller* controller_in) {
 	if (device_handle == 0) { return 0x2000000B; }
 	uint32_t error_code = 0;
 	int ret = VCS_ResetDevice(device_handle, controller_in->node_id, &error_code);
 	if (ret == 0) {
-		print_error(error_code);
+		vscl_print_error(error_code);
 		printf("Device failed to be reset: %s\n", controller_in->name);
 	}
 
 	return error_code;
 }
 
-uint32_t setup_testrig_as_can_gateway(struct controller controllers[3], void* handles[3], int default_init) {
+uint32_t vscl_setup_testrig_as_can_gateway(struct controller controllers[3], void* handles[3], int default_init) {
 	uint32_t error_code = 0;
 
 	if (default_init != 0) {
@@ -44,23 +44,23 @@ uint32_t setup_testrig_as_can_gateway(struct controller controllers[3], void* ha
 		}
 	}
 	
-	error_code = initialize_devices(controllers, handles, 3);
+	error_code = vscl_initialize_devices(controllers, handles, 3);
 	if (error_code != 0) {
 		printf("When initializing multiple devices: ");
-		print_error(error_code);
+		vscl_print_error(error_code);
 		return error_code;
 	}
 
 	return error_code;
 }
 
-uint32_t cleanup_testrig(struct controller controllers[3], void* handles[3]) {
+uint32_t vscl_cleanup_testrig(struct controller controllers[3], void* handles[3]) {
 	uint32_t error_code = 0;
 	
-	error_code = close_devices(controllers, handles, 3);
+	error_code = vscl_close_devices(controllers, handles, 3);
 	if (error_code != 0) {
 		printf("When cleaning up multiple devices: ");
-		print_error(error_code);
+		vscl_print_error(error_code);
 		return error_code;
 	}
 

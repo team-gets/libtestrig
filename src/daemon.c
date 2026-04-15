@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "daemon.h"
-#include "ipc/os.h"
+#include "ipc/ipc.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -58,7 +58,7 @@ static int seek_sock_ext(char* sock) {
 
 int seek_daemon(struct sockaddr_un* sockaddr) {
 	char sock[108] = { 0 };
-	int dest = get_sock_destination(sock);
+	int dest = vscl_get_sock_destination(sock);
 	if (dest) { return 1; }
 
 	sockaddr->sun_family = AF_UNIX;
@@ -80,14 +80,14 @@ int testrig_daemon(other_args* others) {
 	struct sockaddr_un sockaddr = { 0 };
 	int retstat = 0;
 
-	int sock = sock_setup(&sockaddr);
+	int sock = vscl_sock_setup(&sockaddr);
 	if (sock == -1) { return -1; }
 	socklen_t socksize = sizeof(sockaddr);
 
-	retstat = sock_bind(sock, &sockaddr);
+	retstat = vscl_sock_bind(sock, &sockaddr);
 	if (retstat == -1) { return -1; }
 
-	retstat = sock_listen(sock, 1);
+	retstat = vscl_sock_listen(sock, 1);
 	if (retstat == -1) { return -1; }
 
 #ifdef _WIN32
@@ -117,7 +117,7 @@ int testrig_daemon(other_args* others) {
 		uint8_t head[4] = { 0 };
 		memcpy(head, msg, 4);
 
-		int header = identify_full_header(head);
+		int header = vscl_identify_full_header(head);
 		if (header != HEADER_IS_SYNC) { continue; }
 
 		// What i want:
@@ -127,10 +127,10 @@ int testrig_daemon(other_args* others) {
 		// - It should connect back to another socket to send the data!
 		struct rig_message reply;
 		uint8_t blank[8] = { 0 };
-		int set = set_message(&reply, HEAD_SYNC, blank);
+		int set = vscl_set_message(&reply, HEAD_SYNC, blank);
 		if (!set) { continue; }
 
-		int sent = sock_send(accepted, &reply);
+		int sent = vscl_sock_send(accepted, &reply);
 		if (sent != 12) { continue; }
 
 
@@ -140,7 +140,7 @@ int testrig_daemon(other_args* others) {
 
 		while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_CONNECTED) {
 			// this isn't cfg right
-			int accepted = sock_connect(sock, &sockaddr);
+			int accepted = vscl_sock_connect(sock, &sockaddr);
 			if (accepted == -1) { perror("daemon connect failure"); continue; }
 
 			uint8_t buf[12] = { 0 };
@@ -157,7 +157,7 @@ int testrig_daemon(other_args* others) {
 		}
 	}
 
-	sock_close(sock, &sockaddr);
+	vscl_sock_close(sock, &sockaddr);
 	printf("Stopping...\n");
 	return 0;
 }

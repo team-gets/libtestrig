@@ -8,7 +8,7 @@ const uint8_t HEAD_SYNC[4] = { 'S', 'Y', 'N', 'C' };
 const uint8_t HEAD_IDENT[4] = { 'I', 'D', 234, 137 };
 const uint8_t MESSAGE_BLANK[8] = { 0 };
 
-int set_message(struct rig_message* msg, const uint8_t* head, const uint8_t* data) {
+int vscl_set_message(struct rig_message* msg, const uint8_t* head, const uint8_t* data) {
     memset(msg, 0, sizeof(struct rig_message));
 	memcpy(msg->head, head, 4);
 	memcpy(msg->data, data, 8);

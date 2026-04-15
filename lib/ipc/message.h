@@ -55,7 +55,7 @@ TESTRIG_API extern const uint8_t HEAD_IDENT[4];
 TESTRIG_API extern const uint8_t MESSAGE_BLANK[8];
 
 // Convenience function that encapsulates copying to the header and data fields.
-TESTRIG_API int set_message(struct rig_message* msg, const uint8_t* head, const uint8_t* data);
+TESTRIG_API int vscl_set_message(struct rig_message* msg, const uint8_t* head, const uint8_t* data);
 
 /*
  *	The type of header.
