@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.30..4.0)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 project(libtestrig
 	LANGUAGES C)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(target_copy_dll)
 
@@ -23,23 +23,21 @@ set(EPOS_SOURCES
 	"${EPOS_DIR}/manage.c"
 	"${EPOS_DIR}/identify.c")
 
-set(LIBTESTRIG_SOURCES ${IPC_SOURCES})
+set(LIBTESTRIG_SOURCES ${IPC_SOURCES} ${EPOS_SOURCES})
 
-find_package(EPOSCmd)
-if (EPOSCmd_FOUND)
-	list(APPEND LIBTESTRIG_SOURCES ${EPOS_SOURCES})
-else()
-	message("Controller capabilities not being built.")
+find_package(EposCmd REQUIRED)
+if (EposCmd-FOUND)
+	message("-- Found EPOS Command Library")
 endif()
 
-add_library(testrig SHARED ${LIBTESTRIG_SOURCES})
-target_compile_definitions(testrig PRIVATE COMPILING_TESTRIG_DLL)
-target_include_directories(testrig PUBLIC ${LIB_DIR})
+add_library(libtestrig SHARED ${LIBTESTRIG_SOURCES})
+target_compile_definitions(libtestrig PRIVATE COMPILING_TESTRIG_DLL)
+target_include_directories(libtestrig PUBLIC ${LIB_DIR})
+
+target_link_libraries(libtestrig PUBLIC EposCmd)
 
 if (WIN32)
-	target_link_libraries(testrig PRIVATE Ws2_32)
+	target_link_libraries(libtestrig PRIVATE Ws2_32)
 endif()
 
-if (EPOSCmd_FOUND)
-	target_link_libraries(testrig PUBLIC EPOSCmd)
-endif()
+add_subdirectory("${CMAKE_SOURCE_DIR}/src")
