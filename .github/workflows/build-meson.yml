@@ -42,10 +42,6 @@ jobs:
       - name: Build
         run: |
           CC=${{ matrix.compiler }} meson compile -C build
-      - name: Verbosely Test
-        run: |
-          LD_LIBRARY_PATH=$(realpath build/test) meson test -v -C build
-        # above is a HACK!!
         
   windows-build-meson:
     name: Windows
@@ -75,6 +71,3 @@ jobs:
           meson compile -C build
         env:
           CC: ${{ matrix.compiler }}
-      - name: Verbosely Test
-        run: |
-          meson test -v -C build

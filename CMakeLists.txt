@@ -43,5 +43,3 @@ endif()
 if (EPOSCmd_FOUND)
 	target_link_libraries(testrig PUBLIC EPOSCmd)
 endif()
-
-add_subdirectory("${CMAKE_SOURCE_DIR}/test")

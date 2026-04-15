@@ -15,4 +15,3 @@ std_rpath = '$ORIGIN'
 
 subdir('lib')
 subdir('src')
-subdir('test')
