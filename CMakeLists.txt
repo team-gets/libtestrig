@@ -52,4 +52,10 @@ if (WIN32)
 	target_link_libraries(libtestrig PUBLIC Ws2_32)
 endif()
 
+if (MSVC)
+	add_compile_options("/W4")
+else()
+	add_compile_options("-Wall")
+endif()
+
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")
