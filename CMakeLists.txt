@@ -49,7 +49,7 @@ target_include_directories(libtestrig PUBLIC ${LIB_DIR})
 target_link_libraries(libtestrig PUBLIC EposCmd)
 
 if (WIN32)
-	target_link_libraries(libtestrig PRIVATE Ws2_32)
+	target_link_libraries(libtestrig PUBLIC Ws2_32)
 endif()
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")

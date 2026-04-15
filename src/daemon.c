@@ -10,7 +10,7 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
-//#include <windows.h> // holy cow there is some include order stuff with windows.h
+#include <windows.h> // holy cow there is some include order stuff with windows.h
 typedef int socklen_t;
 #else
 #include <ftw.h>
