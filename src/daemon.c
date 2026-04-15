@@ -117,7 +117,7 @@ int testrig_daemon(other_args* others) {
 		vscl_byte_t head[4] = { 0 };
 		memcpy(head, msg, 4);
 
-		int header = vscl_identify_full_header(head);
+		int header = vscl_ident_full_header(head);
 		if (header != HEADER_IS_SYNC) { continue; }
 
 		// What i want:

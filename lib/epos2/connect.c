@@ -24,7 +24,7 @@ uint32_t vscl_initialize_device(struct controller* controller_out, void* node, v
 
 	if (node == 0 || error_code != 0) {
 		vscl_failed_open_device(error_code);
-		vscl_print_controller_characteristics(controller_out);
+		vscl_print_characteristics(controller_out);
 		return error_code;
 	}
 	
@@ -46,7 +46,7 @@ uint32_t vscl_initialize_devices(struct controller controllers_out[], void* hand
 
 	if (handles_out[0] == 0 || error_code != 0) {
 		vscl_failed_open_device(error_code);
-		vscl_print_controller_characteristics(&controllers_out[0]);
+		vscl_print_characteristics(&controllers_out[0]);
 		return error_code;
 	}
 
@@ -70,7 +70,7 @@ uint32_t vscl_initialize_devices(struct controller controllers_out[], void* hand
 
 		if (handles_out[i] == 0 || error_code != 0) {
 			vscl_failed_open_device(error_code);
-			vscl_print_controller_characteristics(&controllers_out[i]);
+			vscl_print_characteristics(&controllers_out[i]);
 			return error_code;
 		}
 

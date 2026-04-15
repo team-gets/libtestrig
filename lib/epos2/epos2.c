@@ -31,7 +31,7 @@ uint32_t vscl_reset_device(void *device_handle, struct controller* controller_in
 	return error_code;
 }
 
-uint32_t vscl_setup_testrig_as_can_gateway(struct controller controllers[3], void* handles[3], int default_init) {
+uint32_t vscl_setup_can_gateway(struct controller controllers[3], void* handles[3], int default_init) {
 	uint32_t error_code = 0;
 
 	if (default_init != 0) {

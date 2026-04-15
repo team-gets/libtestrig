@@ -4,7 +4,7 @@
 extern "C" {
 #endif // __cplusplus
 
-#include <stdint.h>
+#include "libtestrig_api.h"
 
 enum CONTROLLER_STATE {
 	CTRL_STATE_CLOSED = 1,

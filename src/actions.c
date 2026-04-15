@@ -64,7 +64,7 @@ int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 int testrig_ident(other_args* others) {
 	if (others->data == NULL) { return 1; }
 
-	vscl_identify_device_names();
+	vscl_ident_names();
 
 	return 0;
 }

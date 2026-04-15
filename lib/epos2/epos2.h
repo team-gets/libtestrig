@@ -31,7 +31,7 @@ uint32_t TESTRIG_API vscl_reset_device(void* device_handle, struct controller* c
 /*
  *	@brief Setup that's tooled to our configuration.
  */
-uint32_t TESTRIG_API vscl_setup_testrig_as_can_gateway(
+uint32_t TESTRIG_API vscl_setup_can_gateway(
 	struct controller controllers[3], void* handles[3], int default_init);
 
 /*

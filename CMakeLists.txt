@@ -13,7 +13,6 @@ set(EPOS_DIR "${LIB_DIR}/epos2")
 
 set(IPC_SOURCES
 	"${IPC_DIR}/ipc.c"
-	"${IPC_DIR}/constants.c"
 	"${IPC_DIR}/message.c"
 	"${IPC_DIR}/os.c")
 

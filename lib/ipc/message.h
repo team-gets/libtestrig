@@ -5,15 +5,12 @@
 extern "C" {
 #endif
 
-#include "ipc/ipc.h"
 #include "libtestrig_api.h"
 
 /*
  *	A test rig message.
- *	These are unsigned chars - but more explict - on the architectures and OSes we care about
- *	(x86_64 Linux and Windows, basically whatever Maxon supports)
  */ 
-TESTRIG_API struct rig_message {
+struct rig_message {
 	// Header: Four bytes to avoid collisions while keeping messages small.
 	vscl_byte_t head[4];
 
@@ -59,7 +56,6 @@ TESTRIG_API enum HEADER_TYPE {
 	HEADER_IS_DC = 2,
 	HEADER_IS_SYNC = 4,
 };
-
 
 #ifdef __cplusplus
 } // extern "C"

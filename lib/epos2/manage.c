@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include "epos2.h"
 #include "manage.h"
 
-uint32_t vscl_rig_abort(const struct controller* controller_in, void* device_handle) {
+uint32_t vscl_abort(const struct controller* controller_in, void* device_handle) {
 	uint32_t error_code = 0;
 	if (device_handle == 0) {
 		printf("At head of RigAbort():\n");

@@ -26,7 +26,7 @@ static void vscl_print_port_ident_error(vscl_byte_t error_code, const char* name
 	vscl_print_error(error_code);
 }
 
-uint32_t vscl_identify_device_names(void) {
+uint32_t vscl_ident_names(void) {
 	uint32_t error_code = 0;
 	int n = 1;
 	int selection_end;
@@ -62,7 +62,7 @@ uint32_t vscl_identify_device_names(void) {
 	return error_code;
 }
 
-uint32_t vscl_IdentifyDeviceProtocols(char* device_name) {
+uint32_t vscl_ident_protocols(char* device_name) {
 	uint32_t error_code = 0;
 	int n = 1;
 	int selection_end;
@@ -101,7 +101,7 @@ uint32_t vscl_IdentifyDeviceProtocols(char* device_name) {
 	return error_code;
 }
 
-uint32_t vscl_IdentifyDeviceInterfaces(char* device_name, char* protocol_stack) {
+uint32_t vscl_ident_interfaces(char* device_name, char* protocol_stack) {
 	uint32_t error_code = 0;
 	int n = 1;
 	int selection_end;
@@ -138,7 +138,7 @@ uint32_t vscl_IdentifyDeviceInterfaces(char* device_name, char* protocol_stack) 
 	return error_code;
 }
 
-uint32_t vscl_IdentifyDevicePorts(char* device_name, char* protocol_stack, char* device_interface) {
+uint32_t vscl_ident_ports(char* device_name, char* protocol_stack, char* device_interface) {
 	uint32_t error_code = 0;
 	int n = 1;
 	int selection_end;
@@ -176,7 +176,7 @@ uint32_t vscl_IdentifyDevicePorts(char* device_name, char* protocol_stack, char*
 }
 
 
-void vscl_print_controller_characteristics(struct controller* controller) {
+void vscl_print_characteristics(struct controller* controller) {
 	printf("- Name:          %s\n", controller->name);
 	printf("- Node:          %i\n", controller->node_id);
 	printf("- Protocol:	     %s\n", controller->protocol);

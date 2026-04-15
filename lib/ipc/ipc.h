@@ -17,64 +17,65 @@ extern "C" {
 #include <limits.h>
 #include <assert.h>
 
-#include "ipc/message.h"
 #include "ipc/os.h"
+#include "ipc/message.h"
 #include "libtestrig_api.h"
 
 /*
- *	Generate a path to a socket file.
+ *	@brief Generate a path to a socket file.
  *
  *	This is in a temporary path with the .rigsock extension.
  */
-TESTRIG_API int vscl_sock_generate_path(char* sockpath);
+TESTRIG_API int vscl_sock_genpath(char* sockpath);
 
 /*
- *	Create a Unix socket to a random file.
+ *	@brief Create a Unix socket to a random file.
  *
  *	Returns a nonzero int representing the file descriptor, otherwise -1.
  */
 TESTRIG_API int vscl_sock_setup(struct sockaddr_un* sockaddr_mut);
 
 /*
- *	Bind the Unix socket, using the path specified in the passed sockaddr_un struct.
+ *	@brief Bind the Unix socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
 TESTRIG_API int vscl_sock_bind(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Set the Unix socket to listen and permit connection attempts.
+ *	@brief Set the Unix socket to listen and permit connection attempts.
  *
  *	Returns 0 on success, -1 on failure.
  */
 TESTRIG_API int vscl_sock_listen(const int fd, int max_backlog);
 
 /*
- *	Connect the Unix Socket, using the path specified in the passed sockaddr_un struct.
+ *	@brief Connect the Unix Socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
 TESTRIG_API int vscl_sock_connect(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Close the socket and clean up.
+ *	@brief Close the socket and clean up.
  */
 TESTRIG_API int vscl_sock_close(const int fd, struct sockaddr_un* sockaddr);
 
 /*
- *	Send a message over the socket without waiting for a response.
+ *	@brief Send a message over the socket without waiting for a response.
+ *  TODO: make version that waits
  */
 TESTRIG_API int vscl_sock_send(const int fd, struct rig_message* msg);
 
 /*
- *	Identify the header byte.
+ *	@brief Identify the header byte.
  */
-TESTRIG_API int vscl_identify_header_part(vscl_byte_t in[4], int idx);
+TESTRIG_API int vscl_ident_header_part(vscl_byte_t in[4], int idx);
 
 /*
- *	Identify the four bytes in the header.
+ *	@brief Identify the four bytes in the header.
  */
-TESTRIG_API int vscl_identify_full_header(vscl_byte_t in[4]);
+TESTRIG_API int vscl_ident_full_header(vscl_byte_t in[4]);
 
 #ifdef __cplusplus
 } // extern "C"

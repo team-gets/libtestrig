@@ -4,7 +4,6 @@
 #include <time.h>
 
 #include "ipc.h"
-#include "constants.h"
 #include "os.h"
 
 #ifdef _WIN32
@@ -12,7 +11,7 @@
 typedef int socklen_t;
 #endif
 
-int vscl_sock_generate_path(char* sockpath) {
+int vscl_sock_genpath(char* sockpath) {
 	int retstat;
 	int baselen;
 	//int dstart;
@@ -54,7 +53,7 @@ int vscl_sock_setup(struct sockaddr_un* sockaddr_mut) {
 		strnlen(sockaddr_mut->sun_path, 108)) == 0) ? -1 : 1;
 
 	if (path_set == -1) {
-		vscl_sock_generate_path(sockpath);
+		vscl_sock_genpath(sockpath);
 		long long int sockpathlen = strnlen(sockpath, 108);
 		strncpy(sockaddr_mut->sun_path, sockpath, sockpathlen + 1);
 	}
@@ -130,7 +129,7 @@ int vscl_sock_send(const int fd, struct rig_message* msg) {
 	return nbytes;
 }
 
-int vscl_identify_header_part(vscl_byte_t in[4], int idx) {
+int vscl_ident_header_part(vscl_byte_t in[4], int idx) {
 	if (in[idx] == HEAD_STAY[idx]) {
 		return HEADER_IS_STAY;
 	}
@@ -145,15 +144,15 @@ int vscl_identify_header_part(vscl_byte_t in[4], int idx) {
 	}
 }
 
-int vscl_identify_full_header(vscl_byte_t in[4]) {
+int vscl_ident_full_header(vscl_byte_t in[4]) {
 	int identity = -1;
 
 	for (int i = 0; i < 4; i++) {
 		if (i == 0) {
-			identity = vscl_identify_header_part(in, 0);
+			identity = vscl_ident_header_part(in, 0);
 		}
 		else {
-			identity &= vscl_identify_header_part(in, i);
+			identity &= vscl_ident_header_part(in, i);
 		}
 	}
 
