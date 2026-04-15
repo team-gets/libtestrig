@@ -16,7 +16,7 @@ uint32_t initialize_device(struct controller* controller_out, void* node, uint8_
 
 	node = VCS_OpenDevice(controller_out->name,
 			controller_out->protocol,
-			controller_out->interface,
+			controller_out->conn_interface,
 			controller_out->port,
 			&error_code);
 
@@ -38,7 +38,7 @@ uint32_t initialize_devices(struct controller controllers_out[], void* handles_o
 
 	handles_out[0] = VCS_OpenDevice(controllers_out[0].name,
 			controllers_out[0].protocol,
-			controllers_out[0].interface,
+			controllers_out[0].conn_interface,
 			controllers_out[0].port,
 			&error_code);
 

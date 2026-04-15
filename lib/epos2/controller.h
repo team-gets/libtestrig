@@ -28,7 +28,7 @@ struct controller {
 	// The name of the communication protocol.
 	char protocol[16];
 	// The name of the connection interface.
-	char interface[64];
+	char conn_interface[64];
 	// The name of the port used in connection.
 	char port[8];
 	// The node of the controller.

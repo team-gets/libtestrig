@@ -180,6 +180,6 @@ void print_controller_characteristics(struct controller* controller) {
 	printf("- Name:          %s\n", controller->name);
 	printf("- Node:          %i\n", controller->node_id);
 	printf("- Protocol:	     %s\n", controller->protocol);
-	printf("- Interface:     %s\n", controller->interface);
+	printf("- Interface:     %s\n", controller->conn_interface);
 	printf("- Port:          %s\n", controller->port);
 }

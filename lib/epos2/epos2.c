@@ -39,7 +39,7 @@ uint32_t setup_testrig_as_can_gateway(struct controller controllers[3], void* ha
 			struct controller controller = controllers[i];
 			strncpy(controller.name, "EPOS4", 6); // Initial testing shows this
 			strncpy(controller.protocol, "CANopen", 8);
-			strncpy(controller.interface, "", 1); // TOOD: discover this when the cables are here
+			strncpy(controller.conn_interface, "", 1); // TOOD: discover this when the cables are here
 			strncpy(controller.port, "CAN0", 5); // TODO: discover when cables arrive }
 		}
 	}
