@@ -21,6 +21,7 @@ typedef int socklen_t;
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
 static char sockf[108] = { 0 };
 
+// Ctrl-C (Interrupt) Catchers/Handlers {{{
 #ifdef _WIN32
 static struct sockaddr_un* daemon_sockaddr;
 static SOCKET daemon_sock;
@@ -33,7 +34,6 @@ BOOL WINAPI interrupt_catcher(DWORD ctrl_type) {
 		return TRUE;
 	}
 
-	printf("FUCK YOU!!!!!!\n");
 	return FALSE;
 }
 #else
@@ -55,9 +55,12 @@ static int impl_look_for_sock_ext(const char* fpath,
 	return 0;
 }
 #endif // _WIN32: Clean Ctrl+C handlers
+// }}}
 
+// Daemon Process and Socket Identification {{{
 static int seek_sock_ext(char* sock) {
 #ifdef _WIN32
+	// TODO: where directory walker
 #else
 	char orig[108] = { 0 };
 	strncpy(orig, sock, 108);
@@ -68,7 +71,7 @@ static int seek_sock_ext(char* sock) {
 	printf("The sock %s\n", sockf);
 	return 0;
 #endif
-}
+} // static int seek_sock_ext(char* sock)
 
 int seek_daemon(struct sockaddr_un* sockaddr) {
 	char sock[108] = { 0 };
@@ -88,7 +91,8 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 	memset(sockf, 0, 108);
 
 	return 0;
-}
+} // int seek_daemon(struct sockaddir_un* sockaddr)
+// }}}
 
 int testrig_daemon(other_args* others) {
 	struct sockaddr_un sockaddr = { 0 };
@@ -178,4 +182,5 @@ int testrig_daemon(other_args* others) {
 	vscl_sock_close(sock, &sockaddr);
 	printf("Stopping...\n");
 	return 0;
-}
+} // int testrig_daemon(other_args* others)
+// vim: foldmethod=marker

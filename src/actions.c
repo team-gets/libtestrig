@@ -99,11 +99,16 @@ int testrig_ident(other_args* others) {
 int testrig_stat(other_args* others) {
 	if (others->data == NULL) { return 1; }
 
+	// I'm pretty sure this requires device handles.
+	// Also, wrappers haven't been made for this
+
 	return 0;
 }
 
 int testrig_open(other_args* others) {
 	if (others->data == NULL) { return 1; }
+
+	// Launch daemon if not already, then delegate it to that
 
 	return 0;
 }
@@ -137,6 +142,8 @@ int testrig_request(other_args* others) {
 int testrig_close(other_args* others) {
 	if (others->data == NULL) { return 1; }
 
+	// Launch daemon if not already, then delegate it to that
+
 	return 0;
 }
 
@@ -147,4 +154,3 @@ void free_other_args(other_args* others) {
 
 	free(others->data);
 }
-
