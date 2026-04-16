@@ -1,0 +1,5 @@
+function(target_output_to_bin IN_TARGET)
+    set_target_properties(${IN_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${BIN_DIR}")
+    set_target_properties(${IN_TARGET} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${BIN_DIR}")
+    set_target_properties(${IN_TARGET} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${BIN_DIR}")
+endfunction(target_output_to_bin IN_TARGET)
