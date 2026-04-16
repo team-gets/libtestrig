@@ -22,3 +22,23 @@ int vscl_get_sock_destination(char *dest) {
     return 0;
 #endif
 }
+
+#ifdef _WIN32
+void vscl_winprint_error(const TCHAR* msg) {
+    DWORD errcode = GetLastError();
+    TCHAR errmsg[256] = { 0 };
+
+    DWORD wides = FormatMessage(
+            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            errcode,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            errmsg,
+            256,
+            NULL);
+
+
+    if (wides == 0) { printf("error while processing error\n"); }
+    wprintf(L"%s: %s", msg, errmsg);
+}
+#endif
