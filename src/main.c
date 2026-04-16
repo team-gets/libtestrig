@@ -1,8 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-#include "ipc/ipc.h"
-#include "epos2/epos2.h"
 
 #include "actions.h"
 #include "help.h"

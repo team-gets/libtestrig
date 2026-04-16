@@ -16,18 +16,19 @@ extern char* action_map[];
 
 int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 #if _WIN32
-	return -1;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;
 	char cmd[1024] = { 0 };
 
 	strncpy(cmd, argv[0], strnlen(argv[0], 128) + 1);
+	strncat(cmd, " ", 2);
 	strncat(cmd, action_map[act], 10);
 
 	for (uint8_t i = 0; i < others->size; i++) {
 		strncat(cmd, " ", 2);
 		strncat(cmd, others->data[i], 128);
 	}
+	printf("%s\n", cmd);
 
 	BOOL mkdetach = CreateProcess(
 			NULL, 
@@ -41,6 +42,31 @@ int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 			&si,
 			&pi
 		);
+
+	if (mkdetach == FALSE) {
+		DWORD errcode = GetLastError();
+		TCHAR errmsg[256] = { 0 };
+
+		DWORD wides = FormatMessage(
+				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				errcode,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+				errmsg,
+				256,
+				NULL);
+
+
+		if (wides == 0) { printf("error while processing error that occurred during attach\n"); return -1; }
+		wprintf(L"failed to detach: %s", errmsg);
+
+		return -1;
+	}
+
+	CloseHandle(&si);
+	CloseHandle(&pi);
+
+	return GetCurrentProcessId();
 
 #else
 	pid_t pid = fork();

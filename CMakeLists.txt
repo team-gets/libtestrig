@@ -50,7 +50,7 @@ target_link_libraries(libtestrig PUBLIC EposCmd)
 target_output_to_bin(libtestrig)
 
 if (WIN32)
-	target_link_libraries(libtestrig PUBLIC Ws2_32)
+	target_link_libraries(libtestrig PUBLIC Ws2_32 Kernel32)
 endif()
 
 if (MSVC)
