@@ -70,11 +70,30 @@ int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 }
 
 int testrig_ident(other_args* others) {
-	if (others->data == NULL) { return 1; }
+	if (others->data == NULL || strncmp(others->data[0], "names", 5) == 0) {
+		vscl_ident_names();
+		return 0;
+	}
 
-	vscl_ident_names();
+	uint8_t extra_tokens = others->size - 1;
+	const char* subident = others->data[0];
 
-	return 0;
+	if (strncmp(subident, "protocols", 9) == 0 && extra_tokens == 1) {
+		vscl_ident_protocols(others->data[1]);
+		return 0;
+	}
+	else if (strncmp(subident, "interfaces", 12) == 0 && extra_tokens == 2) {
+		vscl_ident_interfaces(others->data[1], others->data[2]);
+		return 0;
+	}
+	else if (strncmp(subident, "ports", 6) == 0 && extra_tokens == 3) {
+		vscl_ident_ports(others->data[1], others->data[2], others->data[3]);
+		return 0;
+	}
+	else {
+		fprintf(stderr, "error: the arguments passed to ident could not be parsed\n");
+		return 1;
+	}	
 }
 
 int testrig_stat(other_args* others) {
