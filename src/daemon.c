@@ -22,6 +22,20 @@ extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
 static char sockf[108] = { 0 };
 
 #ifdef _WIN32
+static struct sockaddr_un* daemon_sockaddr;
+static SOCKET daemon_sock;
+
+BOOL WINAPI interrupt_catcher(DWORD ctrl_type) {
+	if (ctrl_type == CTRL_C_EVENT) {
+		DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_STOPPED;
+		printf("Stopping!\n");
+		vscl_sock_close(daemon_sock, daemon_sockaddr);
+		return TRUE;
+	}
+
+	printf("FUCK YOU!!!!!!\n");
+	return FALSE;
+}
 #else
 static void interrupt_catcher(int sig, siginfo_t* info, [[ maybe_unused ]] void* ucontext) {
 	if (sig != SIGINT || info->si_signo != SIGINT) { return; }
@@ -40,7 +54,7 @@ static int impl_look_for_sock_ext(const char* fpath,
 
 	return 0;
 }
-#endif // _WIN32
+#endif // _WIN32: Clean Ctrl+C handlers
 
 static int seek_sock_ext(char* sock) {
 #ifdef _WIN32
@@ -91,6 +105,12 @@ int testrig_daemon(other_args* others) {
 	if (retstat == -1) { return -1; }
 
 #ifdef _WIN32
+	BOOL setted = SetConsoleCtrlHandler(interrupt_catcher, TRUE);
+	if (!setted) { vscl_winprint_error("daemon ctrl handler"); return -1; }
+	
+	daemon_sockaddr = &sockaddr;
+	daemon_sock = sock;
+
 #else
 	struct sigaction act = { 0 };
 	act.sa_flags = SA_SIGINFO;
@@ -98,7 +118,7 @@ int testrig_daemon(other_args* others) {
 
 	int sigint_bound = sigaction(SIGINT, &act, NULL);
 	if (sigint_bound == -1) { perror("daemon signal capture"); return -1; }
-#endif // _WIN32
+#endif // _WIN32: Setup signal handler
 
 	printf("Waiting for connection...\n");
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
@@ -132,8 +152,6 @@ int testrig_daemon(other_args* others) {
 
 		int sent = vscl_sock_send(accepted, &reply);
 		if (sent != 12) { continue; }
-
-
 
 		DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CONNECTED;
 		printf("Daemon accepted connection...\n");

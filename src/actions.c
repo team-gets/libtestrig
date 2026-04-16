@@ -43,25 +43,7 @@ int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 			&pi
 		);
 
-	if (mkdetach == FALSE) {
-		DWORD errcode = GetLastError();
-		TCHAR errmsg[256] = { 0 };
-
-		DWORD wides = FormatMessage(
-				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL,
-				errcode,
-				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-				errmsg,
-				256,
-				NULL);
-
-
-		if (wides == 0) { printf("error while processing error that occurred during attach\n"); return -1; }
-		wprintf(L"failed to detach: %s", errmsg);
-
-		return -1;
-	}
+	if (mkdetach == FALSE) { vscl_winprint_error("failed to detach"); return -1; }
 
 	CloseHandle(&si);
 	CloseHandle(&pi);
