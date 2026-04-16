@@ -14,20 +14,21 @@
 
 extern char* action_map[];
 
-int detach_program(char** argv, enum cli_action act, const other_args* others) {
+int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 #if _WIN32
-	return -1;
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;
 	char cmd[1024] = { 0 };
 
 	strncpy(cmd, argv[0], strnlen(argv[0], 128) + 1);
+	strncat(cmd, " ", 2);
 	strncat(cmd, action_map[act], 10);
 
 	for (uint8_t i = 0; i < others->size; i++) {
 		strncat(cmd, " ", 2);
 		strncat(cmd, others->data[i], 128);
 	}
+	printf("%s\n", cmd);
 
 	BOOL mkdetach = CreateProcess(
 			NULL, 
@@ -41,6 +42,31 @@ int detach_program(char** argv, enum cli_action act, const other_args* others) {
 			&si,
 			&pi
 		);
+
+	if (mkdetach == FALSE) {
+		DWORD errcode = GetLastError();
+		TCHAR errmsg[256] = { 0 };
+
+		DWORD wides = FormatMessage(
+				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				errcode,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+				errmsg,
+				256,
+				NULL);
+
+
+		if (wides == 0) { printf("error while processing error that occurred during attach\n"); return -1; }
+		wprintf(L"failed to detach: %s", errmsg);
+
+		return -1;
+	}
+
+	CloseHandle(&si);
+	CloseHandle(&pi);
+
+	return GetCurrentProcessId();
 
 #else
 	pid_t pid = fork();
@@ -64,7 +90,7 @@ int detach_program(char** argv, enum cli_action act, const other_args* others) {
 int testrig_ident(other_args* others) {
 	if (others->data == NULL) { return 1; }
 
-	IdentifyDeviceNames();
+	vscl_ident_names();
 
 	return 0;
 }
@@ -88,20 +114,20 @@ int testrig_request(other_args* others) {
 
 	struct sockaddr_un sockaddr = { 0 };
 	struct sockaddr_un daemon_sockaddr = { 0 };
-	int setup = SockSetup(&sockaddr);
+	int setup = vscl_sock_setup(&sockaddr);
 	if (setup == -1) { return 1; }
 
 	int not_sought = seek_daemon(&daemon_sockaddr);
-	if (not_sought) { printf("not found"); SockClose(setup, &sockaddr); return 1; }
+	if (not_sought) { printf("not found"); vscl_sock_close(setup, &sockaddr); return 1; }
 
-	int conn = SockConnect(setup, &daemon_sockaddr);
+	int conn = vscl_sock_connect(setup, &daemon_sockaddr);
 	if (conn == -1) { return 1; }
 
-	struct RigMessage msg = { 0 };
-	SetMessage(&msg, HEAD_SYNC, MESSAGE_BLANK);
+	struct rig_message msg = { 0 };
+	vscl_set_message(&msg, HEAD_SYNC, MESSAGE_BLANK);
 
 	// oh.. I need to impl a two-way thing
-	int nbytes = SockSend(setup, &msg);
+	int nbytes = vscl_sock_send(setup, &msg);
 	if (nbytes == -1) { return 1; }
 
 	return 0;

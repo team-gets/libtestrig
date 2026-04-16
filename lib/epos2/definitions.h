@@ -4,6 +4,7 @@
 // Copyright © 2003 - 2021, maxon motor ag.
 // All rights reserved.
 // *******************************************************************************************************************
+// NOLINTBEGIN
 
 #pragma once
 
@@ -583,3 +584,4 @@ extern const unsigned short EG_DLPC_MAIN_LOOP_FILTER_COEFFICIENT_E; //= 124;
 #ifdef __cplusplus
 } // extern "C"
 #endif
+// NOLINTEND

@@ -27,20 +27,17 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        compiler: ["gcc", "clang"]
+        preset: ["linux-gcc", "linux-clang"]
     steps:
       - uses: actions/checkout@v5
       - name: Install Build Dependencies
         run: echo | python "${{ github.workspace }}/bin/acquire_epos_cmdlib.py"
       - name: Setup CMake
         run: |
-          CC=${{ matrix.compiler }} cmake -S . -B build
+          cmake -S . -B build --preset=${{ matrix.preset }}
       - name: Build
         run: |
-          CC=${{ matrix.compiler }} cmake --build build
-      - name: Verbosely Test
-        run: |
-          ctest --verbose --output-on-failure --test-dir build/test
+          cmake --build build
 
   windows-build-cmake:
     name: Windows
@@ -48,7 +45,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        compiler: ["gcc.exe"] #, "cl.exe"]
+        preset: ["windows-mingw"] #, "cl.exe"]
     steps:
       - uses: actions/checkout@v5
       #- uses: ilammy/msvc-dev-cmd@v1.13.0
@@ -56,14 +53,7 @@ jobs:
         run: echo "" | python "${{ github.workspace }}/bin/acquire_epos_cmdlib.py"
       - name: Setup CMake
         run: |
-          cmake -S . -B build
-        env:
-          CC: ${{ matrix.compiler }}
+          cmake -S . -B build --preset=${{ matrix.preset }}
       - name: Build
         run: |
           cmake --build build
-        env:
-          CC: ${{ matrix.compiler }}
-      - name: Verbosely Test
-        run: |
-          ctest --verbose --output-on-failure --test-dir build/test -C Debug

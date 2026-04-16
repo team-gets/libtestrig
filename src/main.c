@@ -1,15 +1,11 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-#include "ipc/ipc.h"
-#include "epos2/epos2.h"
 
 #include "actions.h"
 #include "help.h"
 #include "args.h"
 #include "daemon.h"
 
-enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_NONE;
+enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_NONE; // NOLINT
 
 int main(int argc, char** argv) {
 	if (argc < 2 || argc > 255) {

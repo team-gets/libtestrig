@@ -14,82 +14,69 @@ extern "C" {
 #include <sys/unistd.h>
 #endif // _WIN32
 
-#include <stdint.h>
-#include "message.h"
+#include <limits.h>
+#include <assert.h>
+
+#include "ipc/os.h"
+#include "ipc/message.h"
 #include "libtestrig_api.h"
 
-#ifdef __cplusplus
-} // extern "C"
-namespace VSCL {
-extern "C" {
-#endif // __cplusplus
-
 /*
- *	Generate a path to a socket file.
+ *	@brief Generate a path to a socket file.
  *
  *	This is in a temporary path with the .rigsock extension.
  */
-TESTRIG_API int SockGeneratePath(char* sockpath);
+TESTRIG_API int vscl_sock_genpath(char* sockpath);
 
 /*
- *	Create a Unix socket to a random file.
+ *	@brief Create a Unix socket to a random file.
  *
  *	Returns a nonzero int representing the file descriptor, otherwise -1.
  */
-TESTRIG_API int SockSetup(struct sockaddr_un* sockaddr_mut);
+TESTRIG_API int vscl_sock_setup(struct sockaddr_un* sockaddr_mut);
 
 /*
- *	Bind the Unix socket, using the path specified in the passed sockaddr_un struct.
+ *	@brief Bind the Unix socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
-TESTRIG_API int SockBind(const int fd, const struct sockaddr_un* sockaddr);
+TESTRIG_API int vscl_sock_bind(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Set the Unix socket to listen and permit connection attempts.
+ *	@brief Set the Unix socket to listen and permit connection attempts.
  *
  *	Returns 0 on success, -1 on failure.
  */
-TESTRIG_API int SockListen(const int fd, int max_backlog);
+TESTRIG_API int vscl_sock_listen(const int fd, int max_backlog);
 
 /*
- *	Connect the Unix Socket, using the path specified in the passed sockaddr_un struct.
+ *	@brief Connect the Unix Socket, using the path specified in the passed sockaddr_un struct.
  *
  *	Returns 0 on success, -1 on failure.
  */
-TESTRIG_API int SockConnect(const int fd, const struct sockaddr_un* sockaddr);
+TESTRIG_API int vscl_sock_connect(const int fd, const struct sockaddr_un* sockaddr);
 
 /*
- *	Close the socket and clean up.
+ *	@brief Close the socket and clean up.
  */
-TESTRIG_API int SockClose(const int fd, struct sockaddr_un* sockaddr);
+TESTRIG_API int vscl_sock_close(const int fd, struct sockaddr_un* sockaddr);
 
 /*
- *	Set the socket up to receive and simply write out to the buffer.
+ *	@brief Send a message over the socket without waiting for a response.
+ *  TODO: make version that waits
  */
-TESTRIG_API int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags);
+TESTRIG_API int vscl_sock_send(const int fd, struct rig_message* msg);
 
 /*
- *	Set the socket up to receive and loop the handler on each message.
+ *	@brief Identify the header byte.
  */
-TESTRIG_API int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*));
+TESTRIG_API int vscl_ident_header_part(vscl_byte_t in[4], int idx);
 
 /*
- *	Send a message over the socket without waiting for a response.
+ *	@brief Identify the four bytes in the header.
  */
-TESTRIG_API int SockSend(const int fd, struct RigMessage* msg);
-
-/*
- *	Identify the header byte.
- */
-TESTRIG_API int IdentifyHeaderPart(uint8_t in[4], int idx);
-
-/*
- *	Identify the four bytes in the header.
- */
-TESTRIG_API int IdentifyFullHeader(uint8_t in[4]);
+TESTRIG_API int vscl_ident_full_header(vscl_byte_t in[4]);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL
 #endif

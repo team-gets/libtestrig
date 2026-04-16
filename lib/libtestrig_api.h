@@ -11,3 +11,5 @@
 #define TESTRIG_API
 #endif // _WIN32
 #endif // TESTRIG_API
+
+typedef char vscl_byte_t;

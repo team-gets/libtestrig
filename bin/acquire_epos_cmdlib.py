@@ -90,7 +90,7 @@ if __name__ == "__main__":
                 stripped = f.split(extension)[0] + extension
                 actual_bin = stripped if i_am == "Linux" else f
 
-                wherestrip = join(dirs["lib_dir"], stripped)
+                wherestrip = join(dirs["lib_dir"], actual_bin)
                 os.replace(join(root, f), wherestrip)
                 bins.append(wherestrip)
 

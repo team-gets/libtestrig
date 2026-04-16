@@ -1,0 +1,12 @@
+Checks: "readability-identifier-naming"
+HeaderFileExtensions: ["h"]
+ImplementationFileExtensions: ["c"]
+ExcludeHeaderFilterRegex: "./lib/epos2/definitions.h"
+CheckOptions:
+  readability-identifier-naming.DefaultCase: lower_case
+  readability-identifier-naming.ParameterCase: lower_case
+  readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
+  readability-identifier-naming.GlobalConstantCase: UPPER_CASE
+  readability-identifier-naming.GlobalConstantPointerCase: UPPER_CASE
+  readability-identifier-naming.EnumCase: UPPER_CASE
+  readability-identifier-naming.EnumConstantCase: UPPER_CASE

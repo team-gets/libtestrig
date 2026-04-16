@@ -1,14 +1,16 @@
+// NOLINTBEGIN
 #define _XOPEN_SOURCE_EXTENDED 1
 #define _XOPEN_SOURCE 600
+// NOLINTEND
 
 #include <stdio.h>
 #include <string.h>
 #include "daemon.h"
-#include "ipc/os.h"
+#include "ipc/ipc.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
-//#include <windows.h> // holy cow there is some include order stuff with windows.h
+#include <windows.h> // holy cow there is some include order stuff with windows.h
 typedef int socklen_t;
 #else
 #include <ftw.h>
@@ -16,7 +18,7 @@ typedef int socklen_t;
 #include <signal.h>
 #endif // _WIN32
 
-extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS;
+extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
 static char sockf[108] = { 0 };
 
 #ifdef _WIN32
@@ -56,7 +58,7 @@ static int seek_sock_ext(char* sock) {
 
 int seek_daemon(struct sockaddr_un* sockaddr) {
 	char sock[108] = { 0 };
-	int dest = GetSockDestination(sock);
+	int dest = vscl_get_sock_destination(sock);
 	if (dest) { return 1; }
 
 	sockaddr->sun_family = AF_UNIX;
@@ -78,14 +80,14 @@ int testrig_daemon(other_args* others) {
 	struct sockaddr_un sockaddr = { 0 };
 	int retstat = 0;
 
-	int sock = SockSetup(&sockaddr);
+	int sock = vscl_sock_setup(&sockaddr);
 	if (sock == -1) { return -1; }
 	socklen_t socksize = sizeof(sockaddr);
 
-	retstat = SockBind(sock, &sockaddr);
+	retstat = vscl_sock_bind(sock, &sockaddr);
 	if (retstat == -1) { return -1; }
 
-	retstat = SockListen(sock, 1);
+	retstat = vscl_sock_listen(sock, 1);
 	if (retstat == -1) { return -1; }
 
 #ifdef _WIN32
@@ -104,7 +106,7 @@ int testrig_daemon(other_args* others) {
 		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
 		if (accepted == -1) { perror("daemon accept failure"); continue; }
 
-		uint8_t msg[12] = { 0 };
+		vscl_byte_t msg[12] = { 0 };
 #ifdef _WIN32
 		int synced = recv(accepted, msg, 12, MSG_PEEK);
 #else
@@ -112,10 +114,10 @@ int testrig_daemon(other_args* others) {
 #endif
 		if (synced != 12) { continue; }
 
-		uint8_t head[4] = { 0 };
+		vscl_byte_t head[4] = { 0 };
 		memcpy(head, msg, 4);
 
-		int header = IdentifyFullHeader(head);
+		int header = vscl_ident_full_header(head);
 		if (header != HEADER_IS_SYNC) { continue; }
 
 		// What i want:
@@ -123,12 +125,12 @@ int testrig_daemon(other_args* others) {
 		// - It should check if it's a sync msg
 		// - It should reply (i think i can do this with bytestreasm)
 		// - It should connect back to another socket to send the data!
-		struct RigMessage reply;
-		uint8_t blank[8] = { 0 };
-		int set = SetMessage(&reply, HEAD_SYNC, blank);
+		struct rig_message reply;
+		vscl_byte_t blank[8] = { 0 };
+		int set = vscl_set_message(&reply, HEAD_SYNC, blank);
 		if (!set) { continue; }
 
-		int sent = SockSend(accepted, &reply);
+		int sent = vscl_sock_send(accepted, &reply);
 		if (sent != 12) { continue; }
 
 
@@ -138,10 +140,10 @@ int testrig_daemon(other_args* others) {
 
 		while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_CONNECTED) {
 			// this isn't cfg right
-			int accepted = SockConnect(sock, &sockaddr);
+			int accepted = vscl_sock_connect(sock, &sockaddr);
 			if (accepted == -1) { perror("daemon connect failure"); continue; }
 
-			uint8_t buf[12] = { 0 };
+			vscl_byte_t buf[12] = { 0 };
 #ifdef _WIN32
 			int recvd = recv(accepted, buf, 12, MSG_PEEK);
 #else
@@ -155,7 +157,7 @@ int testrig_daemon(other_args* others) {
 		}
 	}
 
-	SockClose(sock, &sockaddr);
+	vscl_sock_close(sock, &sockaddr);
 	printf("Stopping...\n");
 	return 0;
 }

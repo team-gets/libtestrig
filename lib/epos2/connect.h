@@ -9,13 +9,7 @@ extern "C" {
 #include "libtestrig_api.h"
 #include "controller.h"
 
-#ifdef __cplusplus
-} // extern "C" (headers)
-namespace VSCL::Rig {
-extern "C" {
-#endif // __cplusplus
-
-uint32_t TESTRIG_API CleanEnableDevice(struct Controller* controller, void* device_handle);
+uint32_t TESTRIG_API vscl_clean_enable_device(struct controller* controller, void* device_handle);
 
 /*
  *	@brief Opens communication to the device and sets its state for a clean init.
@@ -23,7 +17,7 @@ uint32_t TESTRIG_API CleanEnableDevice(struct Controller* controller, void* devi
  *	Refer to Page 162 of the manual under INITIALIZATION,
  *	which describes several of the methods wrapped here.
  */
-uint32_t TESTRIG_API InitializeDevice(struct Controller* controller_out, void* node, uint8_t node_id);
+uint32_t TESTRIG_API vscl_initialize_device(struct controller* controller_out, void* node, vscl_byte_t node_id);
 
 /*
  *	@brief Opens communication to the devices in a gateway configuraton,
@@ -32,8 +26,8 @@ uint32_t TESTRIG_API InitializeDevice(struct Controller* controller_out, void* n
  *	Refer to Page 162 of the manual under INITIALIZATION,
  *	which describes several of the methods wrapped here.
  */
-uint32_t TESTRIG_API InitializeDevices(
-	struct Controller controllers_out[], void* handles_out[], uint8_t num);
+uint32_t TESTRIG_API vscl_initialize_devices(
+	struct controller controllers_out[], void* handles_out[], vscl_byte_t num);
 
 /*
  *	@brief Closes all connections to a single controller
@@ -41,16 +35,15 @@ uint32_t TESTRIG_API InitializeDevices(
  *	Refer to Page 162 of the manual under CLOSING PROCEDURE,
  *	which describes several of the methods wrapped here.
  */
-uint32_t TESTRIG_API CloseDevice(struct Controller* controller, void* device_handle);
+uint32_t TESTRIG_API vscl_close_device(struct controller* controller, void* device_handle);
 
 /*
  *	@brief Closes connections to multiple controllers in a gateway configuration,
  *	assuming the first handle and controller is the gateway.
  */
-uint32_t TESTRIG_API CloseDevices(
-		struct Controller controllers[], void* device_handles[], uint8_t num);
+uint32_t TESTRIG_API vscl_close_devices(
+		struct controller controllers[], void* device_handles[], vscl_byte_t num);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL::Rig
-#endif // __cplusplus
+#endif

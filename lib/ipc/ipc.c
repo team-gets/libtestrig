@@ -4,7 +4,6 @@
 #include <time.h>
 
 #include "ipc.h"
-#include "constants.h"
 #include "os.h"
 
 #ifdef _WIN32
@@ -12,12 +11,12 @@
 typedef int socklen_t;
 #endif
 
-int SockGeneratePath(char* sockpath) {
+int vscl_sock_genpath(char* sockpath) {
 	int retstat;
 	int baselen;
 	//int dstart;
 
-	retstat = GetSockDestination(sockpath);
+	retstat = vscl_get_sock_destination(sockpath);
 	baselen = strlen(sockpath);
 
 	if (retstat != 0) { return retstat; }
@@ -32,7 +31,7 @@ int SockGeneratePath(char* sockpath) {
 	return 0;
 }
 
-int SockSetup(struct sockaddr_un* sockaddr_mut) {
+int vscl_sock_setup(struct sockaddr_un* sockaddr_mut) {
 	int fd;
 	int path_set;
 	char sockpath[108] = { 0 };
@@ -54,7 +53,7 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 		strnlen(sockaddr_mut->sun_path, 108)) == 0) ? -1 : 1;
 
 	if (path_set == -1) {
-		SockGeneratePath(sockpath);
+		vscl_sock_genpath(sockpath);
 		long long int sockpathlen = strnlen(sockpath, 108);
 		strncpy(sockaddr_mut->sun_path, sockpath, sockpathlen + 1);
 	}
@@ -63,7 +62,7 @@ int SockSetup(struct sockaddr_un* sockaddr_mut) {
 	return fd;
 }
 
-int SockBind(const int fd, const struct sockaddr_un* sockaddr) {
+int vscl_sock_bind(const int fd, const struct sockaddr_un* sockaddr) {
 	int bindstat;
 	socklen_t socklen;
 
@@ -74,7 +73,7 @@ int SockBind(const int fd, const struct sockaddr_un* sockaddr) {
 	return bindstat;
 }
 
-int SockListen(const int fd, int max_backlog) {
+int vscl_sock_listen(const int fd, int max_backlog) {
 	int listenstat;
 
 	listenstat = listen(fd, max_backlog);
@@ -83,7 +82,7 @@ int SockListen(const int fd, int max_backlog) {
 	return listenstat;
 }
 
-int SockConnect(const int fd, const struct sockaddr_un* sockaddr) {
+int vscl_sock_connect(const int fd, const struct sockaddr_un* sockaddr) {
 	int connstat;
 	socklen_t socklen;
 
@@ -94,7 +93,7 @@ int SockConnect(const int fd, const struct sockaddr_un* sockaddr) {
 	return connstat;
 }
 
-int SockClose(const int fd, struct sockaddr_un* sockaddr) {
+int vscl_sock_close(const int fd, struct sockaddr_un* sockaddr) {
 	int closestat;
 
 
@@ -108,110 +107,9 @@ int SockClose(const int fd, struct sockaddr_un* sockaddr) {
 	return closestat;
 }
 
-// TODO: reevaluate necessity for inclusion
-int SockReadOut(const int fd, const struct sockaddr_un* sockaddr, uint8_t* buf_out, size_t max_write, int flags) {
-	int recvstat;
-	int acceptstat;
-	int head;
-
-	int bytes_written = 0;
-	int recent_success = 1;
-	int reading = 1;
-	socklen_t socklen = sizeof(*sockaddr);
-
-	while (reading != -1) {
-		acceptstat = accept(fd, (struct sockaddr*)sockaddr, &socklen);
-		if (acceptstat == -1) { continue; }
-	
-		// While a child is connected to this socket...
-		while (reading != -1) {
-			uint8_t buf[12] = { 0 };
-#ifdef _WIN32
-			recvstat = recv(acceptstat, buf, 12, MSG_PEEK);
-#else
-			recvstat = read(acceptstat, buf, 12);
-#endif
-
-			if (recvstat == -1) { perror("Socket read failure"); continue; }
-
-			uint8_t headcheck[4] = { buf[0], buf[1], buf[2], buf[3] };
-			head = IdentifyFullHeader(headcheck);
-
-			// Pick what to do
-			switch (head) {
-			case HEADER_IS_DC: // Disconnecting
-				if (flags & DC_WITH_CLIENT)
-					reading = -1;
-
-				break;
-			case HEADER_IS_STAY: // Continue
-				recent_success = 1;
-				break;
-			case -1: // Invalid header: don't read
-				if (recent_success == 1) {
-					printf("Socket receive error: Invalid header\n");
-					recent_success = 0;
-				}
-
-				continue;
-				break;
-			default: // Not really possible, but don't read it regardless.
-				if (recent_success == 1) {
-					printf("Unknown header read error\n");
-					recent_success = 0;
-				}
-
-				continue;
-				break;
-			}
-
-			// Do a readout
-			for (int i = 4; i < 12 && bytes_written < 4096; i++, bytes_written++) {
-				buf_out[bytes_written] = buf[i];
-			}
-		}
-	}
-
-	return 0;
-}
-
-int SockReadAndHandle(const int fd, struct sockaddr_un* sockaddr, int(*handler)(uint8_t*)) {
-	int recvstat;
-	int acceptstat;
-	int handlestat;
-
-	int reading = 1;
-	socklen_t socklen = sizeof(*sockaddr);
-
-	while (reading != -1) {
-		acceptstat = accept(fd, (struct sockaddr*)sockaddr, &socklen);
-		if (acceptstat == -1) { continue; }
-	
-		// While a child is connected to this socket...
-		while (reading != -1) {
-			uint8_t buf[12] = { 0 };
-#ifdef _WIN32
-			recvstat = recv(acceptstat, buf, 12, MSG_PEEK);
-#else
-			recvstat = read(acceptstat, buf, 12);
-#endif
-
-			if (recvstat == -1) { perror("Socket read failure"); continue; }
-
-			handlestat = handler(buf);
-
-			if (handlestat == HANDLER_RET_DC) {
-				reading = -1;
-			}
-		}
-	}
-
-	return 0;
-}
-
-int SockSend(const int fd, struct RigMessage* msg) {
+int vscl_sock_send(const int fd, struct rig_message* msg) {
 	int nbytes;
-	uint8_t buf[12] = { 0 };
+	vscl_byte_t buf[12] = { 0 };
 
 	for (int i = 0; i < 4; i++) {
 		buf[i] = msg->head[i];
@@ -231,7 +129,7 @@ int SockSend(const int fd, struct RigMessage* msg) {
 	return nbytes;
 }
 
-int IdentifyHeaderPart(uint8_t in[4], int idx) {
+int vscl_ident_header_part(vscl_byte_t in[4], int idx) {
 	if (in[idx] == HEAD_STAY[idx]) {
 		return HEADER_IS_STAY;
 	}
@@ -246,15 +144,15 @@ int IdentifyHeaderPart(uint8_t in[4], int idx) {
 	}
 }
 
-int IdentifyFullHeader(uint8_t in[4]) {
+int vscl_ident_full_header(vscl_byte_t in[4]) {
 	int identity = -1;
 
 	for (int i = 0; i < 4; i++) {
 		if (i == 0) {
-			identity = IdentifyHeaderPart(in, 0);
+			identity = vscl_ident_header_part(in, 0);
 		}
 		else {
-			identity &= IdentifyHeaderPart(in, i);
+			identity &= vscl_ident_header_part(in, i);
 		}
 	}
 

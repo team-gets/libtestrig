@@ -1,18 +1,20 @@
 cmake_minimum_required(VERSION 3.30..4.0)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 project(libtestrig
 	LANGUAGES C)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
 include(target_copy_dll)
+include(target_output_to_bin)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 set(IPC_DIR "${LIB_DIR}/ipc")
 set(EPOS_DIR "${LIB_DIR}/epos2")
+set(BIN_DIR "${CMAKE_SOURCE_DIR}/bin")
 
 set(IPC_SOURCES
 	"${IPC_DIR}/ipc.c"
-	"${IPC_DIR}/constants.c"
 	"${IPC_DIR}/message.c"
 	"${IPC_DIR}/os.c")
 
@@ -23,25 +25,38 @@ set(EPOS_SOURCES
 	"${EPOS_DIR}/manage.c"
 	"${EPOS_DIR}/identify.c")
 
-set(LIBTESTRIG_SOURCES ${IPC_SOURCES})
-
-find_package(EPOSCmd)
-if (EPOSCmd_FOUND)
-	list(APPEND LIBTESTRIG_SOURCES ${EPOS_SOURCES})
-else()
-	message("Controller capabilities not being built.")
-endif()
-
-add_library(testrig SHARED ${LIBTESTRIG_SOURCES})
-target_compile_definitions(testrig PRIVATE COMPILING_TESTRIG_DLL)
-target_include_directories(testrig PUBLIC ${LIB_DIR})
+set(LIBTESTRIG_SOURCES ${IPC_SOURCES} ${EPOS_SOURCES})
 
 if (WIN32)
-	target_link_libraries(testrig PRIVATE Ws2_32)
+	add_library(EposCmd SHARED IMPORTED)
+	set_target_properties(EposCmd PROPERTIES
+		IMPORTED_LOCATION "${BIN_DIR}/EposCmd64.dll"
+		IMPORTED_IMPLIB "${BIN_DIR}/EposCmd64.lib")
+
+	set(EposCmd-FOUND TRUE)
+else()
+	add_library(EposCmd SHARED IMPORTED)
+	set_target_properties(EposCmd PROPERTIES
+		IMPORTED_LOCATION "${BIN_DIR}/libEposCmd.so"
+		IMPORTED_IMPLIB "")
+
+	set(EposCmd-FOUND TRUE)
 endif()
 
-if (EPOSCmd_FOUND)
-	target_link_libraries(testrig PUBLIC EPOSCmd)
+add_library(libtestrig SHARED ${LIBTESTRIG_SOURCES})
+target_compile_definitions(libtestrig PRIVATE COMPILING_TESTRIG_DLL)
+target_include_directories(libtestrig PUBLIC ${LIB_DIR})
+target_link_libraries(libtestrig PUBLIC EposCmd)
+target_output_to_bin(libtestrig)
+
+if (WIN32)
+	target_link_libraries(libtestrig PUBLIC Ws2_32 Kernel32)
 endif()
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/test")
+if (MSVC)
+	add_compile_options("/W4")
+else()
+	add_compile_options("-Wall")
+endif()
+
+add_subdirectory("${CMAKE_SOURCE_DIR}/src")

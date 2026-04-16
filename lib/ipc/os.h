@@ -1,7 +1,6 @@
 #pragma once
 
 #ifdef __cplusplus
-namespace VSCL::_detail {
 extern "C" {
 #endif // __cplusplus
 
@@ -11,9 +10,8 @@ extern "C" {
 #define INVALID_SOCKET -1
 #endif
 
-TESTRIG_API int GetSockDestination(char* dest);
+TESTRIG_API int vscl_get_sock_destination(char* dest);
 
 #ifdef __cplusplus
 } // extern "C"
-} // namespace VSCL::_detail
 #endif // __cplusplus
