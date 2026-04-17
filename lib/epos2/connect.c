@@ -58,7 +58,7 @@ uint32_t vscl_initialize_devices(struct controller controllers_out[], void* hand
 		return error_code;
 	}
 
-	for (vscl_byte_t i = 1; i < num; i++) {
+	for (uint8_t i = 1; i < num; i++) {
 		if (handles_out[i] == NULL) { break; }
 
 		handles_out[i] = VCS_OpenSubDevice(handles_out[i],
@@ -148,7 +148,7 @@ uint32_t vscl_close_devices(struct controller controllers[], void* device_handle
 	uint32_t error_code = 0;
 	int ret;
 
-	for (vscl_byte_t i = num - 1; i == 0; i--) {
+	for (uint8_t i = num - 1; i == 0; i--) {
 		void* handle = device_handles[i];
 		if (handle == 0) { continue; }
 
