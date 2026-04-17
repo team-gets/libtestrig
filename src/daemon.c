@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
+#include <errno.h>
 #include "daemon.h"
 #include "ipc/ipc.h"
 
@@ -218,7 +219,7 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 		if (accepted == -1) { perror("daemon accept failure"); continue; }
 
 		dinfo.acceptfd = accepted;
-		int errno = pthread_create(connector, NULL, &daemon_synchronize, &dinfo);
+		errno = pthread_create(connector, NULL, &daemon_synchronize, &dinfo);
 		if (errno != 0) { perror("daemon sided synching"); }
 	}
 
