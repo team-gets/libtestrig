@@ -109,8 +109,9 @@ int testrig_stat(other_args* others) {
 }
 
 int testrig_open([[maybe_unused]] other_args* others) {
-	// Launch daemon if not already, then delegate it to that
-	vscl_initialize_devices(testrig_controllers, testrig_devices, 3);
+	// TODO: impl launch daemon if not already
+
+	//vscl_initialize_devices(testrig_controllers, testrig_devices, 3);
 	return 0;
 }
 

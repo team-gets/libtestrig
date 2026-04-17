@@ -73,6 +73,7 @@ static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] 
 // }}} fold
 
 // Daemon Process and Socket Identification {{{
+#ifndef _WIN32
 static int impl_look_for_sock_ext(const char* fpath,
 		[[ maybe_unused ]] const struct stat* sb, [[ maybe_unused ]] int tflag, [[ maybe_unused ]] struct FTW* ftwbuf) {
 	if (tflag == FTW_F) {
@@ -83,6 +84,8 @@ static int impl_look_for_sock_ext(const char* fpath,
 
 	return 0;
 }
+#endif
+
 static int seek_sock(char* sock) {
 #ifdef _WIN32
 	// TODO: where directory walker (steal previous impl from tests)
