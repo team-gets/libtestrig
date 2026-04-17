@@ -11,7 +11,8 @@
 extern "C" {
 #endif // __cplusplus
 
-extern const char* default_name;
+// Default device name
+extern const char* DEFAULT_NAME; // NOLINT
 
 /*
  *	@brief Decode a given error code to its corresponding message.
