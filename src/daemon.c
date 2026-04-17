@@ -55,7 +55,26 @@ static int impl_look_for_sock_ext(const char* fpath,
 	return 0;
 }
 #endif // _WIN32: Clean Ctrl+C handlers
-// }}}
+
+static int deploy_interrupt_cleanup([[maybe_unused]] int fd, [[maybe_unused]] struct sockaddr_un* sockaddr) {
+#ifdef _WIN32
+	BOOL setted = SetConsoleCtrlHandler(interrupt_catcher, TRUE);
+	if (!setted) { vscl_winprint_error("daemon ctrl handler"); return 0; }
+	
+	daemon_sockaddr = &sockaddr;
+	daemon_sock = sock;
+	return 1;
+#else
+	struct sigaction act = { 0 };
+	act.sa_flags = SA_SIGINFO;
+	act.sa_sigaction = &interrupt_catcher;
+
+	int sigint_bound = sigaction(SIGINT, &act, NULL);
+	if (sigint_bound == -1) { perror("daemon signal capture"); return 0; }
+	return 1;
+#endif // _WIN32: Setup signal handler
+} // interrupt intercept maker
+// }}} fold
 
 // Daemon Process and Socket Identification {{{
 static int seek_sock_ext(char* sock) {
@@ -102,27 +121,16 @@ int testrig_daemon(other_args* others) {
 	if (sock == -1) { return -1; }
 	socklen_t socksize = sizeof(sockaddr);
 
+	if (!deploy_interrupt_cleanup(sock, &sockaddr)) {
+		vscl_sock_close(sock, &sockaddr);
+		return -1;
+	}
+
 	retstat = vscl_sock_bind(sock, &sockaddr);
 	if (retstat == -1) { return -1; }
 
 	retstat = vscl_sock_listen(sock, 1);
 	if (retstat == -1) { return -1; }
-
-#ifdef _WIN32
-	BOOL setted = SetConsoleCtrlHandler(interrupt_catcher, TRUE);
-	if (!setted) { vscl_winprint_error("daemon ctrl handler"); return -1; }
-	
-	daemon_sockaddr = &sockaddr;
-	daemon_sock = sock;
-
-#else
-	struct sigaction act = { 0 };
-	act.sa_flags = SA_SIGINFO;
-	act.sa_sigaction = &interrupt_catcher;
-
-	int sigint_bound = sigaction(SIGINT, &act, NULL);
-	if (sigint_bound == -1) { perror("daemon signal capture"); return -1; }
-#endif // _WIN32: Setup signal handler
 
 	printf("Waiting for connection...\n");
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
