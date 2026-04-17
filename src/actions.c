@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "ipc/ipc.h"
 #include "epos2/identify.h"
+#include "epos2/connect.h"
 #include "args.h"
 #include "actions.h"
 #include "daemon.h"
@@ -13,6 +14,8 @@
 #endif // _WIN32
 
 extern char* action_map[];
+static void* testrig_devices[3] = { 0 };
+static struct controller testrig_controllers[3] = { 0 };
 
 int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 #if _WIN32
@@ -105,11 +108,9 @@ int testrig_stat(other_args* others) {
 	return 0;
 }
 
-int testrig_open(other_args* others) {
-	if (others->data == NULL) { return 1; }
-
+int testrig_open([[maybe_unused]] other_args* others) {
 	// Launch daemon if not already, then delegate it to that
-
+	vscl_initialize_devices(testrig_controllers, testrig_devices, 3);
 	return 0;
 }
 
@@ -140,9 +141,8 @@ int testrig_request(other_args* others) {
 }
 
 int testrig_close([[maybe_unused]] other_args* others) {
-
-	vscl_close_devices();
-
+	// Launch daemon if not already, then delegate it to that
+	vscl_close_devices(testrig_controllers, testrig_devices, 3);
 	return 0;
 }
 

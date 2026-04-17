@@ -27,6 +27,13 @@ set(EPOS_SOURCES
 
 set(LIBTESTRIG_SOURCES ${IPC_SOURCES} ${EPOS_SOURCES})
 
+if (MSVC)
+	add_compile_options("/W4")
+else()
+	add_compile_options("-Wall")
+endif()
+
+
 if (WIN32)
 	add_library(EposCmd SHARED IMPORTED)
 	set_target_properties(EposCmd PROPERTIES
@@ -51,12 +58,6 @@ target_output_to_bin(libtestrig)
 
 if (WIN32)
 	target_link_libraries(libtestrig PUBLIC Ws2_32 Kernel32)
-endif()
-
-if (MSVC)
-	add_compile_options("/W4")
-else()
-	add_compile_options("-Wall")
 endif()
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")
