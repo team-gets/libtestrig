@@ -20,7 +20,7 @@ typedef int socklen_t;
 #endif // _WIN32
 
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
-static char sockf[108] = { 0 };
+static const char* sockfname = "testrigd.sock";
 
 pthread_t* connector = 0;
 int connectorstat = 0;
@@ -50,19 +50,6 @@ static void interrupt_catcher(int sig, siginfo_t* info, [[ maybe_unused ]] void*
 	if (sig != SIGINT || info->si_signo != SIGINT) { return; }
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_STOPPED;
 }
-
-static int impl_look_for_sock_ext(const char* fpath,
-		[[ maybe_unused ]] const struct stat* sb, [[ maybe_unused ]] int tflag, [[ maybe_unused ]] struct FTW* ftwbuf) {
-	if (tflag == FTW_F) {
-		const char* ext = strstr(fpath, ".rigsock");
-		if (ext != NULL) {
-			strncpy(sockf, fpath, 108);
-			return 1;
-		};
-	}
-
-	return 0;
-}
 #endif // _WIN32: Clean Ctrl+C handlers
 
 static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] struct sockaddr_un* sockaddr) {
@@ -86,9 +73,19 @@ static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] 
 // }}} fold
 
 // Daemon Process and Socket Identification {{{
-static int seek_sock_ext(char* sock) {
+static int impl_look_for_sock_ext(const char* fpath,
+		[[ maybe_unused ]] const struct stat* sb, [[ maybe_unused ]] int tflag, [[ maybe_unused ]] struct FTW* ftwbuf) {
+	if (tflag == FTW_F) {
+		if (strncmp(fpath, sockfname, strlen(sockfname) + 1) == 0) {
+			return 1;
+		};
+	}
+
+	return 0;
+}
+static int seek_sock(char* sock) {
 #ifdef _WIN32
-	// TODO: where directory walker
+	// TODO: where directory walker (steal previous impl from tests)
 #else
 	char orig[108] = { 0 };
 	strncpy(orig, sock, 108);
@@ -96,7 +93,7 @@ static int seek_sock_ext(char* sock) {
 	int walker = nftw(sock, impl_look_for_sock_ext, 10, FTW_MOUNT | FTW_PHYS);
 	if (walker != 1) { perror("finder fail"); return 1; }
 
-	printf("The sock %s\n", sockf);
+	printf("The sock %s\n", sockfname);
 	return 0;
 #endif
 } // static int seek_sock_ext(char* sock)
@@ -108,21 +105,18 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 
 	sockaddr->sun_family = AF_UNIX;
 
-	//struct RigMessage identmsg = { 0 };
-	//SetMessage(&identmsg, HEAD_IDENT, MESSAGE_BLANK);
-
 	// FIXME: this hopes that we clean up after ourselves and that only one exists
-	int not_sought = seek_sock_ext(sock);
+	int not_sought = seek_sock(sock);
 	if (not_sought) { return 1; }
 
-	strncpy(sockaddr->sun_path, sockf, 108);
-	memset(sockf, 0, 108);
+	vscl_get_sock_destination(sockaddr->sun_path);
+	strncat(sockaddr->sun_path, sockfname, 108);
 
 	return 0;
 } // int seek_daemon(struct sockaddir_un* sockaddr)
-// }}}
+// }}} fold
 
-// {{{
+// Synchronize {{{
 void* daemon_synchronize(void* arg) {
 	delegate_info_t* dinfo = (delegate_info_t*)(arg);
 
@@ -178,7 +172,14 @@ void* daemon_synchronize(void* arg) {
 // }}}
 
 int testrig_daemon([[maybe_unused]] other_args* others) {
-	struct sockaddr_un sockaddr = { 0 };
+	char sockpath[108] = { 0 };
+	int sockcopied = vscl_get_sock_destination(sockpath);
+	if (sockcopied != 0) { return -1; }
+	strncat(sockpath, "testrigd.sock", 14);
+
+	struct sockaddr_un sockaddr = { .sun_family = AF_UNIX };
+	strncpy(sockaddr.sun_path, sockpath, 108);
+
 	int retstat = 0;
 
 	int sock = vscl_sock_setup(&sockaddr);
