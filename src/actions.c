@@ -139,10 +139,9 @@ int testrig_request(other_args* others) {
 	return 0;
 }
 
-int testrig_close(other_args* others) {
-	if (others->data == NULL) { return 1; }
+int testrig_close([[maybe_unused]] other_args* others) {
 
-	// Launch daemon if not already, then delegate it to that
+	vscl_close_devices();
 
 	return 0;
 }

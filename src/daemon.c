@@ -56,12 +56,12 @@ static int impl_look_for_sock_ext(const char* fpath,
 }
 #endif // _WIN32: Clean Ctrl+C handlers
 
-static int deploy_interrupt_cleanup([[maybe_unused]] int fd, [[maybe_unused]] struct sockaddr_un* sockaddr) {
+static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] struct sockaddr_un* sockaddr) {
 #ifdef _WIN32
 	BOOL setted = SetConsoleCtrlHandler(interrupt_catcher, TRUE);
 	if (!setted) { vscl_winprint_error("daemon ctrl handler"); return 0; }
 	
-	daemon_sockaddr = &sockaddr;
+	daemon_sockaddr = sockaddr;
 	daemon_sock = sock;
 	return 1;
 #else
