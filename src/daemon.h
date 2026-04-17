@@ -5,6 +5,7 @@
 
 int testrig_daemon(other_args* others);
 int seek_daemon(struct sockaddr_un* sockaddr);
+void* daemon_synchronize(void* arg);
 
 enum TESTRIG_DAEMON_STATE {
 	TESTRIG_DAEMON_NONE = 1,

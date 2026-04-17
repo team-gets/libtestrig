@@ -22,6 +22,14 @@ typedef int socklen_t;
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
 static char sockf[108] = { 0 };
 
+pthread_t* connector = 0;
+int connectorstat = 0;
+typedef struct {
+	int acceptfd;
+	int sock;
+	struct sockaddr_un* sockaddr;
+} delegate_info_t;
+
 // Ctrl-C (Interrupt) Catchers/Handlers {{{
 #ifdef _WIN32
 static struct sockaddr_un* daemon_sockaddr;
@@ -114,6 +122,61 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 } // int seek_daemon(struct sockaddir_un* sockaddr)
 // }}}
 
+// {{{
+void* daemon_synchronize(void* arg) {
+	delegate_info_t* dinfo = (delegate_info_t*)(arg);
+
+	int acceptfd = dinfo->acceptfd;
+	int sock = dinfo->sock;
+	struct sockaddr_un* sockaddr = dinfo->sockaddr;
+
+	vscl_byte_t msg[12] = { 0 };
+#ifdef _WIN32
+	int synced = recv(acceptfd, msg, 12, MSG_PEEK);
+#else
+	int synced = read(acceptfd, msg, 12);
+#endif
+	if (synced != 12) { return 0; }
+
+	vscl_byte_t head[4] = { 0 };
+	memcpy(head, msg, 4);
+
+	int header = vscl_ident_full_header(head);
+	if (header != HEADER_IS_SYNC) { return 0; }
+
+	struct rig_message reply;
+	vscl_byte_t blank[8] = { 0 };
+	int set = vscl_set_message(&reply, HEAD_SYNC, blank);
+	if (!set) { return 0; }
+
+	int sent = vscl_sock_send(acceptfd, &reply);
+	if (sent != 12) { return 0; }
+
+	printf("Daemon accepted connection...\n");
+	while (DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_STOPPED
+		   && DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_CLEANING) {
+		// this isn't cfg right
+		int backward = vscl_sock_connect(sock, sockaddr);
+		if (backward == -1) { perror("daemon connect failure"); continue; }
+
+		vscl_byte_t buf[12] = { 0 };
+#ifdef _WIN32
+		int recvd = recv(backward, buf, 12, MSG_PEEK);
+#else
+		int recvd = read(backward, buf, 12);
+#endif
+		if (recvd != 12) { continue; } // TODO: some contingency?
+
+		// TODO: proper impl that pipes this stuff (into a socket or file or stdout)
+		printf("The message... %s\n", buf);
+		break;
+	}
+
+	pthread_exit(&connectorstat);
+	return 0;
+}
+// }}}
+
 int testrig_daemon([[maybe_unused]] other_args* others) {
 	struct sockaddr_un sockaddr = { 0 };
 	int retstat = 0;
@@ -139,54 +202,20 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 		return -1;
 	}
 
+	delegate_info_t dinfo = {
+		.sock = sock,
+		.sockaddr = &sockaddr
+	};
+
 	printf("Waiting for connection...\n");
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
 	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING) {
 		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
 		if (accepted == -1) { perror("daemon accept failure"); continue; }
 
-		vscl_byte_t msg[12] = { 0 };
-#ifdef _WIN32
-		int synced = recv(accepted, msg, 12, MSG_PEEK);
-#else
-		int synced = read(accepted, msg, 12);
-#endif
-		if (synced != 12) { continue; }
-
-		vscl_byte_t head[4] = { 0 };
-		memcpy(head, msg, 4);
-
-		int header = vscl_ident_full_header(head);
-		if (header != HEADER_IS_SYNC) { continue; }
-
-		struct rig_message reply;
-		vscl_byte_t blank[8] = { 0 };
-		int set = vscl_set_message(&reply, HEAD_SYNC, blank);
-		if (!set) { continue; }
-
-		int sent = vscl_sock_send(accepted, &reply);
-		if (sent != 12) { continue; }
-
-		DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CONNECTED;
-		printf("Daemon accepted connection...\n");
-
-		while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_CONNECTED) {
-			// this isn't cfg right
-			int accepted = vscl_sock_connect(sock, &sockaddr);
-			if (accepted == -1) { perror("daemon connect failure"); continue; }
-
-			vscl_byte_t buf[12] = { 0 };
-#ifdef _WIN32
-			int recvd = recv(accepted, buf, 12, MSG_PEEK);
-#else
-			int recvd = read(accepted, buf, 12);
-#endif
-			if (recvd != 12) { continue; } // TODO: some contingency?
-
-			// TODO: proper impl that pipes this stuff (into a socket or file or stdout)
-			printf("The message... %s\n", buf);
-			break;
-		}
+		dinfo.acceptfd = accepted;
+		int errno = pthread_create(connector, NULL, &daemon_synchronize, &dinfo);
+		if (errno != 0) { perror("daemon sided synching"); }
 	}
 
 	vscl_sock_close(sock, &sockaddr);
