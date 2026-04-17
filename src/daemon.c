@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
 #include "daemon.h"
 #include "ipc/ipc.h"
 
@@ -113,7 +114,7 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 } // int seek_daemon(struct sockaddir_un* sockaddr)
 // }}}
 
-int testrig_daemon(other_args* others) {
+int testrig_daemon([[maybe_unused]] other_args* others) {
 	struct sockaddr_un sockaddr = { 0 };
 	int retstat = 0;
 
@@ -127,10 +128,16 @@ int testrig_daemon(other_args* others) {
 	}
 
 	retstat = vscl_sock_bind(sock, &sockaddr);
-	if (retstat == -1) { return -1; }
+	if (retstat == -1) {
+		vscl_sock_close(sock, &sockaddr);
+		return -1;
+	}
 
 	retstat = vscl_sock_listen(sock, 1);
-	if (retstat == -1) { return -1; }
+	if (retstat == -1) {
+		vscl_sock_close(sock, &sockaddr);
+		return -1;
+	}
 
 	printf("Waiting for connection...\n");
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
@@ -152,11 +159,6 @@ int testrig_daemon(other_args* others) {
 		int header = vscl_ident_full_header(head);
 		if (header != HEADER_IS_SYNC) { continue; }
 
-		// What i want:
-		// - It should read the msg
-		// - It should check if it's a sync msg
-		// - It should reply (i think i can do this with bytestreasm)
-		// - It should connect back to another socket to send the data!
 		struct rig_message reply;
 		vscl_byte_t blank[8] = { 0 };
 		int set = vscl_set_message(&reply, HEAD_SYNC, blank);
