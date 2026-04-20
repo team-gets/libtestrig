@@ -4,6 +4,7 @@
 // Copyright © 2003 - 2021, maxon motor ag.
 // All rights reserved.
 // *******************************************************************************************************************
+// NOLINTBEGIN
 
 #include "definitions.h"
 
@@ -213,3 +214,4 @@ const unsigned short EG_DLPC_MAIN_LOOP_FILTER_COEFFICIENT_B                 = 12
 const unsigned short EG_DLPC_MAIN_LOOP_FILTER_COEFFICIENT_C                 = 122;
 const unsigned short EG_DLPC_MAIN_LOOP_FILTER_COEFFICIENT_D                 = 123;
 const unsigned short EG_DLPC_MAIN_LOOP_FILTER_COEFFICIENT_E                 = 124;
+// NOLINTEND
