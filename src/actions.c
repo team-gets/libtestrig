@@ -19,58 +19,15 @@ static void* testrig_devices[3] = { 0 };
 static struct controller testrig_controllers[3] = { 0 };
 
 int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
-#if _WIN32
-	PROCESS_INFORMATION pi;
-	STARTUPINFO si;
-	char cmd[1024] = { 0 };
-
-	strncpy(cmd, argv[0], strnlen(argv[0], 128) + 1);
-	strncat(cmd, " ", 2);
-	strncat(cmd, action_map[act], 10);
+	char args[1024] = { 0 };
+	sprintf(args, "%s", action_map[act]);
 
 	for (uint8_t i = 0; i < others->size; i++) {
-		strncat(cmd, " ", 2);
-		strncat(cmd, others->data[i], 128);
+		strncat(args, " ", 2);
+		strncat(args, others->data[i], 128);
 	}
-	printf("%s\n", cmd);
 
-	BOOL mkdetach = CreateProcess(
-			NULL, 
-			cmd,
-			NULL,
-			NULL,
-			FALSE,
-			0,
-			NULL,
-			NULL,
-			&si,
-			&pi
-		);
-
-	if (mkdetach == FALSE) { vscl_winprint_error("failed to detach"); return -1; }
-
-	CloseHandle(&si);
-	CloseHandle(&pi);
-
-	return GetCurrentProcessId();
-
-#else
-	pid_t pid = fork();
-
-	switch (pid) {
-	case -1:
-		perror("Failed to fork off");
-		return -1;
-		break;
-	case 0:
-		if (setsid() == -1) { perror("Failed to detach"); return -1; }
-		else { return 0; }
-		break;
-	default:
-		return pid;
-		break;
-	}
-#endif
+	return vscl_make_new_proc(argv[0], args);
 }
 
 int delegate_to_daemon(enum CLI_ACTION act) {
@@ -81,7 +38,8 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 	if (sock == INVALID_SOCKET) { return -1; }
 
 	int not_found = seek_daemon(&sockaddr);
-	if (not_found) { return -1; }
+	if (not_found) {
+	}
 
 	int conn = vscl_sock_connect(sock, &sockaddr);
 	if (conn == -1) { return -1; }
