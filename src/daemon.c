@@ -69,27 +69,36 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 
 	int sockcopied = vscl_get_sock_destination(sockpath);
 	if (sockcopied != 0) { return 0; }
-	strncat(sockpath, SOCK_FNAME, 15);
-	strncpy(sockaddr->sun_path, sockpath, 108);
+	memset(sockaddr->sun_path, 0, 108);
+	sprintf(sockaddr->sun_path, "%s%s", sockpath, SOCK_FNAME);
 
-	FILE* sockf = fopen(sockpath, "r");
-	if (sockf == NULL) { return 0; }
+	struct sockaddr_un temp_sockaddr = { 0 };
+	int temp_sock = vscl_sock_setup(&temp_sockaddr);
+	if (temp_sock == INVALID_SOCKET) { return 0; }
 
-	fclose(sockf);
+	int connstat = connect(temp_sock, (struct sockaddr*)sockaddr, (socklen_t)sizeof(*sockaddr));
+	if (connstat == -1) { return 0; }
+
+#ifdef _WIN32
+	closesocket(temp_sock);
+#else
+	close(temp_sock);
+#endif
+
 	return 1;
 } // int seek_daemon(struct sockaddir_un* sockaddr)
 // }}} fold
 
 int testrig_daemon([[maybe_unused]] other_args* others) {
-	struct sockaddr_un sockaddr = { .sun_family = AF_UNIX };
-	int sought = seek_daemon(&sockaddr);
-	if (sought) { fprintf(stderr, "error: daemon already running"); return -1; }
-
 	int retstat = 0;
+	struct sockaddr_un sockaddr = { .sun_family = AF_UNIX };
 
 	int sock = vscl_sock_setup(&sockaddr);
 	if (sock == -1) { return -1; }
 	socklen_t socksize = sizeof(sockaddr);
+
+	int sought = seek_daemon(&sockaddr);
+	if (sought) { fprintf(stderr, "error: daemon already running\n"); return -1; }
 
 	if (!deploy_interrupt_cleanup(sock, &sockaddr)) {
 		vscl_sock_close(sock, &sockaddr);
@@ -102,19 +111,18 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 		return -1;
 	}
 
-	retstat = vscl_sock_listen(sock, 1);
+	retstat = vscl_sock_listen(sock, 5);
 	if (retstat == -1) {
 		vscl_sock_close(sock, &sockaddr);
 		return -1;
 	}
 
-	printf("Waiting for connection...\n");
+	printf("waiting for connection...\n");
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
 	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING) {
 		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
 		if (accepted == -1) { perror("daemon accept failure"); continue; }
 
-		printf("Accepted\n");
 		vscl_byte_t buf[12] = { 0 };
 
 #ifdef _WIN32
@@ -122,7 +130,7 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 #else
 		int recvd = read(accepted, buf, 12);
 #endif
-		if (recvd != 12) { perror("did not read full msg\n"); continue; }
+		if (recvd != 12) { perror("did not read full msg"); continue; }
 
 		vscl_byte_t body[8] = { 0 };
 		for (uint8_t i = 4; i < 12; i++) {

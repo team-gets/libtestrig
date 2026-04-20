@@ -19,6 +19,7 @@ extern char* action_map[];
 
 static void* testrig_devices[3] = { 0 };
 static struct controller testrig_controllers[3] = { 0 };
+static const int NUM_MAX_RETRIES = 10;
 
 int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 	char args[1024] = { 0 };
@@ -40,6 +41,7 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 	if (sock == INVALID_SOCKET) { return -1; }
 
 	int found = seek_daemon(&sockaddr);
+
 	if (!found) {
 		printf("testrigd not running; creating new testrig process at ");
 		int pid = vscl_make_new_proc(PROG_NAME, "--detach --daemon");
@@ -47,7 +49,21 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 	}
 
 	int conn = vscl_sock_connect(sock, &sockaddr);
-	if (conn == -1) { return -1; }
+	int try = 1;
+	while (conn == -1 && try < NUM_MAX_RETRIES) {
+#ifdef _WIN32
+		Sleep(1000);
+#else
+		sleep(1);
+#endif
+		try++;
+		conn = vscl_sock_connect(sock, &sockaddr);
+	}
+
+	if (try >= NUM_MAX_RETRIES) {
+		fprintf(stderr, "failed to connect after %i retries", NUM_MAX_RETRIES);
+		return -1;
+	}
 
 	struct rig_message msg = { 0 };
 	vscl_byte_t head[4] = { 'W', 'A', 'N', 'T' };
