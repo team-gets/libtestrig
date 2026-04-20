@@ -5,8 +5,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <pthread.h>
-#include <errno.h>
 #include "daemon.h"
 #include "ipc/ipc.h"
 
@@ -22,14 +20,6 @@ typedef int socklen_t;
 
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
 static const char* SOCK_FNAME = "testrigd.sock"; // NOLINT
-
-pthread_t connector;
-int connectorstat = 0;
-typedef struct {
-	int acceptfd;
-	int sock;
-	struct sockaddr_un* sockaddr;
-} delegate_info_t;
 
 // Ctrl-C (Interrupt) Catchers/Handlers {{{
 #ifdef _WIN32
@@ -90,67 +80,6 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 } // int seek_daemon(struct sockaddir_un* sockaddr)
 // }}} fold
 
-// Synchronize {{{
-void* daemon_synchronize(void* arg) {
-	delegate_info_t* dinfo = (delegate_info_t*)(arg);
-
-	int acceptfd = dinfo->acceptfd;
-	int sock = dinfo->sock;
-	struct sockaddr_un* sockaddr = dinfo->sockaddr;
-
-	vscl_byte_t msg[12] = { 0 };
-#ifdef _WIN32
-	int synced = recv(acceptfd, msg, 12, MSG_PEEK);
-#else
-	int synced = read(acceptfd, msg, 12);
-#endif
-	if (synced != 12) { fprintf(stderr, "sync not captured full msg\n"); return 0; }
-
-	vscl_byte_t head[4] = { 0 };
-	memcpy(head, msg, 4);
-
-	int header = vscl_ident_full_header(head);
-	if (header != HEADER_IS_SYNC) { return 0; }
-
-	struct rig_message reply;
-	vscl_byte_t blank[8] = { 0 };
-	int setstat = vscl_set_message(&reply, HEAD_SYNC, blank);
-	if (setstat) { return 0; }
-
-	int sent = vscl_sock_send(acceptfd, &reply);
-	if (sent != 12) { return 0; }
-
-	vscl_byte_t buf[12] = { 0 };
-	printf("Daemon accepted connection...\n");
-	while (DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_STOPPED
-		   && DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_CLEANING) {
-
-		int intent = accept(sock, (struct sockaddr*)sockaddr, (socklen_t*)(sizeof(sockaddr)));
-		if (intent == -1) { perror("daemon intent decode failure"); continue; }
-
-#ifdef _WIN32
-		int recvd = recv(intent, buf, 12, MSG_PEEK);
-#else
-		int recvd = read(intent, buf, 12);
-#endif
-		if (recvd == 12) { break; }
-	}
-
-	vscl_byte_t body[8] = { 0 };
-	for (uint8_t i = 4; i < 12; i++) {
-		body[i - 4] = buf[i];
-	}
-
-	if (!strncmp("status", body, 7))			{ testrig_stat(NULL); }
-	else if (!strncmp("open", body, 5))			{ testrig_open(NULL); }
-	else if (!strncmp("request", body, 7))		{ testrig_request(NULL); }
-	else if (!strncmp("close", body, 6))		{ testrig_close(NULL); }
-
-	pthread_exit(&connectorstat);
-	return 0;
-}
-// }}}
-
 int testrig_daemon([[maybe_unused]] other_args* others) {
 	struct sockaddr_un sockaddr = { .sun_family = AF_UNIX };
 	int sought = seek_daemon(&sockaddr);
@@ -179,11 +108,6 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 		return -1;
 	}
 
-	delegate_info_t dinfo = {
-		.sock = sock,
-		.sockaddr = &sockaddr
-	};
-
 	printf("Waiting for connection...\n");
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
 	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING) {
@@ -191,9 +115,24 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 		if (accepted == -1) { perror("daemon accept failure"); continue; }
 
 		printf("Accepted\n");
-		dinfo.acceptfd = accepted;
-		errno = pthread_create(&connector, NULL, &daemon_synchronize, &dinfo);
-		if (errno != 0) { perror("daemon sided synching"); }
+		vscl_byte_t buf[12] = { 0 };
+
+#ifdef _WIN32
+		int recvd = recv(accepted, buf, 12, MSG_PEEK);
+#else
+		int recvd = read(accepted, buf, 12);
+#endif
+		if (recvd != 12) { perror("did not read full msg\n"); continue; }
+
+		vscl_byte_t body[8] = { 0 };
+		for (uint8_t i = 4; i < 12; i++) {
+			body[i - 4] = buf[i];
+		}
+
+		if (!strncmp("STATUS", body, 7))			{ testrig_stat(NULL); }
+		else if (!strncmp("OPEN", body, 5))			{ testrig_open(NULL); }
+		else if (!strncmp("REQUEST", body, 7))		{ testrig_request(NULL); }
+		else if (!strncmp("CLOSE", body, 6))		{ testrig_close(NULL); }
 	}
 
 	vscl_sock_close(sock, &sockaddr);

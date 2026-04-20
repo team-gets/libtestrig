@@ -86,26 +86,39 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 	int conn = vscl_sock_connect(sock, &sockaddr);
 	if (conn == -1) { return -1; }
 
-	struct rig_message sync = { 0 };
-	vscl_set_message(&sync, HEAD_SYNC, MESSAGE_BLANK);
-
-	int sent = vscl_sock_send(sock, &sync);
-	printf("Saying hi\n");
-
 	struct rig_message msg = { 0 };
-	vscl_byte_t head[4] = { 'h', 'o', 'w', 'd' };
-	vscl_byte_t body[8] = { 'y', ' ', 'w', 'o', 'r', 'l', 'd', '\n' };
-	vscl_set_message(&msg, head, body);
-
+	vscl_byte_t head[4] = { 'W', 'A', 'N', 'T' };
+	vscl_byte_t body[8] = { 0 };
 
 	switch (act) {
 	case ACTION_OPEN:
+		body[0] = 'O';
+		body[1] = 'P';
+		body[2] = 'E';
+		body[3] = 'N';
+		break;
+	case ACTION_CLOSE:
+		body[0] = 'C';
+		body[1] = 'L';
+		body[2] = 'O';
+		body[3] = 'S';
+		body[4] = 'E';
+		break;
+	case ACTION_REQUEST:
+		body[0] = 'R';
+		body[1] = 'E';
+		body[2] = 'Q';
+		body[3] = 'U';
+		body[4] = 'E';
+		body[5] = 'S';
+		body[6] = 'T';
+		break;
 	default:
 		break;
 	}
 
+	vscl_set_message(&msg, head, body);
 	vscl_sock_send(sock, &msg);
-	printf("All done\n");
 	return 0;
 }
 
