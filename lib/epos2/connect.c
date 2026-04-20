@@ -138,7 +138,7 @@ uint32_t vscl_close_devices(struct controller controllers[], void* device_handle
 	if (num < 1) { printf("Invalid device array size.\n"); return 0x06040043; } // General Parameter Error
 	if (device_handles[0] == 0) {
 		printf("At head of CloseDevices():\n");
-		printf("\tERROR: Invalid gateway device handle passed for %s at node %ihh.\n",
+		printf("\tERROR: Invalid gateway device handle passed for %s at node %i.\n",
 				controllers[0].name, controllers[0].node_id);
 
 		return 0x2000000B;

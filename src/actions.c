@@ -171,9 +171,7 @@ int testrig_open([[maybe_unused]] other_args* others) {
 	return 0;
 }
 
-int testrig_request(other_args* others) {
-	//if (others->data == NULL) { return 1; }
-
+int testrig_request([[maybe_unused]] other_args* others) {
 	// need to impl a daemon autolaunches
 
 	struct sockaddr_un sockaddr = { 0 };
@@ -199,7 +197,13 @@ int testrig_request(other_args* others) {
 
 int testrig_close([[maybe_unused]] other_args* others) {
 	// Launch daemon if not already, then delegate it to that
-	vscl_close_devices(testrig_controllers, testrig_devices, 3);
+	if (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_NONE) {
+		delegate_to_daemon(ACTION_CLOSE);
+	}
+	else {
+		vscl_close_devices(testrig_controllers, testrig_devices, 3);
+	}
+
 	return 0;
 }
 
