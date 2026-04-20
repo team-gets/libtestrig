@@ -14,7 +14,9 @@
 #endif // _WIN32
 
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
+extern char* PROG_NAME; // NOLINT FIXME: WHAT IS THE READABILITIY CHECK HERE
 extern char* action_map[];
+
 static void* testrig_devices[3] = { 0 };
 static struct controller testrig_controllers[3] = { 0 };
 
@@ -37,8 +39,11 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 	sock = vscl_sock_setup(&sockaddr);
 	if (sock == INVALID_SOCKET) { return -1; }
 
-	int not_found = seek_daemon(&sockaddr);
-	if (not_found) {
+	int found = seek_daemon(&sockaddr);
+	if (!found) {
+		printf("testrigd not running; creating new testrig process at ");
+		int pid = vscl_make_new_proc(PROG_NAME, "--detach --daemon");
+		printf("%i\n", pid);
 	}
 
 	int conn = vscl_sock_connect(sock, &sockaddr);

@@ -11,7 +11,7 @@
 
 [[maybe_unused]]
 static size_t vscl_strinterlen(const char* interstring, const char* original) {
-	assert(original > interstring);
+	assert(original >= interstring);
 	return original - interstring;
 }
 
@@ -67,12 +67,12 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 
 	switch (pid) {
 	case -1:
-		perror("Failed to fork off");
+		perror("failed to fork off");
 		return -1;
 		break;
 	case 0:
 		if (setsid() == -1) {
-			perror("Failed to detach");
+			perror("failed to detach");
 			return -1;
 		}
 		else {
@@ -83,17 +83,17 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 			argv[0] = (char*)malloc(strlen(prog) + 1);
 			strncpy(argv[0], prog, strlen(prog) + 1);
 
-			argv[1] = (char*)malloc(64);
+			argv[1] = (char*)calloc(64, 1);
 			char* arg1 = strstr(args, " ");
 			if (arg1 == NULL) {
-				strncpy(argv[1], arg1, strlen(arg1) + 1);
+				strncpy(argv[1], args, strlen(args) + 1);
 			}
 			else {
 				char interstr[64] = { 0 };
-				size_t interlen = vscl_strinterlen(arg1, args);
+				size_t interlen = vscl_strinterlen(args, arg1);
 
 				strncpy(interstr, args, interlen);
-				strncpy(argv[1], interstr, 64);
+				strncpy(argv[1], interstr, strlen(interstr) + 1);
 
 				char* argn = strstr(arg1, " ");
 				char* argn1 = arg1;
@@ -104,17 +104,26 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 						argv = (char**)realloc(argv, sizeof_argv * sizeof(char*));
 					}
 
-					argv[num_args - 2] = (char*)malloc(64);
+					size_t n = num_args - 1;
+					argv[n] = (char*)calloc(64, 1);
 					char argnstr[64] = { 0 };
 					size_t argnlen = vscl_strinterlen(argn, argn1);
+					argnlen = (argnlen == 0) ? 64 : argnlen;
+
 					strncpy(argnstr, argn1, argnlen);
+					strncpy(argv[n], argnstr, strlen(argnstr) + 1);
 
 					argn1 = argn;
-					argn = strstr(argn, " ");
+					argn = strstr(argn1 + 1, " ");
 				}
 			}
 
 			execv(prog, argv);
+
+			for (size_t i = 0; i < num_args; i++) {
+				free(argv[i]);
+			}
+
 			free(argv);
 			return 0;
 		}

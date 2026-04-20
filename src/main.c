@@ -6,6 +6,7 @@
 #include "daemon.h"
 
 enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_NONE; // NOLINT
+char* PROG_NAME; // NOLINT
 
 int main(int argc, char** argv) {
 	if (argc < 2 || argc > 255) {
@@ -13,6 +14,7 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
+	PROG_NAME = argv[0];
 	struct parsed_args parsed;
 	other_args others = { 0, 0 };
 	parse_args(argc, argv, &parsed, &others);
