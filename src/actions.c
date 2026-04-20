@@ -13,6 +13,7 @@
 #include <unistd.h>
 #endif // _WIN32
 
+extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
 extern char* action_map[];
 static void* testrig_devices[3] = { 0 };
 static struct controller testrig_controllers[3] = { 0 };
@@ -72,6 +73,42 @@ int detach_program(char** argv, enum CLI_ACTION act, const other_args* others) {
 #endif
 }
 
+int delegate_to_daemon(enum CLI_ACTION act) {
+	int sock;
+	struct sockaddr_un sockaddr;
+
+	sock = vscl_sock_setup(&sockaddr);
+	if (sock == INVALID_SOCKET) { return -1; }
+
+	int not_found = seek_daemon(&sockaddr);
+	if (not_found) { return -1; }
+
+	int conn = vscl_sock_connect(sock, &sockaddr);
+	if (conn == -1) { return -1; }
+
+	struct rig_message sync = { 0 };
+	vscl_set_message(&sync, HEAD_SYNC, MESSAGE_BLANK);
+
+	int sent = vscl_sock_send(sock, &sync);
+	printf("Saying hi\n");
+
+	struct rig_message msg = { 0 };
+	vscl_byte_t head[4] = { 'h', 'o', 'w', 'd' };
+	vscl_byte_t body[8] = { 'y', ' ', 'w', 'o', 'r', 'l', 'd', '\n' };
+	vscl_set_message(&msg, head, body);
+
+	switch (act) {
+	case ACTION_OPEN:
+	default:
+		break;
+	}
+
+	vscl_sock_send(sock, &msg);
+	printf("All done\n");
+	return 0;
+}
+
+
 int testrig_ident(other_args* others) {
 	if (others->data == NULL || strncmp(others->data[0], "names", 5) == 0) {
 		vscl_ident_names();
@@ -110,8 +147,13 @@ int testrig_stat(other_args* others) {
 
 int testrig_open([[maybe_unused]] other_args* others) {
 	// TODO: impl launch daemon if not already
+	if (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_NONE) {
+		delegate_to_daemon(ACTION_OPEN);
+	}
+	else {
+		vscl_initialize_devices(testrig_controllers, testrig_devices, 3);
+	}
 
-	//vscl_initialize_devices(testrig_controllers, testrig_devices, 3);
 	return 0;
 }
 

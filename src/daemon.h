@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ipc/ipc.h"
+#include "actions.h"
 #include "other_args.h"
 
 int testrig_daemon(other_args* others);

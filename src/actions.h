@@ -13,6 +13,7 @@
 
 int detach_program(char** argv, enum CLI_ACTION act, const other_args* others);
 
+int delegate_to_daemon(enum CLI_ACTION act);
 int testrig_ident(other_args* others);
 int testrig_stat(other_args* others);
 int testrig_open(other_args* others);

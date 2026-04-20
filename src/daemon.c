@@ -21,9 +21,9 @@ typedef int socklen_t;
 #endif // _WIN32
 
 extern enum TESTRIG_DAEMON_STATE DAEMON_CURRENT_STATUS; // NOLINT
-static const char* sockfname = "testrigd.sock";
+static const char* SOCK_FNAME = "testrigd.sock"; // NOLINT
 
-pthread_t* connector = 0;
+pthread_t connector;
 int connectorstat = 0;
 typedef struct {
 	int acceptfd;
@@ -74,49 +74,19 @@ static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] 
 // }}} fold
 
 // Daemon Process and Socket Identification {{{
-#ifndef _WIN32
-static int impl_look_for_sock_ext(const char* fpath,
-		[[ maybe_unused ]] const struct stat* sb, [[ maybe_unused ]] int tflag, [[ maybe_unused ]] struct FTW* ftwbuf) {
-	if (tflag == FTW_F) {
-		if (strncmp(fpath, sockfname, strlen(sockfname) + 1) == 0) {
-			return 1;
-		};
-	}
-
-	return 0;
-}
-#endif
-
-static int seek_sock(char* sock) {
-#ifdef _WIN32
-	// TODO: where directory walker (steal previous impl from tests)
-#else
-	char orig[108] = { 0 };
-	strncpy(orig, sock, 108);
-
-	int walker = nftw(sock, impl_look_for_sock_ext, 10, FTW_MOUNT | FTW_PHYS);
-	if (walker != 1) { perror("finder fail"); return 1; }
-
-	printf("The sock %s\n", sockfname);
-	return 0;
-#endif
-} // static int seek_sock_ext(char* sock)
-
 int seek_daemon(struct sockaddr_un* sockaddr) {
-	char sock[108] = { 0 };
-	int dest = vscl_get_sock_destination(sock);
-	if (dest) { return 1; }
+	char sockpath[108] = { 0 };
 
-	sockaddr->sun_family = AF_UNIX;
+	int sockcopied = vscl_get_sock_destination(sockpath);
+	if (sockcopied != 0) { return 0; }
+	strncat(sockpath, SOCK_FNAME, 15);
+	strncpy(sockaddr->sun_path, sockpath, 108);
 
-	// FIXME: this hopes that we clean up after ourselves and that only one exists
-	int not_sought = seek_sock(sock);
-	if (not_sought) { return 1; }
+	FILE* sockf = fopen(sockpath, "rb");
+	if (sockf == NULL) { return 0; }
 
-	vscl_get_sock_destination(sockaddr->sun_path);
-	strncat(sockaddr->sun_path, sockfname, 108);
-
-	return 0;
+	fclose(sockf);
+	return 1;
 } // int seek_daemon(struct sockaddir_un* sockaddr)
 // }}} fold
 
@@ -134,7 +104,7 @@ void* daemon_synchronize(void* arg) {
 #else
 	int synced = read(acceptfd, msg, 12);
 #endif
-	if (synced != 12) { return 0; }
+	if (synced != 12) { fprintf(stderr, "sync not captured full msg\n"); return 0; }
 
 	vscl_byte_t head[4] = { 0 };
 	memcpy(head, msg, 4);
@@ -144,8 +114,8 @@ void* daemon_synchronize(void* arg) {
 
 	struct rig_message reply;
 	vscl_byte_t blank[8] = { 0 };
-	int set = vscl_set_message(&reply, HEAD_SYNC, blank);
-	if (!set) { return 0; }
+	int setstat = vscl_set_message(&reply, HEAD_SYNC, blank);
+	if (setstat) { return 0; }
 
 	int sent = vscl_sock_send(acceptfd, &reply);
 	if (sent != 12) { return 0; }
@@ -153,21 +123,17 @@ void* daemon_synchronize(void* arg) {
 	printf("Daemon accepted connection...\n");
 	while (DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_STOPPED
 		   && DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_CLEANING) {
-		// this isn't cfg right
-		int backward = vscl_sock_connect(sock, sockaddr);
-		if (backward == -1) { perror("daemon connect failure"); continue; }
+
+		int intent = accept(sock, (struct sockaddr*)sockaddr, (socklen_t*)(sizeof(sockaddr)));
+		if (intent == -1) { perror("daemon intent decode failure"); continue; }
 
 		vscl_byte_t buf[12] = { 0 };
 #ifdef _WIN32
-		int recvd = recv(backward, buf, 12, MSG_PEEK);
+		int recvd = recv(intent, buf, 12, MSG_PEEK);
 #else
-		int recvd = read(backward, buf, 12);
+		int recvd = read(intent, buf, 12);
 #endif
-		if (recvd != 12) { continue; } // TODO: some contingency?
-
-		// TODO: proper impl that pipes this stuff (into a socket or file or stdout)
-		printf("The message... %s\n", buf);
-		break;
+		if (recvd == 12) { break; }
 	}
 
 	pthread_exit(&connectorstat);
@@ -176,13 +142,9 @@ void* daemon_synchronize(void* arg) {
 // }}}
 
 int testrig_daemon([[maybe_unused]] other_args* others) {
-	char sockpath[108] = { 0 };
-	int sockcopied = vscl_get_sock_destination(sockpath);
-	if (sockcopied != 0) { return -1; }
-	strncat(sockpath, "testrigd.sock", 14);
-
 	struct sockaddr_un sockaddr = { .sun_family = AF_UNIX };
-	strncpy(sockaddr.sun_path, sockpath, 108);
+	int sought = seek_daemon(&sockaddr);
+	if (sought) { fprintf(stderr, "error: daemon already running"); return -1; }
 
 	int retstat = 0;
 
@@ -218,8 +180,9 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
 		if (accepted == -1) { perror("daemon accept failure"); continue; }
 
+		printf("Accepted\n");
 		dinfo.acceptfd = accepted;
-		errno = pthread_create(connector, NULL, &daemon_synchronize, &dinfo);
+		errno = pthread_create(&connector, NULL, &daemon_synchronize, &dinfo);
 		if (errno != 0) { perror("daemon sided synching"); }
 	}
 
