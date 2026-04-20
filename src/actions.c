@@ -97,6 +97,7 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 	vscl_byte_t body[8] = { 'y', ' ', 'w', 'o', 'r', 'l', 'd', '\n' };
 	vscl_set_message(&msg, head, body);
 
+
 	switch (act) {
 	case ACTION_OPEN:
 	default:

@@ -82,7 +82,7 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 	strncat(sockpath, SOCK_FNAME, 15);
 	strncpy(sockaddr->sun_path, sockpath, 108);
 
-	FILE* sockf = fopen(sockpath, "rb");
+	FILE* sockf = fopen(sockpath, "r");
 	if (sockf == NULL) { return 0; }
 
 	fclose(sockf);
@@ -120,6 +120,7 @@ void* daemon_synchronize(void* arg) {
 	int sent = vscl_sock_send(acceptfd, &reply);
 	if (sent != 12) { return 0; }
 
+	vscl_byte_t buf[12] = { 0 };
 	printf("Daemon accepted connection...\n");
 	while (DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_STOPPED
 		   && DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_CLEANING) {
@@ -127,7 +128,6 @@ void* daemon_synchronize(void* arg) {
 		int intent = accept(sock, (struct sockaddr*)sockaddr, (socklen_t*)(sizeof(sockaddr)));
 		if (intent == -1) { perror("daemon intent decode failure"); continue; }
 
-		vscl_byte_t buf[12] = { 0 };
 #ifdef _WIN32
 		int recvd = recv(intent, buf, 12, MSG_PEEK);
 #else
@@ -135,6 +135,16 @@ void* daemon_synchronize(void* arg) {
 #endif
 		if (recvd == 12) { break; }
 	}
+
+	vscl_byte_t body[8] = { 0 };
+	for (uint8_t i = 4; i < 12; i++) {
+		body[i - 4] = buf[i];
+	}
+
+	if (!strncmp("status", body, 7))			{ testrig_stat(NULL); }
+	else if (!strncmp("open", body, 5))			{ testrig_open(NULL); }
+	else if (!strncmp("request", body, 7))		{ testrig_request(NULL); }
+	else if (!strncmp("close", body, 6))		{ testrig_close(NULL); }
 
 	pthread_exit(&connectorstat);
 	return 0;
