@@ -5,18 +5,16 @@ on:
     branches: ["main"]
     paths:
       - ".github/workflows/build-cmake.yml"
-      - "ipc/**/*.c"
-      - "ipc/**/*.h"
-      - "test/*.c"
+      - "**/*.c"
+      - "**/*.h"
       - "**/CMakeLists.txt"
       - "cmake/*.cmake"
   push:
     branches: ["main"]
     paths:
       - ".github/workflows/build-cmake.yml"
-      - "ipc/**/*.c"
-      - "ipc/**/*.h"
-      - "test/*.c"
+      - "**/*.c"
+      - "**/*.h"
       - "**/CMakeLists.txt"
       - "cmake/*.cmake"
 
