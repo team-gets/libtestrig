@@ -42,6 +42,13 @@
 			}
 		},
 		{
+			"name": "windows-msvc",
+			"inherits": [ "default", "windows-only" ],
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "cl"
+			}
+		},
+		{
 			"name": "linux-gcc",
 			"inherits": [ "default", "linux-only" ],
 			"cacheVariables": {
@@ -61,6 +68,10 @@
 		{
 			"name": "windows-mingw",
 			"configurePreset": "windows-mingw"
+		},
+		{
+			"name": "windows-msvc",
+			"configurePreset": "windows-msvc"
 		},
 		{
 			"name": "linux-gcc",
