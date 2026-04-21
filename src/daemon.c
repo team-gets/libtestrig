@@ -87,9 +87,9 @@ int seek_daemon(struct sockaddr_un* sockaddr) {
 
 	return 1;
 } // int seek_daemon(struct sockaddir_un* sockaddr)
-// }}} fold
+// }}} Daemon Process and Socket Identification
 
-int testrig_daemon([[maybe_unused]] other_args* others) {
+int testrig_daemon(other_args* others) {
 	int retstat = 0;
 	struct sockaddr_un sockaddr = { .sun_family = AF_UNIX };
 
@@ -98,7 +98,26 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 	socklen_t socksize = sizeof(sockaddr);
 
 	int sought = seek_daemon(&sockaddr);
-	if (sought) { fprintf(stderr, "error: daemon already running\n"); return -1; }
+
+	if (others != NULL && others->data != NULL
+	    && !strncmp(others->data[0], "down", 6)) {
+		
+		vscl_byte_t body[8] = "DOWN";
+		struct rig_message msg = { 0 };
+
+		vscl_set_message(&msg, HEAD_SYNC, body);
+		int conn = vscl_sock_connect(sock, &sockaddr);
+		if (conn == -1) { return -1; }
+
+		int sent = vscl_sock_send(sock, &msg);
+		if (sent == -1) { return -1; }
+
+		return 0;
+	}
+	else if (sought) {
+		fprintf(stderr, "error: daemon already running\n");
+		return -1;
+	}
 
 	if (!deploy_interrupt_cleanup(sock, &sockaddr)) {
 		vscl_sock_close(sock, &sockaddr);
@@ -137,10 +156,11 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 			body[i - 4] = buf[i];
 		}
 
-		if (!strncmp("STATUS", body, 7))			{ testrig_stat(NULL); }
-		else if (!strncmp("OPEN", body, 5))			{ testrig_open(NULL); }
-		else if (!strncmp("REQUEST", body, 7))		{ testrig_peek(NULL); }
-		else if (!strncmp("CLOSE", body, 6))		{ testrig_close(NULL); }
+		if (!strncmp("STATUS", body, 7))		{ testrig_stat(NULL); }
+		else if (!strncmp("OPEN", body, 5))		{ testrig_open(NULL); }
+		else if (!strncmp("REQUEST", body, 7))	{ testrig_peek(NULL); }
+		else if (!strncmp("CLOSE", body, 6))	{ testrig_close(NULL); }
+		else if (!strncmp("DOWN", body, 5))		{ DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CLEANING; }
 	}
 
 	vscl_sock_close(sock, &sockaddr);

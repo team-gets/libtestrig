@@ -16,7 +16,7 @@ int help_me(other_args* which) {
 	else if (!strncmp("open", which_one, 5))	{ printhelp_open(); return 0; }
 	else if (!strncmp("peek", which_one, 7))	{ printhelp_peek(); return 0; }
 	else if (!strncmp("close", which_one, 6))	{ printhelp_close(); return 0; }
-	else	{ printf("invalid target for \"help\"\n"); return 1; }
+	else	{ printf("invalid target for \"help\": \"%s\"\n", which_one); return 1; }
 }
 
 void print_usage(void) {
@@ -24,11 +24,11 @@ void print_usage(void) {
 	print_hline(5);
 	printf("Options:\n"
 		   "--detach       Detach the process from the shell.\n"
-		   "--daemon       Operate in daemon mode.\n"
 		   "--verbose      Operate verbosely\n");
 	print_hline(5);
 	printf("Actions:\n"
 		   "help       Print out detailed help for a specific action.\n"
+		   "daemon     Operate on the daemon.\n"
 		   "ident      Identify connected controllers.\n"
 		   "stat       Determine the status of connected controllers.\n"
 		   "open       Open connection to a device.\n"
@@ -59,7 +59,7 @@ void printhelp_stat(void) {
 }
 
 void printhelp_daemon(void) {
-	printf("testrig daemon mode\n");
+	printf("testrig daemon\n");
 	print_hline(5);
 	printf("The process serves as a mediator between the controllers\n"
 		   "and other processes through an opened Unix socket,\n"
