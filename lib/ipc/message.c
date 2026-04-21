@@ -14,3 +14,33 @@ int vscl_set_message(struct rig_message* msg, const vscl_byte_t* head, const vsc
 	memcpy(msg->data, data, 8);
 	return 0;
 }
+
+int vscl_ident_header_part(vscl_byte_t in[4], int idx) {
+	if (in[idx] == HEAD_STAY[idx]) {
+		return HEADER_IS_STAY;
+	}
+	else if (in[idx] == HEAD_DC[idx]) {
+		return HEADER_IS_DC;
+	}
+	else if (in[idx] == HEAD_SYNC[idx]) {
+		return HEADER_IS_SYNC;
+	}
+	else {
+		return -1;
+	}
+}
+
+int vscl_ident_full_header(vscl_byte_t in[4]) {
+	int identity = -1;
+
+	for (int i = 0; i < 4; i++) {
+		if (i == 0) {
+			identity = vscl_ident_header_part(in, 0);
+		}
+		else {
+			identity &= vscl_ident_header_part(in, i);
+		}
+	}
+
+	return identity;
+}
