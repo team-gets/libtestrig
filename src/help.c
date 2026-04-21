@@ -14,7 +14,7 @@ int help_me(other_args* which) {
 	else if (!strncmp("stat", which_one, 5))	{ printhelp_stat(); return 0; }
 	else if (!strncmp("daemon", which_one, 7))	{ printhelp_daemon(); return 0; }
 	else if (!strncmp("open", which_one, 5))	{ printhelp_open(); return 0; }
-	else if (!strncmp("request", which_one, 7))	{ printhelp_request(); return 0; }
+	else if (!strncmp("peek", which_one, 7))	{ printhelp_peek(); return 0; }
 	else if (!strncmp("close", which_one, 6))	{ printhelp_close(); return 0; }
 	else	{ printf("invalid target for \"help\"\n"); return 1; }
 }
@@ -32,7 +32,7 @@ void print_usage(void) {
 		   "ident      Identify connected controllers.\n"
 		   "stat       Determine the status of connected controllers.\n"
 		   "open       Open connection to a device.\n"
-		   "request     Request a CAN frame and print it out to stdout.\n"
+		   "peek       Request a CAN frame and print it out to stdout.\n"
 		   "close      Close connection to device and release it.\n");
 	printf("\n");
 }
@@ -75,8 +75,8 @@ void printhelp_open(void) {
 		   "\n");
 }
 
-void printhelp_request(void) {
-	printf("testrig request\n");
+void printhelp_peek(void) {
+	printf("testrig peek\n");
 	print_hline(5);
 	printf("Request a CAN frame and send it to stdout."
 		   "\n");

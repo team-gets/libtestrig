@@ -150,7 +150,7 @@ int testrig_open([[maybe_unused]] other_args* others) {
 	return 0;
 }
 
-int testrig_request([[maybe_unused]] other_args* others) {
+int testrig_peek([[maybe_unused]] other_args* others) {
 	// need to impl a daemon autolaunches
 
 	struct sockaddr_un sockaddr = { 0 };

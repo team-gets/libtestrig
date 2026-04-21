@@ -14,10 +14,10 @@ static void die_invalid_arg(const char* arg) {
 
 static char* mode_map[] = { "command", "detach" };
 char* action_map[] = { "help", "ident", "status", "daemon",
-	"open", "request", "close" };
+	"open", "peek", "close" };
 static int(*fun_map[])(other_args*) = {
 	&help_me, &testrig_ident, &testrig_stat, &testrig_daemon,
-	&testrig_open, &testrig_request, &testrig_close };
+	&testrig_open, &testrig_peek, &testrig_close };
 
 int is_flag(const char* arg) { return (strstr(arg, "--") == NULL) ? 0 : 1; }
 int is_opt(const char* arg) {
@@ -49,7 +49,7 @@ int parse_act(const char* act, struct parsed_args* parsed) {
 	else if (!strncmp("ident", act, 6))		{ parsed->action = ACTION_IDENT; ret = 1; }
 	else if (!strncmp("status", act, 7))	{ parsed->action = ACTION_STAT; ret = 1; }
 	else if (!strncmp("open", act, 5))		{ parsed->action = ACTION_OPEN; ret = 1; }
-	else if (!strncmp("request", act, 7))	{ parsed->action = ACTION_REQUEST; ret = 1; }
+	else if (!strncmp("peek", act, 7))	{ parsed->action = ACTION_REQUEST; ret = 1; }
 	else if (!strncmp("close", act, 6))		{ parsed->action = ACTION_CLOSE; ret = 1; }
 	else if (!strncmp("help", act, 5))		{ parsed->action = ACTION_HELP; ret = 1; }
 

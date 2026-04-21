@@ -139,7 +139,7 @@ int testrig_daemon([[maybe_unused]] other_args* others) {
 
 		if (!strncmp("STATUS", body, 7))			{ testrig_stat(NULL); }
 		else if (!strncmp("OPEN", body, 5))			{ testrig_open(NULL); }
-		else if (!strncmp("REQUEST", body, 7))		{ testrig_request(NULL); }
+		else if (!strncmp("REQUEST", body, 7))		{ testrig_peek(NULL); }
 		else if (!strncmp("CLOSE", body, 6))		{ testrig_close(NULL); }
 	}
 
