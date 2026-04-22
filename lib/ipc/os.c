@@ -36,8 +36,8 @@ int vscl_get_sock_destination(char *dest) {
 
 int vscl_make_new_proc(const char* prog, const char* args) {
 #if _WIN32
-	PROCESS_INFORMATION pi;
-	STARTUPINFO si;
+	PROCESS_INFORMATION pi = { 0 };
+	STARTUPINFO si = { 0 };
 
 	char cmd[1024] = { 0 };
 	sprintf(cmd, "%s %s", prog, args);

@@ -32,10 +32,15 @@ int main(int argc, char** argv) {
 		if (parented == INVALID_SOCKET) { fprintf(stderr, "Parent sock maker fail\n"); return -1; }
 
 		int parentstat = vscl_sock_bind(parented, &sockaddr);
-		if (parentstat == -1) { fprintf(stderr, "Sock binder fail\n"); return parentstat; }
+		if (parentstat == -1) {
+            fprintf(stderr, "Sock binder fail\n");
+			int closestat = vscl_sock_close(parented, &sockaddr);
+			return (!closestat) ? closestat : parentstat;
+        }
 
 		parentstat = vscl_sock_listen(parented, 1);
 		if (parentstat == -1) {
+            fprintf(stderr, "Sock listener fail at sockpath %s\n", sockaddr.sun_path);
 			int closestat = vscl_sock_close(parented, &sockaddr);
 			return (!closestat) ? closestat : parentstat;
 		}
@@ -69,20 +74,27 @@ int main(int argc, char** argv) {
     }
 	else if (strncmp(argv[1], "child", 6) == 0) {
 		vscl_sleep(5); // arbitrary
-		fflush(stdout);
+
 		struct sockaddr_un childsock = { 0 };
 		int childed = vscl_sock_setup(&childsock);
 		if (childed == INVALID_SOCKET) { fprintf(stderr, "Child sock maker fail\n"); return -1; }
 		else { printf("Child socket created at %s\n", childsock.sun_path); }
 		
 		int connection = vscl_sock_connect(childed, &sockaddr);
-		if (connection == -1) { fprintf(stderr, "Child connection fail\n"); return connection; }
+		if (connection == -1) {
+            fprintf(stderr, "Child connection fail\n");
+            vscl_sock_close(childed, &childsock);
+			int closestat = vscl_sock_close(childed, &sockaddr);
+			return (!closestat) ? closestat : connection;
+        }
 
 		struct rig_message msg = { {'H', 'O', 'W', 'D'}, {'Y', ' ', 'W', 'O', 'R', 'L', 'D', 0} };
 		int sent = vscl_sock_send(connection, &msg);
 		if (sent != 12) {
 			fprintf(stderr, "Failure to send all bytes: %i out of 12\n", sent);
-			return -1;
+            vscl_sock_close(childed, &childsock);
+			int closestat = vscl_sock_close(childed, &sockaddr);
+			return (!closestat) ? closestat : -1;
 		}
 		else {
 			printf("Sent all bytes.\n");
