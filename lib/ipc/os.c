@@ -159,7 +159,7 @@ void vscl_os_perror(const char* preamble) {
 
 
     if (wides == 0) { printf("error while processing error\n"); }
-    wprintf(L"%s: %s", preamble, errmsg);
+    printf("%s: %s", preamble, errmsg);
 #else
 	perror(preamble);
 #endif
