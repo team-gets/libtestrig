@@ -47,14 +47,14 @@ int main(int argc, char** argv) {
 			vscl_byte_t buf[12] = { 0 };
 
 #ifdef _WIN32
-			int recvd = recv(accepted, buf, 12, MSG_PEEK);
+			int recvd = recv(acceptor, buf, 12, MSG_PEEK);
 #else
 			int recvd = read(acceptor, buf, 12);
 #endif
 			if (recvd != 12) {
 				fprintf(stderr, "Failure to read full msg: %i out of 12\n", recvd);
 				vscl_sock_close(parented, &sockaddr);
-				return recvd;
+				return (recvd == 0) ? -1 : recvd;
 			}
 
 			printf("Success: The message I got was %s\n", buf);
@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
 		return vscl_sock_close(parented, &sockaddr);
     }
 	else if (strncmp(argv[1], "child", 6) == 0) {
+		vscl_sleep(2);
 		struct sockaddr_un childsock = { 0 };
 		int childed = vscl_sock_setup(&childsock);
 		if (childed == INVALID_SOCKET) { fprintf(stderr, "Child sock maker fail\n"); return -1; }

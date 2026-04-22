@@ -63,6 +63,10 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 	return GetCurrentProcessId();
 
 #else
+	fflush(stdout);
+	fflush(stderr);
+	fflush(stdin);
+
 	pid_t pid = fork();
 
 	switch (pid) {
@@ -132,6 +136,14 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 		return pid;
 		break;
 	}
+#endif
+}
+
+void vscl_sleep(uint32_t s) {
+#ifdef _WIN32
+	Sleep(s * 1000)
+#else
+	sleep(s);
 #endif
 }
 
