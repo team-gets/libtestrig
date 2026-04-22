@@ -23,13 +23,16 @@ int main(int argc, char** argv) {
 	struct sockaddr_un sockaddr = { .sun_family = AF_UNIX, };
 	strncpy(sockaddr.sun_path, sockpath, 108);
 
-    if (strncmp(argv[1], "parent", 6) == 0) {
+    if (strncmp(argv[1], "parent", 7) == 0) {
 		int forkstat = vscl_make_new_proc(argv[0], "child");
 		if (forkstat == -1) { fprintf(stderr, "Failure to launch\n"); return forkstat; }
 		else { printf("New process was spawned with PID %i\n", forkstat); }
 
 		int parented = vscl_sock_setup(&sockaddr);
-		if (parented == INVALID_SOCKET) { fprintf(stderr, "Parent sock maker fail\n"); return -1; }
+		if (parented == INVALID_SOCKET) {
+			fprintf(stderr, "Parent sock maker fail\n");
+			return -1;
+		}
 
 		int parentstat = vscl_sock_bind(parented, &sockaddr);
 		if (parentstat == -1) {
