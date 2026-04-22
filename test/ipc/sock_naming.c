@@ -5,8 +5,8 @@
 #include "ipc/sock.h"
 #include "ipc/os.h"
 
-int main(int argc, char** argv) {
-    printf("Begin socket test suite.\n");
+int main(void) {
+    printf("Begin socket naming tests.\n");
     int retstat = 0;
 
     char sockdest[108] = { 0 };

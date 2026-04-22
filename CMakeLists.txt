@@ -6,6 +6,7 @@ project(libtestrig
 
 include(target_copy_dll)
 include(target_output_to_bin)
+include(target_compile_warn_all)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib")
@@ -29,13 +30,6 @@ set(EPOS_SOURCES
 
 set(LIBTESTRIG_SOURCES ${IPC_SOURCES} ${EPOS_SOURCES})
 
-if (MSVC)
-	add_compile_options("/W4")
-else()
-	add_compile_options("-Wall")
-endif()
-
-
 if (WIN32)
 	add_library(EposCmd SHARED IMPORTED)
 	set_target_properties(EposCmd PROPERTIES
@@ -56,6 +50,7 @@ add_library(libtestrig SHARED ${LIBTESTRIG_SOURCES})
 target_compile_definitions(libtestrig PRIVATE COMPILING_TESTRIG_DLL)
 target_include_directories(libtestrig PUBLIC ${LIB_DIR})
 target_link_libraries(libtestrig PUBLIC EposCmd)
+target_compile_warn_all(libtestrig)
 target_output_to_bin(libtestrig)
 
 if (WIN32)
