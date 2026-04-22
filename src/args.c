@@ -44,13 +44,16 @@ int parse_flag(const char* flag, struct parsed_args* parsed) {
 int parse_act(const char* act, struct parsed_args* parsed) {
 	int ret = 0;
 
-	if		(!strncmp("daemon", act, 7))	{ parsed->action = ACTION_DAEMON; ret = 1; }
-	else if (!strncmp("ident", act, 6))		{ parsed->action = ACTION_IDENT; ret = 1; }
-	else if (!strncmp("status", act, 7))	{ parsed->action = ACTION_STAT; ret = 1; }
-	else if (!strncmp("open", act, 5))		{ parsed->action = ACTION_OPEN; ret = 1; }
-	else if (!strncmp("peek", act, 7))		{ parsed->action = ACTION_REQUEST; ret = 1; }
-	else if (!strncmp("close", act, 6))		{ parsed->action = ACTION_CLOSE; ret = 1; }
-	else if (!strncmp("help", act, 5))		{ parsed->action = ACTION_HELP; ret = 1; }
+	char* lead_stripped = strstr(act, " ");
+	const char* actual = (lead_stripped == NULL) ? act : lead_stripped + 1;
+
+	if		(!strncmp("daemon", actual, 7))		{ parsed->action = ACTION_DAEMON; ret = 1; }
+	else if (!strncmp("ident", actual, 6))		{ parsed->action = ACTION_IDENT; ret = 1; }
+	else if (!strncmp("status", actual, 7))		{ parsed->action = ACTION_STAT; ret = 1; }
+	else if (!strncmp("open", actual, 5))		{ parsed->action = ACTION_OPEN; ret = 1; }
+	else if (!strncmp("peek", actual, 7))		{ parsed->action = ACTION_REQUEST; ret = 1; }
+	else if (!strncmp("close", actual, 6))		{ parsed->action = ACTION_CLOSE; ret = 1; }
+	else if (!strncmp("help", actual, 5))		{ parsed->action = ACTION_HELP; ret = 1; }
 
 	return ret;
 }
