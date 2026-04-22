@@ -1,12 +1,12 @@
 #pragma once
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
+
+#ifdef _WIN32
+#include "win_headers.h"
+#endif
 
 #include "libtestrig_api.h"
 

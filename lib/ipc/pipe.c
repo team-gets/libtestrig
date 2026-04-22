@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "ipc/pipe.h"
+#include "ipc/os.h"
 
 vscl_pipe_t vscl_create_pipes() {
 
@@ -12,10 +13,10 @@ vscl_pipe_t vscl_create_pipes() {
 	sattrs.lpSecurityDescriptor = NULL; 
 
 	if (!CreatePipe(&piper.child_read, &piper.child_write, &sattrs, 0))
-		vscl_winprint_error(L"While creating child read pipe");
+		vscl_winprint_error("While creating child read pipe");
 
 	if (!SetHandleInformation(piper.child_read, HANDLE_FLAG_INHERIT, 0))
-		vscl_winprint_error(L"While preventing child from taking parent pipe attributes");
+		vscl_winprint_error("While preventing child from taking parent pipe attributes");
 		
 #else
 	int pipestat = pipe(piper.linux_fds);

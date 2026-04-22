@@ -4,14 +4,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#ifdef _WIN32
-#include <winsock2.h>
-#include <afunix.h>
-#else
+#ifndef _WIN32
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/un.h>
 #include <sys/unistd.h>
+#else
+#include "ipc/win_headers.h"
 #endif // _WIN32
 
 #include <limits.h>

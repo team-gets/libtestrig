@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
+#include "ipc/win_headers.h"
 #else
 #include <unistd.h>
 #endif
