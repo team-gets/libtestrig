@@ -137,7 +137,7 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 
 void vscl_sleep(uint32_t s) {
 #ifdef _WIN32
-	Sleep(s * 1000)
+	Sleep(s * 1000);
 #else
 	sleep(s);
 #endif
