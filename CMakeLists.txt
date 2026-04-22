@@ -16,6 +16,7 @@ set(BIN_DIR "${CMAKE_SOURCE_DIR}/bin")
 set(IPC_SOURCES
 	"${IPC_DIR}/ipc.c"
 	"${IPC_DIR}/sock.c"
+	"${IPC_DIR}/pipe.c"
 	"${IPC_DIR}/message.c"
 	"${IPC_DIR}/os.c")
 
