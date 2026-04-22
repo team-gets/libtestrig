@@ -5,8 +5,11 @@
 static const char* TESTER_SOCK_NAME = "TEST_SOCK.rigsock"; // NOLINT
 
 int main(int argc, char** argv) {
+	if (argc < 2) { fprintf(stderr, "You must pass arguments to this test.\n"); return -1; }
+
     printf("This was invoked with the following command line:\n");
     printf("\t%s %s\n", argv[0], argv[1]);
+	fclose(stdin);
 		
 	char sockpath[108] = { 0 };
 	int retstat = vscl_get_sock_destination(sockpath);
@@ -21,6 +24,10 @@ int main(int argc, char** argv) {
 	strncpy(sockaddr.sun_path, sockpath, 108);
 
     if (strncmp(argv[1], "parent", 6) == 0) {
+		int forkstat = vscl_make_new_proc(argv[0], "child");
+		if (forkstat == -1) { fprintf(stderr, "Failure to launch\n"); return forkstat; }
+		else { printf("New process was spawned with PID %i\n", forkstat); }
+
 		int parented = vscl_sock_setup(&sockaddr);
 		if (parented == INVALID_SOCKET) { fprintf(stderr, "Parent sock maker fail\n"); return -1; }
 
@@ -33,13 +40,8 @@ int main(int argc, char** argv) {
 			return (!closestat) ? closestat : parentstat;
 		}
 
-		// Race condition?
-        parentstat = vscl_make_new_proc(argv[0], "child");
-        if (parentstat == -1) { fprintf(stderr, "Failure to launch\n"); return parentstat; }
-        else { printf("New process was spawned with PID %i\n", parentstat); }
-
 		int exitplz = 0;
-		socklen_t socklen = (socklen_t)sizeof(sockaddr);
+		socklen_t socklen = (socklen_t)sizeof(struct sockaddr);
         while (!exitplz) {
 			int acceptor = accept(parented, (struct sockaddr*)&sockaddr, &socklen);
 			if (acceptor == -1) { fprintf(stderr, "Accept epic fail\n"); continue; }
@@ -66,10 +68,12 @@ int main(int argc, char** argv) {
 		return vscl_sock_close(parented, &sockaddr);
     }
 	else if (strncmp(argv[1], "child", 6) == 0) {
-		vscl_sleep(2);
+		vscl_sleep(5); // arbitrary
+		fflush(stdout);
 		struct sockaddr_un childsock = { 0 };
 		int childed = vscl_sock_setup(&childsock);
 		if (childed == INVALID_SOCKET) { fprintf(stderr, "Child sock maker fail\n"); return -1; }
+		else { printf("Child socket created at %s\n", childsock.sun_path); }
 		
 		int connection = vscl_sock_connect(childed, &sockaddr);
 		if (connection == -1) { fprintf(stderr, "Child connection fail\n"); return connection; }
@@ -85,5 +89,9 @@ int main(int argc, char** argv) {
 		}
 
 		return vscl_sock_close(childed, &childsock);
+	}
+	else {
+		fprintf(stderr, "Invalid token: %s\n", argv[1]);
+		return -1;
 	}
 }
