@@ -15,4 +15,4 @@ function(make_ipc_test OUT_TGT_NAME IN_SOURCES)
 endfunction(make_ipc_test OUT_TGT_NAME IN_SOURCES)
 
 make_ipc_test(sock_naming "${CMAKE_CURRENT_LIST_DIR}/sock_naming.c")
-make_ipc_test(sock_communicating "${CMAKE_CURRENT_LIST_DIR}/sock_communicating.c" "serve")
+make_ipc_test(sock_communicating "${CMAKE_CURRENT_LIST_DIR}/sock_communicating.c" "parent")

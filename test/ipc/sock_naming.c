@@ -28,7 +28,7 @@ int main(void) {
     // Ensure no early truncation
     assert(strstr(sockdest, ".rigsock") != NULL);
     assert(strstr(new_sockdest, ".rigsock") != NULL);
-    printf("The socket path was not truncated.\n");
+    printf("Success: The socket path was not truncated.\n");
 
     return 0;
 }
