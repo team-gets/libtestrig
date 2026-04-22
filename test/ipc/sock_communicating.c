@@ -59,6 +59,8 @@ int main(int argc, char** argv) {
 
 			printf("Success: The message I got was %s\n", buf);
 			assert(strncmp(buf, "HOWDY WORLD", 12) == 0);
+
+			exitplz = 1;
 		}
 
 		return vscl_sock_close(parented, &sockaddr);
@@ -72,7 +74,14 @@ int main(int argc, char** argv) {
 		if (connection == -1) { fprintf(stderr, "Child connection fail\n"); return connection; }
 
 		struct rig_message msg = { {'H', 'O', 'W', 'D'}, {'Y', ' ', 'W', 'O', 'R', 'L', 'D', 0} };
-		vscl_sock_send(connection, &msg);
+		int sent = vscl_sock_send(connection, &msg);
+		if (sent != 12) {
+			fprintf(stderr, "Failure to send all bytes: %i out of 12\n", sent);
+			return -1;
+		}
+		else {
+			printf("Sent all bytes.\n");
+		}
 
 		return vscl_sock_close(childed, &childsock);
 	}

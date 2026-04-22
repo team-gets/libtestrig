@@ -10,7 +10,8 @@ extern "C" {
 
 #include "libtestrig_api.h"
 
-#ifndef _WIN32
+#ifdef _WIN32
+#else
 #define INVALID_SOCKET -1
 #endif
 

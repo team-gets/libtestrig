@@ -11,6 +11,7 @@ extern "C" {
 #include <sys/unistd.h>
 #else
 #include "ipc/win_headers.h"
+#define socklen_t socklen
 #endif // _WIN32
 
 #include <limits.h>
