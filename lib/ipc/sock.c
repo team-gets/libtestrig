@@ -42,11 +42,11 @@ int vscl_sock_setup(struct sockaddr_un* sockaddr_mut) {
 	int wsa_result;
 
 	wsa_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
-	if (wsa_result != 0) { perror("failed WSAStartup"); return -1; }
+	if (wsa_result != 0) { vscl_os_perror("failed WSAStartup"); return -1; }
 #endif // _WIN32
 
 	fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (fd == INVALID_SOCKET) { perror("failed to create socket"); return -1; }
+	if (fd == INVALID_SOCKET) { vscl_os_perror("failed to create socket"); return -1; }
 
 	path_set = (strncmp(
 		sockaddr_mut->sun_path, blank,
@@ -68,7 +68,7 @@ int vscl_sock_bind(const int fd, const struct sockaddr_un* sockaddr) {
 
 	socklen = sizeof(*sockaddr);
 	bindstat = bind(fd, (struct sockaddr*)sockaddr, socklen);
-	if (bindstat == -1) { perror("failed to bind socket"); }
+	if (bindstat == -1) { vscl_os_perror("failed to bind socket"); }
 
 	return bindstat;
 }
@@ -77,7 +77,7 @@ int vscl_sock_listen(const int fd, int max_backlog) {
 	int listenstat;
 
 	listenstat = listen(fd, max_backlog);
-	if (listenstat == -1) { perror("failed to set socket to listen"); }
+	if (listenstat == -1) { vscl_os_perror("failed to set socket to listen"); }
 
 	return listenstat;
 }
@@ -88,7 +88,7 @@ int vscl_sock_connect(const int fd, const struct sockaddr_un* sockaddr) {
 
 	socklen = sizeof(*sockaddr);
 	connstat = connect(fd, (struct sockaddr*)sockaddr, socklen);
-	if (connstat == -1) { perror("failed to connect to socket"); }
+	if (connstat == -1) { vscl_os_perror("failed to connect to socket"); }
 
 	return connstat;
 }
@@ -123,7 +123,7 @@ int vscl_sock_send(const int fd, struct rig_message* msg) {
 #else
 	nbytes = write(fd, buf, 12);
 #endif
-	if (nbytes == -1) { perror("Clientside socket send error"); }
+	if (nbytes == -1) { vscl_os_perror("Clientside socket send error"); }
 
 	return nbytes;
 }

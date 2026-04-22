@@ -21,7 +21,7 @@ TESTRIG_API int vscl_make_new_proc(const char* prog, const char* args);
 TESTRIG_API void vscl_sleep(uint32_t s);
 
 #ifdef _WIN32
-TESTRIG_API void vscl_winprint_error(const TCHAR* msg);
+TESTRIG_API void vscl_os_perror(const TCHAR* msg);
 #endif
 
 #ifdef __cplusplus

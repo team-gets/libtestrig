@@ -16,7 +16,7 @@ uint32_t vscl_abort(const struct controller* controller_in, void* device_handle)
 
 	int ret = VCS_SetQuickStopState(device_handle, controller_in->node_id, &error_code);
 	if (ret == 0) {
-		vscl_print_error(error_code);
+		vscl_rig_perror(error_code);
 		printf("DANGER: Failed to abort rig operations!\n");
 	}
 	else {

@@ -7,23 +7,23 @@
 
 static void vscl_print_naming_error(vscl_byte_t error_code) {
 	printf("While identifying device names:\n\t");
-	vscl_print_error(error_code);
+	vscl_rig_perror(error_code);
 }
 
 static void vscl_print_protocol_ident_error(vscl_byte_t error_code, const char* name) {
 	printf("While identifying device protocol stacks for device %s:\n\t", name);
-	vscl_print_error(error_code);
+	vscl_rig_perror(error_code);
 }
 
 static void vscl_print_interface_ident_error(vscl_byte_t error_code, const char* name, const char* protocol) {
 	printf("While identifying device interface for device %s on protocol %s:\n\t", name, protocol);
-	vscl_print_error(error_code);
+	vscl_rig_perror(error_code);
 }
 
 static void vscl_print_port_ident_error(vscl_byte_t error_code, const char* name, const char* protocol, const char* iface) {
 	printf("While identifying device interface for device %s on protocol %s and interface %s:\n\t",
 			name, protocol, iface);
-	vscl_print_error(error_code);
+	vscl_rig_perror(error_code);
 }
 
 uint32_t vscl_ident_names(void) {

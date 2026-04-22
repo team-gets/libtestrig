@@ -22,7 +22,7 @@ int vscl_get_sock_destination(char *dest) {
     errno_t retstat;
     
     retstat = getenv_s(&retvalue, usrtemp, 76, "TEMP");
-    if (retvalue == 0 || retstat != 0) { perror("Failed to get TEMP"); return retstat; }
+    if (retvalue == 0 || retstat != 0) { vscl_os_perror("Failed to get TEMP"); return retstat; }
     
 	strncpy(dest, usrtemp, retvalue);
     strncat(dest, "\\", 2);
@@ -55,7 +55,7 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 			&pi
 		);
 
-	if (mkdetach == FALSE) { vscl_winprint_error("failed to detach"); return -1; }
+	if (mkdetach == FALSE) { vscl_os_perror("failed to detach"); return -1; }
 
 	CloseHandle(&si);
 	CloseHandle(&pi);
@@ -67,12 +67,12 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 
 	switch (pid) {
 	case -1:
-		perror("failed to fork off");
+		vscl_os_perror("failed to fork off");
 		return -1;
 		break;
 	case 0:
 		if (setsid() == -1) {
-			perror("failed to detach");
+			vscl_os_perror("failed to detach");
 			return -1;
 		}
 		else {
@@ -143,8 +143,8 @@ void vscl_sleep(uint32_t s) {
 #endif
 }
 
+void vscl_os_perror(const char* preamble) {
 #ifdef _WIN32
-void vscl_winprint_error(const TCHAR* msg) {
     DWORD errcode = GetLastError();
     TCHAR errmsg[256] = { 0 };
 
@@ -159,6 +159,8 @@ void vscl_winprint_error(const TCHAR* msg) {
 
 
     if (wides == 0) { printf("error while processing error\n"); }
-    wprintf(L"%s: %s", msg, errmsg);
-}
+    wprintf(L"%s: %s", preamble, errmsg);
+#else
+	perror(preamble);
 #endif
+}
