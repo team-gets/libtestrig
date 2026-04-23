@@ -9,9 +9,7 @@
 #include "ipc/ipc.h"
 
 #ifdef _WIN32
-#include <winsock2.h>
-#include <windows.h> // holy cow there is some include order stuff with windows.h
-typedef int socklen_t;
+#include "ipc/win_headers.h"
 #else
 #include <ftw.h>
 #include <unistd.h>
@@ -156,10 +154,10 @@ int testrig_daemon(other_args* others) {
 			body[i - 4] = buf[i];
 		}
 
-		if (!strncmp("STATUS", body, 7))		{ testrig_stat(NULL); }
+		if (!strncmp("STATUS", body, 7))			{ testrig_stat(NULL); }
 		else if (!strncmp("OPEN", body, 5))		{ testrig_open(NULL); }
 		else if (!strncmp("REQUEST", body, 7))	{ testrig_peek(NULL); }
-		else if (!strncmp("CLOSE", body, 6))	{ testrig_close(NULL); }
+		else if (!strncmp("CLOSE", body, 6))		{ testrig_close(NULL); }
 		else if (!strncmp("DOWN", body, 5))		{ DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CLEANING; }
 	}
 

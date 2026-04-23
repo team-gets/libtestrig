@@ -4,6 +4,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 project(libtestrig
 	LANGUAGES C)
 
+include(CTest)
 include(target_copy_dll)
 include(target_output_to_bin)
 include(target_compile_warn_all)
@@ -44,6 +45,12 @@ else()
 		IMPORTED_IMPLIB "")
 
 	set(EposCmd-FOUND TRUE)
+endif()
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+	message("-- Creating coverage reports in Debug mode.")
+	add_compile_options(-coverage)
+	add_link_options(-coverage)
 endif()
 
 add_library(libtestrig SHARED ${LIBTESTRIG_SOURCES})

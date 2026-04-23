@@ -6,11 +6,6 @@
 #include "sock.h"
 #include "os.h"
 
-#ifdef _WIN32
-// TODO: Evaluate if this is sufficient (it is honestly kind of smelly)
-typedef int socklen_t;
-#endif
-
 int vscl_sock_genpath(char* sockpath) {
 	int retstat;
 	int baselen;
