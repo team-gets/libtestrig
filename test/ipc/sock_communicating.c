@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         }
 
 		struct rig_message msg = { {'H', 'O', 'W', 'D'}, {'Y', ' ', 'W', 'O', 'R', 'L', 'D', 0} };
-		int sent = vscl_sock_send(connection, &msg);
+		int sent = vscl_sock_send(childed, &msg);
 		if (sent != 12) {
 			fprintf(stderr, "Failure to send all bytes: %i out of 12\n", sent);
             vscl_sock_close(childed, &childsock);
