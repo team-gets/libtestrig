@@ -1,0 +1,1 @@
+make_unit_test(daemon_interrupting "${CMAKE_CURRENT_LIST_DIR}/daemon_interrupting.c" $<TARGET_FILE:testrig>)
