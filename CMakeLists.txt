@@ -47,7 +47,7 @@ else()
 	set(EposCmd-FOUND TRUE)
 endif()
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 	message("-- Creating coverage reports in Debug mode.")
 	add_compile_options(-coverage)
 	add_link_options(-coverage)

@@ -15,6 +15,7 @@
 				"CMAKE_COLOR_DIAGNOSTICS": "ON"
 			}
 		},
+
 		{
 			"name": "windows-only",
 			"hidden": true,
