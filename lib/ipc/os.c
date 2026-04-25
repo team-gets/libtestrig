@@ -84,7 +84,7 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 			strncpy(argv[0], prog, strlen(prog) + 1);
 
 			argv[1] = (char*)calloc(64, 1);
-			char* arg1 = strstr(args, " ");
+			const char* arg1 = strstr(args, " ");
 			if (arg1 == NULL) {
 				strncpy(argv[1], args, strlen(args) + 1);
 			}
@@ -95,8 +95,8 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 				strncpy(interstr, args, interlen);
 				strncpy(argv[1], interstr, strlen(interstr) + 1);
 
-				char* argn = strstr(arg1, " ");
-				char* argn1 = arg1;
+				char* argn = (char*)strstr(arg1, " ");
+				char* argn1 = (char*)arg1;
 				while (argn != NULL) {
 					num_args++;
 					if (num_args > sizeof_argv) {
