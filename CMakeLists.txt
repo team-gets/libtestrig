@@ -59,10 +59,14 @@ target_include_directories(libtestrig PUBLIC ${LIB_DIR})
 target_link_libraries(libtestrig PUBLIC EposCmd)
 target_compile_warn_all(libtestrig)
 target_output_to_bin(libtestrig)
+set_target_properties(libtestrig
+	PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
 
 if (WIN32)
 	target_link_libraries(libtestrig PUBLIC Ws2_32 Kernel32)
 endif()
+
+add_library(vscl::testrig::lib ALIAS libtestrig)
 
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")
 add_subdirectory("${CMAKE_SOURCE_DIR}/test")

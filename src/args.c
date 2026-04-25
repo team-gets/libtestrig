@@ -44,7 +44,7 @@ int parse_flag(const char* flag, struct parsed_args* parsed) {
 int parse_act(const char* act, struct parsed_args* parsed) {
 	int ret = 0;
 
-	char* lead_stripped = strstr(act, " ");
+	const char* lead_stripped = strstr(act, " ");
 	const char* actual = (lead_stripped == NULL) ? act : lead_stripped + 1;
 
 	if		(!strncmp("daemon", actual, 7))		{ parsed->action = ACTION_DAEMON; ret = 1; }
