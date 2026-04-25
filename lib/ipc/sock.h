@@ -9,6 +9,8 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/un.h>
 #include <sys/unistd.h>
+
+#define INVALID_SOCKET -1
 #else
 #include "ipc/win_headers.h"
 #endif // _WIN32
