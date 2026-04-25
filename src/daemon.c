@@ -26,7 +26,7 @@ static SOCKET daemon_sock;
 
 BOOL WINAPI interrupt_catcher(DWORD ctrl_type) {
 	if (ctrl_type == CTRL_C_EVENT) {
-		DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_STOPPED;
+		DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CLEANING;
 		printf("Stopping!\n");
 		vscl_sock_close(daemon_sock, daemon_sockaddr);
 		return TRUE;
@@ -37,7 +37,7 @@ BOOL WINAPI interrupt_catcher(DWORD ctrl_type) {
 #else
 static void interrupt_catcher(int sig, siginfo_t* info, [[ maybe_unused ]] void* ucontext) {
 	if (sig != SIGINT || info->si_signo != SIGINT) { return; }
-	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_STOPPED;
+	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CLEANING;
 }
 #endif // _WIN32: Clean Ctrl+C handlers
 
@@ -113,7 +113,7 @@ int testrig_daemon(other_args* others) {
 		return 0;
 	}
 	else if (sought) {
-		fprintf(stderr, "error: daemon already running\n");
+		fprintf(stderr, "Error: Daemon already running\n");
 		return -1;
 	}
 
@@ -134,11 +134,16 @@ int testrig_daemon(other_args* others) {
 		return -1;
 	}
 
-	printf("waiting for connection...\n");
+	printf("Waiting for connection...\n");
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
 	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING) {
 		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
-		if (accepted == -1) { vscl_os_perror("daemon accept failure"); continue; }
+		if (accepted == -1) {
+			if (DAEMON_CURRENT_STATUS != TESTRIG_DAEMON_CLEANING)
+				vscl_os_perror("Daemon accept failure");
+
+			continue;
+		}
 
 		vscl_byte_t buf[12] = { 0 };
 
@@ -147,17 +152,24 @@ int testrig_daemon(other_args* others) {
 #else
 		int recvd = read(accepted, buf, 12);
 #endif
-		if (recvd != 12) { vscl_os_perror("did not read full msg"); continue; }
+		if (recvd != 12) {
+			if (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING
+			||  DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_CONNECTED) {
+				vscl_os_perror("Did not read full msg");
+			}
+
+			continue;
+		}
 
 		vscl_byte_t body[8] = { 0 };
 		for (uint8_t i = 4; i < 12; i++) {
 			body[i - 4] = buf[i];
 		}
 
-		if (!strncmp("STATUS", body, 7))			{ testrig_stat(NULL); }
+		if (!strncmp("STATUS", body, 7))		{ testrig_stat(NULL); }
 		else if (!strncmp("OPEN", body, 5))		{ testrig_open(NULL); }
 		else if (!strncmp("REQUEST", body, 7))	{ testrig_peek(NULL); }
-		else if (!strncmp("CLOSE", body, 6))		{ testrig_close(NULL); }
+		else if (!strncmp("CLOSE", body, 6))	{ testrig_close(NULL); }
 		else if (!strncmp("DOWN", body, 5))		{ DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CLEANING; }
 	}
 
