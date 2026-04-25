@@ -44,7 +44,7 @@ static void interrupt_catcher(int sig, siginfo_t* info, [[ maybe_unused ]] void*
 static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] struct sockaddr_un* sockaddr) {
 #ifdef _WIN32
 	BOOL setted = SetConsoleCtrlHandler(interrupt_catcher, TRUE);
-	if (!setted) { vscl_os_perror("daemon ctrl handler"); return 0; }
+	if (!setted) { vscl_os_perror("Daemon ctrl handler"); return 0; }
 	
 	daemon_sockaddr = sockaddr;
 	daemon_sock = sock;
@@ -55,7 +55,7 @@ static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] 
 	act.sa_sigaction = &interrupt_catcher;
 
 	int sigint_bound = sigaction(SIGINT, &act, NULL);
-	if (sigint_bound == -1) { vscl_os_perror("daemon signal capture"); return 0; }
+	if (sigint_bound == -1) { vscl_os_perror("Daemon signal capture"); return 0; }
 	return 1;
 #endif // _WIN32: Setup signal handler
 } // interrupt intercept maker

@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 	}
 
 	if (parsed.fun == NULL) {
-		printf("unimplemented action\n");
+		printf("Unimplemented action\n");
 	}
 	else if (ret == 0) {
 		ret = parsed.fun(&others);

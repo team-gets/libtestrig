@@ -43,7 +43,7 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 	int found = seek_daemon(&sockaddr);
 
 	if (!found) {
-		printf("testrigd not running; creating new testrig process at ");
+		printf("testrigd not running; Creating new testrig process at ");
 		int pid = vscl_make_new_proc(PROG_NAME, "--detach daemon");
 		printf("%i\n", pid);
 	}
@@ -58,7 +58,7 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 	}
 
 	if (try >= NUM_MAX_RETRIES) {
-		fprintf(stderr, "failed to connect after %i retries", NUM_MAX_RETRIES);
+		fprintf(stderr, "Failed to connect after %i retries", NUM_MAX_RETRIES);
 		return -1;
 	}
 
@@ -121,7 +121,7 @@ int testrig_ident(other_args* others) {
 		return 0;
 	}
 	else {
-		fprintf(stderr, "error: the arguments passed to ident could not be parsed\n");
+		fprintf(stderr, "Error: The arguments passed to ident could not be parsed\n");
 		return 1;
 	}	
 }
@@ -156,7 +156,7 @@ int testrig_peek([[maybe_unused]] other_args* others) {
 	if (setup == -1) { return 1; }
 
 	int not_sought = seek_daemon(&daemon_sockaddr);
-	if (not_sought) { printf("not found"); vscl_sock_close(setup, &sockaddr); return 1; }
+	if (not_sought) { printf("Not found\n"); vscl_sock_close(setup, &sockaddr); return 1; }
 
 	int conn = vscl_sock_connect(setup, &daemon_sockaddr);
 	if (conn == -1) { return 1; }
