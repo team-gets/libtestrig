@@ -8,4 +8,5 @@ set(TESTRIG_SOURCES
 add_executable(testrig ${TESTRIG_SOURCES})
 target_link_libraries(testrig PRIVATE libtestrig)
 target_include_directories(testrig PRIVATE ${LIB_DIR})
+target_compile_warn_all(testrig)
 target_output_to_bin(testrig)

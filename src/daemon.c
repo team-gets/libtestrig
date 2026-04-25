@@ -9,9 +9,7 @@
 #include "ipc/ipc.h"
 
 #ifdef _WIN32
-#include <winsock2.h>
-#include <windows.h> // holy cow there is some include order stuff with windows.h
-typedef int socklen_t;
+#include "ipc/win_headers.h"
 #else
 #include <ftw.h>
 #include <unistd.h>
@@ -46,7 +44,7 @@ static void interrupt_catcher(int sig, siginfo_t* info, [[ maybe_unused ]] void*
 static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] struct sockaddr_un* sockaddr) {
 #ifdef _WIN32
 	BOOL setted = SetConsoleCtrlHandler(interrupt_catcher, TRUE);
-	if (!setted) { vscl_winprint_error("daemon ctrl handler"); return 0; }
+	if (!setted) { vscl_os_perror("daemon ctrl handler"); return 0; }
 	
 	daemon_sockaddr = sockaddr;
 	daemon_sock = sock;
@@ -57,7 +55,7 @@ static int deploy_interrupt_cleanup([[maybe_unused]] int sock, [[maybe_unused]] 
 	act.sa_sigaction = &interrupt_catcher;
 
 	int sigint_bound = sigaction(SIGINT, &act, NULL);
-	if (sigint_bound == -1) { perror("daemon signal capture"); return 0; }
+	if (sigint_bound == -1) { vscl_os_perror("daemon signal capture"); return 0; }
 	return 1;
 #endif // _WIN32: Setup signal handler
 } // interrupt intercept maker
@@ -140,7 +138,7 @@ int testrig_daemon(other_args* others) {
 	DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_LISTENING;
 	while (DAEMON_CURRENT_STATUS == TESTRIG_DAEMON_LISTENING) {
 		int accepted = accept(sock, (struct sockaddr*)&sockaddr, &socksize);
-		if (accepted == -1) { perror("daemon accept failure"); continue; }
+		if (accepted == -1) { vscl_os_perror("daemon accept failure"); continue; }
 
 		vscl_byte_t buf[12] = { 0 };
 
@@ -149,17 +147,17 @@ int testrig_daemon(other_args* others) {
 #else
 		int recvd = read(accepted, buf, 12);
 #endif
-		if (recvd != 12) { perror("did not read full msg"); continue; }
+		if (recvd != 12) { vscl_os_perror("did not read full msg"); continue; }
 
 		vscl_byte_t body[8] = { 0 };
 		for (uint8_t i = 4; i < 12; i++) {
 			body[i - 4] = buf[i];
 		}
 
-		if (!strncmp("STATUS", body, 7))		{ testrig_stat(NULL); }
+		if (!strncmp("STATUS", body, 7))			{ testrig_stat(NULL); }
 		else if (!strncmp("OPEN", body, 5))		{ testrig_open(NULL); }
 		else if (!strncmp("REQUEST", body, 7))	{ testrig_peek(NULL); }
-		else if (!strncmp("CLOSE", body, 6))	{ testrig_close(NULL); }
+		else if (!strncmp("CLOSE", body, 6))		{ testrig_close(NULL); }
 		else if (!strncmp("DOWN", body, 5))		{ DAEMON_CURRENT_STATUS = TESTRIG_DAEMON_CLEANING; }
 	}
 

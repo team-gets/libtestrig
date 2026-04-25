@@ -11,7 +11,7 @@ int vscl_decode_error(const uint32_t error_code, char* error_msg, vscl_byte_t ma
 	return ret;
 }
 
-int vscl_print_error(const uint32_t error_code) {
+int vscl_rig_perror(const uint32_t error_code) {
 	char msg[64] = { 0 };
 	int ret = vscl_decode_error(error_code, msg, 64);
 	printf("ERROR 0x%X: %s\n", error_code, msg);
@@ -24,7 +24,7 @@ uint32_t vscl_reset_device(void *device_handle, struct controller* controller_in
 	uint32_t error_code = 0;
 	int ret = VCS_ResetDevice(device_handle, controller_in->node_id, &error_code);
 	if (ret == 0) {
-		vscl_print_error(error_code);
+		vscl_rig_perror(error_code);
 		printf("Device failed to be reset: %s\n", controller_in->name);
 	}
 
@@ -47,7 +47,7 @@ uint32_t vscl_setup_can_gateway(struct controller controllers[3], void* handles[
 	error_code = vscl_initialize_devices(controllers, handles, 3);
 	if (error_code != 0) {
 		printf("When initializing multiple devices: ");
-		vscl_print_error(error_code);
+		vscl_rig_perror(error_code);
 		return error_code;
 	}
 
@@ -60,7 +60,7 @@ uint32_t vscl_cleanup_testrig(struct controller controllers[3], void* handles[3]
 	error_code = vscl_close_devices(controllers, handles, 3);
 	if (error_code != 0) {
 		printf("When cleaning up multiple devices: ");
-		vscl_print_error(error_code);
+		vscl_rig_perror(error_code);
 		return error_code;
 	}
 

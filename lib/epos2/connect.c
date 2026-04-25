@@ -7,7 +7,7 @@
 #include "identify.h"
 
 static void vscl_failed_open_device(uint32_t error_code) {
-	vscl_print_error(error_code);
+	vscl_rig_perror(error_code);
 	printf("Failed to open device with with following characteristics:\n");
 }
 
@@ -53,7 +53,7 @@ uint32_t vscl_initialize_devices(struct controller controllers_out[], void* hand
 	error_code = vscl_clean_enable_device(&controllers_out[0], handles_out[0]);
 	if (error_code != 0) {
 		printf("While attempting to open gateway:\n\t");
-		vscl_print_error(error_code);
+		vscl_rig_perror(error_code);
 
 		return error_code;
 	}
@@ -77,7 +77,7 @@ uint32_t vscl_initialize_devices(struct controller controllers_out[], void* hand
 		error_code = vscl_clean_enable_device(&controllers_out[i], handles_out[i]);
 		if (error_code != 0) {
 			printf("While attempting to open gateway:\n\t");
-			vscl_print_error(error_code);
+			vscl_rig_perror(error_code);
 			return error_code;
 		}
 	}
@@ -100,7 +100,7 @@ uint32_t vscl_clean_enable_device(struct controller* controller, void* device_ha
 	ret = VCS_ClearFault(device_handle, controller->node_id, &error_code);
 	if (ret == 0) {
 		printf("While clearing fault from %s at %s:\n\t", controller->name, controller->port);
-		vscl_print_error(error_code);
+		vscl_rig_perror(error_code);
 		return error_code;
 	}
 
@@ -125,7 +125,7 @@ uint32_t vscl_close_device(struct controller* controller, void* device_handle) {
 	if (ret == 0) {
 		printf("While attempting to close device %s at node %ihh\n\t",
 				controller->name, controller->node_id);
-		vscl_print_error(error_code);
+		vscl_rig_perror(error_code);
 		return error_code;
 	}
 
@@ -156,7 +156,7 @@ uint32_t vscl_close_devices(struct controller controllers[], void* device_handle
 		if (ret == 0) {
 			printf("While closing subdevice %s at node %ihh:\n\t",
 					controllers[i].name, controllers[i].node_id);
-			vscl_print_error(error_code);
+			vscl_rig_perror(error_code);
 
 			return error_code;
 		}
@@ -169,7 +169,7 @@ uint32_t vscl_close_devices(struct controller controllers[], void* device_handle
 	if (ret == 0) {
 		printf("While closing gateway device %s at node %ihh:\n\t",
 				controllers[0].name, controllers[0].node_id);
-		vscl_print_error(error_code);
+		vscl_rig_perror(error_code);
 		return error_code;
 	}
 

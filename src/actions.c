@@ -44,18 +44,15 @@ int delegate_to_daemon(enum CLI_ACTION act) {
 
 	if (!found) {
 		printf("testrigd not running; creating new testrig process at ");
-		int pid = vscl_make_new_proc(PROG_NAME, "--detach --daemon");
+		int pid = vscl_make_new_proc(PROG_NAME, "--detach daemon");
 		printf("%i\n", pid);
 	}
 
 	int conn = vscl_sock_connect(sock, &sockaddr);
 	int try = 1;
 	while (conn == -1 && try < NUM_MAX_RETRIES) {
-#ifdef _WIN32
-		Sleep(1000);
-#else
-		sleep(1);
-#endif
+		vscl_sleep(1);
+
 		try++;
 		conn = vscl_sock_connect(sock, &sockaddr);
 	}
