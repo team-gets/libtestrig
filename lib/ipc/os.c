@@ -110,7 +110,7 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 					size_t argnlen = vscl_strinterlen(argn, argn1);
 					argnlen = (argnlen == 0) ? 64 : argnlen;
 
-					strncpy(argnstr, argn1, argnlen);
+					strncpy(argnstr, argn1 + 1, argnlen);
 					strncpy(argv[n], argnstr, strlen(argnstr) + 1);
 
 					argn1 = argn;
