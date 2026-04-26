@@ -49,6 +49,16 @@ TESTRIG_API extern const vscl_byte_t MESSAGE_BLANK[8];
 TESTRIG_API int vscl_set_message(struct rig_message* msg, const vscl_byte_t* head, const vscl_byte_t* data);
 
 /*
+ *	@brief Identify the header byte.
+ */
+TESTRIG_API int vscl_ident_header_part(vscl_byte_t in[4], int idx);
+
+/*
+ *	@brief Identify the four bytes in the header.
+ */
+TESTRIG_API int vscl_ident_full_header(vscl_byte_t in[4]);
+
+/*
  *	The type of header.
  */
 TESTRIG_API enum HEADER_TYPE {

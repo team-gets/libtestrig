@@ -17,7 +17,7 @@ int delegate_to_daemon(enum CLI_ACTION act);
 int testrig_ident(other_args* others);
 int testrig_stat(other_args* others);
 int testrig_open(other_args* others);
-int testrig_request(other_args* others);
+int testrig_peek(other_args* others);
 int testrig_close(other_args* others);
 
 void free_other_args(other_args* others);

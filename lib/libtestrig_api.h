@@ -13,3 +13,8 @@
 #endif // TESTRIG_API
 
 typedef char vscl_byte_t;
+
+enum VSCL_PLATFORM {
+	VSCL_PLATFORM_WINDOWS,
+	VSCL_PLATFORM_LINUX,
+};

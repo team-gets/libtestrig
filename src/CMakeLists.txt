@@ -6,6 +6,12 @@ set(TESTRIG_SOURCES
 	"${CMAKE_CURRENT_LIST_DIR}/daemon.c")
 
 add_executable(testrig ${TESTRIG_SOURCES})
-target_link_libraries(testrig PRIVATE libtestrig)
+target_link_libraries(testrig PRIVATE vscl::testrig::lib)
 target_include_directories(testrig PRIVATE ${LIB_DIR})
+target_compile_warn_all(testrig)
 target_output_to_bin(testrig)
+set_target_properties(testrig
+	PROPERTIES VERIFY_INTERFACE_HEADER_SETS ON)
+
+add_executable(vscl::testrig::cli ALIAS testrig)
+

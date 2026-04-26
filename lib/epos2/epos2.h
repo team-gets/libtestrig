@@ -22,7 +22,7 @@ int TESTRIG_API vscl_decode_error(const uint32_t error_code, char* error_msg, vs
 /*
  *	@brief Decode and print an error code's corresponding message.
  */
-int TESTRIG_API vscl_print_error(const uint32_t error_code);
+int TESTRIG_API vscl_rig_perror(const uint32_t error_code);
 
 /*
  *	@brief Reset a device.

@@ -22,7 +22,7 @@ int vscl_get_sock_destination(char *dest) {
     errno_t retstat;
     
     retstat = getenv_s(&retvalue, usrtemp, 76, "TEMP");
-    if (retvalue == 0 || retstat != 0) { perror("Failed to get TEMP"); return retstat; }
+    if (retvalue == 0 || retstat != 0) { vscl_os_perror("Failed to get TEMP"); return retstat; }
     
 	strncpy(dest, usrtemp, retvalue);
     strncat(dest, "\\", 2);
@@ -36,8 +36,8 @@ int vscl_get_sock_destination(char *dest) {
 
 int vscl_make_new_proc(const char* prog, const char* args) {
 #if _WIN32
-	PROCESS_INFORMATION pi;
-	STARTUPINFO si;
+	PROCESS_INFORMATION pi = { 0 };
+	STARTUPINFO si = { 0 };
 
 	char cmd[1024] = { 0 };
 	sprintf(cmd, "%s %s", prog, args);
@@ -55,7 +55,7 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 			&pi
 		);
 
-	if (mkdetach == FALSE) { vscl_winprint_error("failed to detach"); return -1; }
+	if (mkdetach == FALSE) { vscl_os_perror("failed to detach"); return -1; }
 
 	CloseHandle(&si);
 	CloseHandle(&pi);
@@ -67,12 +67,12 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 
 	switch (pid) {
 	case -1:
-		perror("failed to fork off");
+		vscl_os_perror("failed to fork off");
 		return -1;
 		break;
 	case 0:
 		if (setsid() == -1) {
-			perror("failed to detach");
+			vscl_os_perror("failed to detach");
 			return -1;
 		}
 		else {
@@ -84,7 +84,7 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 			strncpy(argv[0], prog, strlen(prog) + 1);
 
 			argv[1] = (char*)calloc(64, 1);
-			char* arg1 = strstr(args, " ");
+			const char* arg1 = strstr(args, " ");
 			if (arg1 == NULL) {
 				strncpy(argv[1], args, strlen(args) + 1);
 			}
@@ -95,8 +95,8 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 				strncpy(interstr, args, interlen);
 				strncpy(argv[1], interstr, strlen(interstr) + 1);
 
-				char* argn = strstr(arg1, " ");
-				char* argn1 = arg1;
+				char* argn = (char*)strstr(arg1, " ");
+				char* argn1 = (char*)arg1;
 				while (argn != NULL) {
 					num_args++;
 					if (num_args > sizeof_argv) {
@@ -110,7 +110,7 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 					size_t argnlen = vscl_strinterlen(argn, argn1);
 					argnlen = (argnlen == 0) ? 64 : argnlen;
 
-					strncpy(argnstr, argn1, argnlen);
+					strncpy(argnstr, argn1 + 1, argnlen);
 					strncpy(argv[n], argnstr, strlen(argnstr) + 1);
 
 					argn1 = argn;
@@ -118,6 +118,13 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 				}
 			}
 
+			num_args++;
+			if (num_args > sizeof_argv) {
+				sizeof_argv *= 2;
+				argv = (char**)realloc(argv, sizeof_argv * sizeof(char*));
+			}
+
+			argv[num_args - 1] = NULL;
 			execv(prog, argv);
 
 			for (size_t i = 0; i < num_args; i++) {
@@ -135,8 +142,16 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 #endif
 }
 
+void vscl_sleep(uint32_t s) {
 #ifdef _WIN32
-void vscl_winprint_error(const TCHAR* msg) {
+	Sleep(s * 1000);
+#else
+	sleep(s);
+#endif
+}
+
+void vscl_os_perror(const char* preamble) {
+#ifdef _WIN32
     DWORD errcode = GetLastError();
     TCHAR errmsg[256] = { 0 };
 
@@ -151,6 +166,8 @@ void vscl_winprint_error(const TCHAR* msg) {
 
 
     if (wides == 0) { printf("error while processing error\n"); }
-    wprintf(L"%s: %s", msg, errmsg);
-}
+    printf("%s: %s", preamble, errmsg);
+#else
+	perror(preamble);
 #endif
+}

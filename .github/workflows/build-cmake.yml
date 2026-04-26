@@ -5,18 +5,16 @@ on:
     branches: ["main"]
     paths:
       - ".github/workflows/build-cmake.yml"
-      - "ipc/**/*.c"
-      - "ipc/**/*.h"
-      - "test/*.c"
+      - "**/*.c"
+      - "**/*.h"
       - "**/CMakeLists.txt"
       - "cmake/*.cmake"
   push:
     branches: ["main"]
     paths:
       - ".github/workflows/build-cmake.yml"
-      - "ipc/**/*.c"
-      - "ipc/**/*.h"
-      - "test/*.c"
+      - "**/*.c"
+      - "**/*.h"
       - "**/CMakeLists.txt"
       - "cmake/*.cmake"
 
@@ -38,6 +36,9 @@ jobs:
       - name: Build
         run: |
           cmake --build build
+      - name: Test
+        run: |
+          ctest --verbose --output-on-failure --test-dir ${{ github.workspace }}/build/test
 
   windows-build-cmake:
     name: Windows
@@ -57,3 +58,6 @@ jobs:
       - name: Build
         run: |
           cmake --build build
+      - name: Test
+        run: |
+          ctest --verbose --output-on-failure --test-dir ${{ github.workspace }}/build/test

@@ -14,10 +14,10 @@ static void die_invalid_arg(const char* arg) {
 
 static char* mode_map[] = { "command", "detach" };
 char* action_map[] = { "help", "ident", "status", "daemon",
-	"open", "request", "close" };
+	"open", "peek", "close" };
 static int(*fun_map[])(other_args*) = {
 	&help_me, &testrig_ident, &testrig_stat, &testrig_daemon,
-	&testrig_open, &testrig_request, &testrig_close };
+	&testrig_open, &testrig_peek, &testrig_close };
 
 int is_flag(const char* arg) { return (strstr(arg, "--") == NULL) ? 0 : 1; }
 int is_opt(const char* arg) {
@@ -34,8 +34,7 @@ int parse_flag(const char* flag, struct parsed_args* parsed) {
 	const char* name = strstr(flag, "--") + 2;
 	int ret = 0;
 
-	if		(!strncmp("daemon", name, 7))	{ parsed->action = ACTION_DAEMON; ret = 1; }
-	else if (!strncmp("detach", name, 7)) 	{ parsed->mode = CLI_MODE_DETACHED; ret = 1; }
+	if		(!strncmp("detach", name, 7)) 	{ parsed->mode = CLI_MODE_DETACHED; ret = 1; }
 	else if (!strncmp("verbose", name, 8))	{ parsed->verbosity = 1; ret = 1; }
 	else if (!strncmp("help", name, 5))		{ parsed->action = ACTION_HELP; ret = 1; }
 
@@ -45,13 +44,16 @@ int parse_flag(const char* flag, struct parsed_args* parsed) {
 int parse_act(const char* act, struct parsed_args* parsed) {
 	int ret = 0;
 
-	if		(!strncmp("daemon", act, 7))	{ parsed->action = ACTION_DAEMON; ret = 1; }
-	else if (!strncmp("ident", act, 6))		{ parsed->action = ACTION_IDENT; ret = 1; }
-	else if (!strncmp("status", act, 7))	{ parsed->action = ACTION_STAT; ret = 1; }
-	else if (!strncmp("open", act, 5))		{ parsed->action = ACTION_OPEN; ret = 1; }
-	else if (!strncmp("request", act, 7))	{ parsed->action = ACTION_REQUEST; ret = 1; }
-	else if (!strncmp("close", act, 6))		{ parsed->action = ACTION_CLOSE; ret = 1; }
-	else if (!strncmp("help", act, 5))		{ parsed->action = ACTION_HELP; ret = 1; }
+	const char* lead_stripped = strstr(act, " ");
+	const char* actual = (lead_stripped == NULL) ? act : lead_stripped + 1;
+
+	if		(!strncmp("daemon", actual, 7))		{ parsed->action = ACTION_DAEMON; ret = 1; }
+	else if (!strncmp("ident", actual, 6))		{ parsed->action = ACTION_IDENT; ret = 1; }
+	else if (!strncmp("status", actual, 7))		{ parsed->action = ACTION_STAT; ret = 1; }
+	else if (!strncmp("open", actual, 5))		{ parsed->action = ACTION_OPEN; ret = 1; }
+	else if (!strncmp("peek", actual, 7))		{ parsed->action = ACTION_REQUEST; ret = 1; }
+	else if (!strncmp("close", actual, 6))		{ parsed->action = ACTION_CLOSE; ret = 1; }
+	else if (!strncmp("help", actual, 5))		{ parsed->action = ACTION_HELP; ret = 1; }
 
 	return ret;
 }
