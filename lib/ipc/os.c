@@ -118,6 +118,13 @@ int vscl_make_new_proc(const char* prog, const char* args) {
 				}
 			}
 
+			num_args++;
+			if (num_args > sizeof_argv) {
+				sizeof_argv *= 2;
+				argv = (char**)realloc(argv, sizeof_argv * sizeof(char*));
+			}
+
+			argv[num_args - 1] = NULL;
 			execv(prog, argv);
 
 			for (size_t i = 0; i < num_args; i++) {
